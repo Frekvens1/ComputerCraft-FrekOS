@@ -1,13 +1,16 @@
 from fastapi import FastAPI
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 
 app = FastAPI()
 
+app.mount("/frekos", StaticFiles(directory="frekos"), name="frekos")
 
 @app.get("/")
 async def root():
-    return {"message": "Hello World"}
+    return {"message": "Hello ComputerCraft!"}
 
 
-@app.get("/hello/{name}")
-async def say_hello(name: str):
-    return {"message": f"Hello {name}"}
+@app.get("/install")
+async def install():
+    return FileResponse("frekos/update.lua", media_type="text/plain")
