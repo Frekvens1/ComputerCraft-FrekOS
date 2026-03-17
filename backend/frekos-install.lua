@@ -8,6 +8,7 @@ function main()
     download("frekos/apps/startup.lua", "/frekos/apps/startup.lua")
     download("frekos/apps/update.lua", "/frekos/apps/update.lua")
     download("frekos/apps/lockscreen.lua", "/frekos/apps/lockscreen.lua")
+    download("frekos/apps/welcome_screen.lua", "/frekos/apps/welcome_screen.lua")
 
     -- endregion
 

@@ -1,7 +1,7 @@
 local password = "changeme"
 
 function onSuccess()
-    print("FrekOS v0.1")
+    shell.run("/frekos/apps/welcome_screen.lua")
 end
 
 function onFailure()
@@ -36,7 +36,7 @@ while true do
    end
 end
 
-os.pullEvent = os.pullEvent
+os.pullEvent = pullEvent
 
 clear()
 onSuccess()
