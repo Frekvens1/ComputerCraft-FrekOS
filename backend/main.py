@@ -4,13 +4,13 @@ from fastapi.staticfiles import StaticFiles
 
 app = FastAPI()
 
-app.mount("/frekos", StaticFiles(directory="frekos"), name="frekos")
+app.mount('/computercraft', StaticFiles(directory='computercraft'), name='computercraft')
 
-@app.get("/")
+@app.get('/')
 async def root():
-    return {"message": "Hello ComputerCraft!"}
+    return {'message': 'Hello ComputerCraft!'}
 
 
-@app.get("/install")
+@app.get('/install')
 async def install():
-    return FileResponse("frekos/update.lua", media_type="text/plain")
+    return FileResponse('computercraft/frekos/apps/update.lua', media_type='text/plain')
