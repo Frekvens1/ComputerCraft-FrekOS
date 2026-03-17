@@ -1,9 +1,141 @@
-local inventories = {}
-local items = {}
+local system = {}
+
+local scroll = 0
+local lines = {}
 
 function main()
+    clear()
     updateStorage()
     printStorage()
+    scrollRender()
+end
+
+-- region { Inventory management }
+
+function isInventory(name)
+    local types = { peripheral.getType(name) }
+    for _, type in ipairs(types) do
+        if type == "inventory" then
+            return true
+        end
+    end
+    return false
+end
+
+function updateStorage()
+    system = {
+        slots_free = 0,
+        slots_used = 0,
+        slots_total = 0,
+        items_total = 0,
+        inventories = {},
+        items = {},
+    }
+
+    for _, name in ipairs(peripheral.getNames()) do
+        local p = peripheral.wrap(name)
+        if isInventory(name) then
+            local slot_items = p.list()
+            local slots_total = p.size()
+
+            local item_count = 0
+            local slots_used = 0
+
+            for slot, item in pairs(slot_items) do
+                slots_used = slots_used + 1
+                item_count = item_count + item.count
+
+                if system.items[item.name] == nil then
+                    system.items[item.name] = {
+                        item_count = item.count,
+                        storage_count = 1,
+                        storages = { [name] = item.count },
+                    }
+                else
+                    system.items[item.name].item_count = system.items[item.name].item_count + item.count
+                    if system.items[item.name].storages[name] == nil then
+                        system.items[item.name].storage_count = system.items[item.name].storage_count + 1
+                        system.items[item.name].storages[name] = item.count
+                    else
+                        system.items[item.name].storages[name] = system.items[item.name].storages[name] + item.count
+                    end
+                end
+            end
+
+            system.slots_free = system.slots_used + slots_total - slots_used
+            system.slots_used = system.slots_used + slots_used
+            system.slots_total = system.slots_used + slots_total
+            system.items_total = system.slots_used + item_count
+
+            system.inventories[name] = {
+                peripheral = p,
+                inventory = slot_items,
+                item_count = item_count,
+                slots_free = slots_total - slots_used,
+                slots_used = slots_used,
+                slots_total = slots_total,
+            }
+        end
+    end
+end
+
+-- endregion
+
+-- region { Display render }
+
+function scrollRender()
+    renderScreen()
+
+    while true do
+        local event, direction, _, _ = os.pullEvent()
+        if event == "mouse_scroll" then
+            if direction == 1 then
+                scrollDown()
+            else
+                scrollUp()
+            end
+
+            renderScreen()
+        end
+    end
+end
+
+function printStorage()
+    lines = {}
+
+    addLine("Slots: " .. system.slots_used .. "/" .. system.slots_total .. " | Items total: " .. system.items_total)
+    addLine(hr())
+
+    addLine()
+    addLine("Inventories")
+    addLine(hr())
+
+    for name, chest in pairs(system.inventories) do
+        addLine("[" .. name .. "] Items: " .. chest.item_count .. " | Slots: " .. chest.slots_used .. "/" .. chest.slots_total)
+    end
+
+    addLine()
+    addLine("Items")
+    addLine(hr())
+
+    for item_name, item_info in pairs(system.items) do
+        addLine("[" .. prettyName(item_name) .. "] Count: " .. item_info.item_count .. " | Storages: " .. item_info.storage_count)
+        for storage_name, storage_count in pairs(item_info.storages) do
+            addLine("- [" .. storage_name .. "]: " .. storage_count)
+        end
+
+        addLine()
+    end
+end
+
+function clear()
+   term.clear()
+   term.setCursorPos(1,1)
+end
+
+function hr()
+    local w = term.getSize()
+    return string.rep("-", w)
 end
 
 function prettyName(name)
@@ -24,76 +156,34 @@ function prettyName(name)
     return pretty_name
 end
 
-function printStorage()
-    for name, chest in pairs(inventories) do
-        print("[" .. name .. "] Items: " .. chest.item_count .. " | Slots: " .. chest.slots_used)
+function addLine(text)
+    if text == nil then
+        text = ""
     end
 
-    print()
+    table.insert(lines, text)
+end
 
-    for item_name, item_info in pairs(items) do
-        print("[" .. prettyName(item_name) .. "] Count: " .. item_info.item_count .. " | Storages: " .. item_info.storage_count)
-        for storage_name, storage_count in pairs(item_info.storages) do
-            print("- [" .. storage_name .. "]: " .. storage_count)
+function renderScreen()
+    term.clear()
+    local w, h = term.getSize()
+    for i = 1, h do
+        local lineIndex = i + scroll
+        if lines[lineIndex] then
+            term.setCursorPos(1, i)
+            term.write(lines[lineIndex])
         end
     end
 end
 
-function isInventory(name)
-    local types = { peripheral.getType(name) }
-    for _, type in ipairs(types) do
-        if type == "inventory" then
-            return true
-        end
-    end
-    return false
+function scrollUp()
+    if scroll > 0 then scroll = scroll - 1 end
 end
 
-function updateStorage()
-    inventories = {}
-    items = {}
-
-    for _, name in ipairs(peripheral.getNames()) do
-        local p = peripheral.wrap(name)
-        if isInventory(name) then
-            local slot_items = p.list()
-            local inventory_size = p.size()
-
-            local item_count = 0
-            local slots_used = 0
-
-            for slot, item in pairs(slot_items) do
-                slots_used = slots_used + 1
-                item_count = item_count + item.count
-
-                if items[item.name] == nil then
-                    items[item.name] = {
-                        item_count = item.count,
-                        storage_count = 1,
-                        storages = { [name] = item.count },
-                    }
-                else
-                    items[item.name].item_count = items[item.name].item_count + item.count
-                    if items[item.name].storages[name] == nil then
-                        items[item.name].storage_count = items[item.name].storage_count + 1
-                        items[item.name].storages[name] = item.count
-                    else
-                        items[item.name].storages[name] = items[item.name].storages[name] + item.count
-                    end
-                end
-            end
-
-            inventories[name] = {
-                peripheral = p,
-                size = inventory_size,
-                inventory = slot_items,
-                item_count = item_count,
-                slots_used = slots_used,
-                free_slots = inventory_size - slots_used,
-            }
-        end
-    end
+function scrollDown()
+    if scroll < #lines - 1 then scroll = scroll + 1 end
 end
 
+-- endregion
 
 main()
