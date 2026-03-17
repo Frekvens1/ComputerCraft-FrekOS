@@ -1,71 +1,105 @@
 local serverHostname = "https://frekos.cc/api/computercraft/"
 
 function main()
-    download("startup.lua", "/startup.lua")
+    clear()
 
-    -- region { System files - Applications }
+    print("Installing FrekOS v0.1")
+    print(hr())
+    print()
 
-    download("frekos/apps/startup.lua", "/frekos/apps/startup.lua")
-    download("frekos/apps/update.lua", "/frekos/apps/update.lua")
-    download("frekos/apps/lockscreen.lua", "/frekos/apps/lockscreen.lua")
-    download("frekos/apps/welcome_screen.lua", "/frekos/apps/welcome_screen.lua")
+    bulkDownload({
+        "startup.lua",
 
-    -- endregion
+        -- region { System files - Applications }
 
-    -- region { System files - Libraries }
+        "frekos/apps/startup.lua",
+        "frekos/apps/update.lua",
+        "frekos/apps/lockscreen.lua",
+        "frekos/apps/welcome_screen.lua",
 
-    -- endregion
+        -- endregion
 
-    -- region { Applications }
+        -- region { System files - Libraries }
 
-    download("apps/storage.lua", "/apps/storage.lua")
+        -- endregion
 
-    -- endregion
+        -- region { Applications }
 
+        "apps/storage.lua",
 
-    print("\n\nInstall complete!\n\n")
+        -- endregion
+    })
+
+    print()
+    print(hr())
+    print()
+
+    print("Install complete!")
+    print()
+    print()
+
     -- reboot()
 end
 
+function clear()
+    term.clear()
+    term.setCursorPos(1,1)
+end
+
+function hr()
+    local w = term.getSize()
+    return string.rep("-", w)
+end
+
 function get(url)
-	local ok, err = http.checkURL(url)
-	if not ok then
-		return nil
-	end
-	
-	local response = http.get(url, nil, true)
-	if not response then
-		return nil
-	end
-	
-	local text = response.readAll()
-	response.close()
-	
-	return text
+    local ok, err = http.checkURL(url)
+    if not ok then
+        return nil
+    end
+
+    local response = http.get(url, nil, true)
+    if not response then
+        return nil
+    end
+
+    local text = response.readAll()
+    response.close()
+
+    return text
+end
+
+function bulkDownload(filepaths)
+    print("Downloading files...")
+    print(hr())
+    for _, filepath in ipairs(filepaths) do
+        download(filepath)
+    end
 end
 
 function download(filepath, save_path)
-	print("Downloading file '"..filepath.."' as '"..save_path.."'!")
-	local fileContent = get(serverHostname..filepath)
-	
-	if (fileContent == nil) then
-		print("Download failed!\n")
-		return false
-	end
+    if save_path == nil then
+        save_path = "/" .. filepath
+    end
 
-	if (fs.exists(save_path)) then
-		fs.delete(save_path)
-	end
+    print("- " .. filepath)
+    local fileContent = get(serverHostname .. filepath)
 
-	ensureDir(save_path)
+    if (fileContent == nil) then
+        print("  - Download failed!\n")
+        return false
+    end
 
-	local file = fs.open(save_path, "w")
-	file.write(fileContent)
-	file.close()
-	
-	print("Download complete!\n")
-	
-	return true
+    if (fs.exists(save_path)) then
+        fs.delete(save_path)
+    end
+
+    ensureDir(save_path)
+
+    local file = fs.open(save_path, "w")
+    file.write(fileContent)
+    file.close()
+
+    return true
 end
 
 function ensureDir(path)
@@ -76,7 +110,7 @@ function ensureDir(path)
 end
 
 function reboot()
-   write("Rebooting in 3.. ")
+    write("Rebooting in 3.. ")
     os.sleep(1)
 
     write("2.. ")
