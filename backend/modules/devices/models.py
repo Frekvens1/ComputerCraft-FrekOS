@@ -25,23 +25,7 @@ class DeviceBackend(Device):
 
 # endregion
 
-# region { API requests }
-
-class DeviceRequest(BaseModel):
-    device: Device
-
-
-# endregion
-
 # region { API responses }
-
-class DevicesResponse(BaseModel):
-    devices: List[Device]
-
-
-class DeviceResponse(BaseModel):
-    device: Device
-
 
 class DeleteDeviceResponse(BaseModel):
     success: bool

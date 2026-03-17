@@ -1,37 +1,32 @@
+from typing import List
+
 from fastapi import FastAPI
 from modules.devices import logic
 from modules.devices.models import (
-    DeviceRequest,
-    DevicesResponse,
-    DeviceResponse,
-    DeleteDeviceResponse, DeviceData,
+    DeleteDeviceResponse, DeviceData, Device,
 )
 
 
 def initialize(app: FastAPI):
-    @app.get("/devices", response_model=DevicesResponse)
+    @app.get("/devices", response_model=List[Device])
     async def get_devices():
-        return DevicesResponse(devices=logic.get_devices())
+        return logic.get_devices()
 
-    @app.get("/device/{device_uuid}", response_model=DeviceResponse)
+    @app.get("/device/{device_uuid}", response_model=Device)
     async def get_device(device_uuid: str):
-        device = logic.get_device(device_uuid)
-        return DeviceResponse(device=device)
+        return logic.get_device(device_uuid)
 
-    @app.post("/device", response_model=DeviceResponse)
+    @app.post("/device", response_model=Device)
     async def create_device(device_data: DeviceData):
-        device = logic.create_device(device_data)
-        return DeviceResponse(device=device)
+        return logic.create_device(device_data)
 
-    @app.put("/device", response_model=DeviceResponse)
-    async def update_device(request: DeviceRequest):
-        updated = logic.update_device(request.device)
-        return DeviceResponse(device=updated)
+    @app.put("/device", response_model=Device)
+    async def update_device(device: Device):
+        return logic.update_device(device)
 
-    @app.patch("/device", response_model=DeviceResponse)
-    async def patch_device(request: DeviceRequest):
-        updated = logic.patch_device(request.device)
-        return DeviceResponse(device=updated)
+    @app.patch("/device", response_model=Device)
+    async def patch_device(device: Device):
+        return logic.patch_device(device)
 
     @app.delete("/device/{device_uuid}", response_model=DeleteDeviceResponse)
     async def delete_device(device_uuid: str):
