@@ -4,6 +4,8 @@ from fastapi.staticfiles import StaticFiles
 
 from libraries import mongo_lib
 
+from modules.devices.api import initialize as devices_api
+
 app = FastAPI()
 mongo_lib.initialize()
 
@@ -22,3 +24,4 @@ async def install():
 async def update():
     return FileResponse('frekos-install.lua', media_type='text/plain')
 
+devices_api(app)
