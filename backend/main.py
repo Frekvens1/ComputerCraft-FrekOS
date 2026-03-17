@@ -2,7 +2,10 @@ from fastapi import FastAPI
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
+from libraries import mongo_lib
+
 app = FastAPI()
+mongo_lib.initialize()
 
 app.mount('/computercraft', StaticFiles(directory='computercraft'), name='computercraft')
 
