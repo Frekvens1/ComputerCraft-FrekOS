@@ -1,0 +1,16 @@
+name: ${PROJECT_NAME}
+services: 
+  mongodb:
+    container_name: ${PROJECT_NAME}-mongodb
+    image: mongo
+    restart: always
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+    volumes:
+      - mongodb-data:/etc/mongo
+
+volumes:
+    mongodb-data:
