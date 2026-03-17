@@ -11,6 +11,11 @@ async def root():
     return {'message': 'Hello ComputerCraft!'}
 
 
-@app.get('/install')
+@app.get('/frekos/install')
 async def install():
-    return FileResponse('computercraft/frekos/apps/update.lua', media_type='text/plain')
+    return FileResponse('frekos-install.lua', media_type='text/plain')
+
+@app.get('/frekos/update')
+async def update():
+    return FileResponse('frekos-install.lua', media_type='text/plain')
+
