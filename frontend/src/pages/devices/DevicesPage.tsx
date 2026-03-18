@@ -8,6 +8,7 @@ import type {Device, DeviceData} from '@/core/modules/devices/models';
 import {DeviceRepository} from '@/core/modules/devices/api.ts';
 import {CreateDeviceDialog} from '@/core/modules/devices/modals/CreateDeviceDialog.tsx';
 import {ConfirmDialog} from "@/core/modals/ConfirmDialog.tsx";
+import {StatusDot} from "@/core/components/StatusDot.tsx";
 
 const deviceRepository = new DeviceRepository();
 
@@ -44,27 +45,45 @@ export function DevicesPage() {
                             {devices.map((device) => (
                                 <Card
                                     key={device.device_uuid}
-                                    className="transition hover:bg-muted/50"
+                                    className="transition hover:bg-muted/50 group"
                                 >
-                                    <CardHeader className="flex flex-row items-center justify-between pb-2">
-                                        <CardTitle className="text-base">{device.name}</CardTitle>
-                                        <ConfirmDialog
-                                            title={`Remove device "${device.name}"?`}
-                                            description='This action cannot be undone.'
-                                            onAction={() => removeDevice(device.device_uuid)}>
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                className="cursor-pointer text-red-500 hover:text-red-700 hover:bg-red-100"
-                                            >
-                                                <Trash2 className="h-4 w-4"/>
-                                            </Button>
-                                        </ConfirmDialog>
+                                    <CardHeader className="flex flex-col pb-2">
+                                        <div className="w-full flex flex-row items-center justify-between">
+                                            <div className="w-full flex flex-row items-center gap-2">
+                                                <StatusDot status={device.description ? 'online' : 'offline'}/>
+                                                <CardTitle className="text-base">{device.name}</CardTitle>
+                                            </div>
+                                            <ConfirmDialog
+                                                title={`Remove device "${device.name}"?`}
+                                                description='This action cannot be undone.'
+                                                onAction={() => removeDevice(device.device_uuid)}>
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    className="
+                                                        cursor-pointer text-red-500 hover:text-red-700 hover:bg-red-100
+                                                        [@media(hover:none)]:opacity-100 transition-opacity duration-200
+                                                        [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100
+                                                      "
+                                                >
+                                                    <Trash2 className="h-4 w-4"/>
+                                                </Button>
+                                            </ConfirmDialog>
+                                        </div>
+                                        <div className="w-full flex flex-row items-center">
+
+                                            <p className="text-sm text-muted-foreground">
+                                                {device.description}
+                                            </p>
+                                        </div>
                                     </CardHeader>
 
-                                    <CardContent>
+                                    <CardContent className='flex flex-col gap-2'>
+                                        <p className="text-sm">
+                                            Device UUID:
+                                        </p>
                                         <p className="text-sm text-muted-foreground">
-                                            {device.description}
+                                            {device.device_uuid}
                                         </p>
                                     </CardContent>
                                 </Card>
