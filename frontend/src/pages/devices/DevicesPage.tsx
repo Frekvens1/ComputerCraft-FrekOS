@@ -32,7 +32,7 @@ export function DevicesPage() {
     }
 
     return (
-        <div className='px-4 w-full max-w-4xl h-[80vh] flex flex-col'>
+        <div className='p-4 w-full max-w-4xl h-[75vh] flex flex-col'>
             <Card className='h-full flex flex-col'>
                 <CardHeader className='flex flex-row items-center justify-between mx-1 border-b px-6'>
                     <CardTitle className='text-2xl'>Devices</CardTitle>
@@ -45,9 +45,9 @@ export function DevicesPage() {
                             {devices.map((device) => (
                                 <Card
                                     key={device.device_uuid}
-                                    className="transition hover:bg-muted/50 group"
+                                    className="transition hover:bg-muted/50 group cursor-pointer"
                                 >
-                                    <CardHeader className="flex flex-col pb-2">
+                                    <CardHeader className="flex flex-col border-b pb-2">
                                         <div className="w-full flex flex-row items-center justify-between">
                                             <div className="w-full flex flex-row items-center gap-2">
                                                 <StatusDot status={device.description ? 'online' : 'offline'}/>
@@ -71,7 +71,6 @@ export function DevicesPage() {
                                             </ConfirmDialog>
                                         </div>
                                         <div className="w-full flex flex-row items-center">
-
                                             <p className="text-sm text-muted-foreground">
                                                 {device.description}
                                             </p>
