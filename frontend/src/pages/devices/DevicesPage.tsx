@@ -32,7 +32,7 @@ export function DevicesPage() {
     }
 
     return (
-        <div className='p-4 w-full max-w-4xl h-[75vh] flex flex-col'>
+        <div className='px-4 lg:px-6 w-full flex flex-col'>
             <Card className='h-full flex flex-col'>
                 <CardHeader className='flex flex-row items-center justify-between mx-1 border-b px-6'>
                     <CardTitle className='text-2xl'>Devices</CardTitle>
