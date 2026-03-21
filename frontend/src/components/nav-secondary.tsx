@@ -1,7 +1,6 @@
-"use client"
+'use client'
 
-import * as React from "react"
-import {type Icon} from "@tabler/icons-react"
+import * as React from 'react'
 
 import {
     SidebarGroup,
@@ -9,29 +8,22 @@ import {
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
-} from "@/components/ui/sidebar"
+} from '@/components/ui/sidebar'
+import type {navigation} from '@/components/app-sidebar.tsx';
+import {Link} from 'react-router-dom';
 
-export function NavSecondary({
-                                 items,
-                                 ...props
-                             }: {
-    items: {
-        title: string
-        url: string
-        icon: Icon
-    }[]
-} & React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
+export function NavSecondary({items, ...props}: { items: navigation[] } & React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
     return (
         <SidebarGroup {...props}>
             <SidebarGroupContent>
                 <SidebarMenu>
                     {items.map((item) => (
                         <SidebarMenuItem key={item.title}>
-                            <SidebarMenuButton asChild>
-                                <a href={item.url} className='cursor-pointer'>
-                                    <item.icon/>
+                            <SidebarMenuButton asChild data-active={item.isActive}>
+                                <Link to={item.url} className='cursor-pointer'>
+                                    <item.icon />
                                     <span>{item.title}</span>
-                                </a>
+                                </Link>
                             </SidebarMenuButton>
                         </SidebarMenuItem>
                     ))}

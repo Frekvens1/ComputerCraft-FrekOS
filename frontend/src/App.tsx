@@ -1,37 +1,44 @@
-import {AppSidebar} from "@/components/app-sidebar"
-import {SiteHeader} from "@/components/site-header"
-import {
-    SidebarInset,
-    SidebarProvider,
-} from "@/components/ui/sidebar"
-
 import './App.css'
-import {DevicesPage} from "@/pages/devices/DevicesPage.tsx";
-import type {CSSProperties} from "react";
 
+import {createBrowserRouter, Navigate, RouterProvider} from 'react-router-dom';
+import {DashboardPage} from '@/pages/dashboard/DashboardPage.tsx';
+import {DevicesPage} from '@/pages/devices/DevicesPage.tsx';
+import {SidebarLayout} from '@/pages/SidebarLayout.tsx';
+
+export interface RouterHandle {
+    title: string;
+}
+
+const router = createBrowserRouter([
+    {
+        path: '/',
+        element: <SidebarLayout/>,
+        children: [
+            {
+                index: true,
+                element: <Navigate to='/dashboard' replace/>,
+            },
+            {
+                path: 'dashboard',
+                element: <DashboardPage/>,
+                handle: {title: 'Dashboard'} as RouterHandle,
+            },
+            {
+                path: 'devices',
+                element: <DevicesPage/>,
+                handle: {title: 'Devices'} as RouterHandle,
+            },
+            {
+                path: '*',
+                element: <Navigate to='/' replace/>,
+            },
+        ],
+    },
+]);
 
 function App() {
     return (
-        <SidebarProvider
-            style={
-                {
-                    "--sidebar-width": "calc(var(--spacing) * 72)",
-                    "--header-height": "calc(var(--spacing) * 12)",
-                } as CSSProperties
-            }
-        >
-            <AppSidebar variant="inset"/>
-            <SidebarInset>
-                <SiteHeader title={'Devices'}/>
-                <div className="flex flex-1 flex-col">
-                    <div className="@container/main flex flex-1 flex-col gap-2">
-                        <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-                            <DevicesPage/>
-                        </div>
-                    </div>
-                </div>
-            </SidebarInset>
-        </SidebarProvider>
+        <RouterProvider router={router}/>
     )
 }
 

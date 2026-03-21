@@ -1,9 +1,4 @@
-"use client"
-
-import {
-    type Icon,
-} from "@tabler/icons-react"
-
+'use client'
 
 import {
     SidebarGroup,
@@ -11,28 +6,22 @@ import {
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
-} from "@/components/ui/sidebar"
+} from '@/components/ui/sidebar'
+import type {navigation} from '@/components/app-sidebar.tsx';
+import {Link} from 'react-router-dom';
 
-export function NavDocuments({
-                                 items,
-                             }: {
-    items: {
-        title: string
-        url: string
-        icon: Icon
-    }[]
-}) {
+export function NavDocuments({items}: {items: navigation[]}) {
     return (
-        <SidebarGroup className="group-data-[collapsible=icon]:hidden">
+        <SidebarGroup className='group-data-[collapsible=icon]:hidden'>
             <SidebarGroupLabel>Apps</SidebarGroupLabel>
             <SidebarMenu>
                 {items.map((item) => (
                     <SidebarMenuItem key={item.title}>
-                        <SidebarMenuButton asChild>
-                            <a href={item.url} className='cursor-pointer'>
-                                <item.icon/>
+                        <SidebarMenuButton asChild data-active={item.isActive}>
+                            <Link to={item.url} className='cursor-pointer'>
+                                <item.icon />
                                 <span>{item.title}</span>
-                            </a>
+                            </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
                 ))}
