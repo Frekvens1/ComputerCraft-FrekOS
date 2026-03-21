@@ -26,6 +26,9 @@ function main()
         -- region { Applications }
 
         "apps/storage.lua",
+        "apps/teleport.lua",
+        "apps/quartz_miner.lua",
+        "apps/quartz_replacer.lua",
 
         -- endregion
     })
