@@ -4,7 +4,8 @@ import {createBrowserRouter, Navigate, RouterProvider} from 'react-router-dom';
 import {DashboardPage} from '@/pages/dashboard/DashboardPage.tsx';
 import {DevicesPage} from '@/pages/devices/DevicesPage.tsx';
 import {SidebarLayout} from '@/pages/SidebarLayout.tsx';
-import {TeleportPage} from "@/pages/apps/teleport/TeleportPage.tsx";
+import {TeleportPage} from '@/pages/apps/teleport/TeleportPage.tsx';
+import {NewDevicePage} from "@/pages/devices/NewDevicePage.tsx";
 
 export interface RouterHandle {
     title: string;
@@ -26,8 +27,18 @@ const router = createBrowserRouter([
             },
             {
                 path: 'devices',
-                element: <DevicesPage/>,
-                handle: {title: 'Devices'} as RouterHandle,
+                children: [
+                    {
+                        index: true,
+                        element: <DevicesPage/>,
+                        handle: {title: 'Devices'} as RouterHandle,
+                    },
+                    {
+                        path: 'new',
+                        element: <NewDevicePage/>,
+                        handle: {title: 'Add device'} as RouterHandle,
+                    }
+                ]
             },
             {
                 path: 'apps',

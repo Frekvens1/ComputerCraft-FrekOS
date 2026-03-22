@@ -76,7 +76,7 @@ const data: { [p: string]: navigation[] } = {
         },
         {
             title: 'Teleport Manager',
-            url: '/apps/storage',
+            url: '/apps/teleport',
             icon: IconHelicopter,
         },
         /*
