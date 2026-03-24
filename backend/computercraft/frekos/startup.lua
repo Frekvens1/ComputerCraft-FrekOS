@@ -1,13 +1,18 @@
-local pullEvent = os.pullEvent
-os.pullEvent = os.pullEventRaw
+local completion = require "cc.shell.completion"
 
 function main()
     print("FrekOS is booting up...")
-     printLine()
+    printLine()
 
     shell.setPath(shell.path() .. ":/frekos/apps:/apps")
+    shell.setCompletionFunction("frekos/apps/cat.lua", function(shell, index, text, previous)
+        if index == 1 then
+            return completion.file(shell, text)
+        end
+    end)
+
     loadLibraries("/frekos/libs")
-    os.sleep(2)
+    FrekOS.events.inject()
 end
 
 function loadLibraries(library_path)
@@ -27,16 +32,17 @@ function loadLibraries(library_path)
 
             print("- Loading '" .. name .. "'...")
 
-            -- Load the file as a function
             local fn = loadfile(file_path)
             local api, beforeLoad, afterLoad = fn()
 
-            -- Expose API globally
-            _G[name] = api
+            if api then
+                _G[name] = api
+            end
 
             if beforeLoad then
                 libs.before[name] = beforeLoad
             end
+
             if afterLoad then
                 libs.after[name] = afterLoad
             end
@@ -89,6 +95,3 @@ end
 
 clear()
 main()
-
-os.pullEvent = pullEvent
-clear()

@@ -35,16 +35,19 @@ function main()
 
         -- region { System files - Applications }
 
+        "/frekos/apps/cat.lua",
         "/frekos/apps/update.lua",
         "/frekos/apps/lockscreen.lua",
+        "/frekos/apps/wipe_system.lua",
         "/frekos/apps/welcome_screen.lua",
 
         -- endregion
 
         -- region { System files - Libraries }
 
-        "/frekos/libs/fileUtils.lua",
         "/frekos/libs/FrekOS.lua",
+        "/frekos/libs/fileUtils.lua",
+        "/frekos/libs/stringUtils.lua",
         "/frekos/libs/backendUtils.lua",
         "/frekos/libs/screenUtils.lua",
 

@@ -97,7 +97,11 @@ export function DevicesPage() {
                                     <CardContent className='flex flex-col gap-2'>
                                         {isDeviceOnline(device.device_uuid) ?
                                             (
-                                                <p>Device is online</p>
+                                                <>
+                                                    <p>Device is online</p>
+                                                    <p>Device ID</p>
+                                                    <p>{device.device_uuid}</p>
+                                                </>
                                             ) : (
                                                 <Field className='max-w-lg'>
                                                     <FieldLabel htmlFor="input-install-url">Install</FieldLabel>

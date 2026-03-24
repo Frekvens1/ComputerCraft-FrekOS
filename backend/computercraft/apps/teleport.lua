@@ -1,13 +1,16 @@
 trapdoor_side = "front"
 
-function main()
+local function main()
     resetRedstone(trapdoor_side)
-    while true do
-        local msg = backendUtils.connection.receive()
-        if msg then
+
+    FrekOS.events.addTask("teleport", function(event)
+        if event[1] == "frekos_teleport" then
             toggleRedstone(trapdoor_side)
         end
-    end
+    end)
+
+    os.pullEventRaw("terminate")
+    FrekOS.events.removeTask("teleport")
 end
 
 function resetRedstone(side)

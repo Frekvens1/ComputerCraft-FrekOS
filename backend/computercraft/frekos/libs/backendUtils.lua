@@ -1,14 +1,16 @@
+-- region { private }
+
 local api = {}
 
-function getHostname(path)
+local function getHostname(path)
     if not path:match("^/") then
         path = "/" .. path
     end
 
-    return FrekOS.settings.hostname .. FrekOS.settings.api_path  .. path
+    return FrekOS.settings.hostname .. FrekOS.settings.api_path .. path
 end
 
-function getProtocolHTTP()
+local function getProtocolHTTP()
     local protocol = "http"
     if FrekOS.settings.has_ssl then
         protocol = protocol .. "s"
@@ -17,7 +19,7 @@ function getProtocolHTTP()
     return protocol .. "://"
 end
 
-function getProtocolWS()
+local function getProtocolWS()
     local protocol = "ws"
     if FrekOS.settings.has_ssl then
         protocol = protocol .. "s"
@@ -25,6 +27,8 @@ function getProtocolWS()
 
     return protocol .. "://"
 end
+
+-- endregion
 
 function api.get(path)
     local url = getProtocolHTTP() .. getHostname(path)
@@ -59,12 +63,19 @@ function api.refreshConnection()
     api.connection = api.websocket("/device/" .. FrekOS.settings.device_uuid)
 end
 
+function api.getConnection()
+    while not api.connection do
+        api.refreshConnection()
+    end
 
-function beforeLoad()
+    return api.connection
+end
+
+local function beforeLoad()
 
 end
 
-function afterLoad()
+local function afterLoad()
     print("Establishing websocket connection...")
     api.refreshConnection()
     if not api.connection then

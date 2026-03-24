@@ -1,8 +1,12 @@
+-- region { private }
+
 local api = {}
+
+-- endregion
 
 function api.clear()
     term.clear()
-    term.setCursorPos(1,1)
+    term.setCursorPos(1, 1)
 end
 
 function api.printLine(count)
@@ -18,12 +22,11 @@ function api.printLine(count)
     print(string.rep("-", count))
 end
 
-
-function beforeLoad()
+local function beforeLoad()
 
 end
 
-function afterLoad()
+local function afterLoad()
 
 end
 
