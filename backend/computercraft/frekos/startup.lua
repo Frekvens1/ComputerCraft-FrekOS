@@ -1,6 +1,3 @@
-local args = { ... }
-local pullEventRaw = args[1]
-
 local completion = require "cc.shell.completion"
 
 function main()
@@ -15,7 +12,7 @@ function main()
     end)
 
     loadLibraries("/frekos/libs")
-    FrekOS.events.inject(pullEventRaw)
+    FrekOS.events.inject()
 end
 
 function loadLibraries(library_path)
