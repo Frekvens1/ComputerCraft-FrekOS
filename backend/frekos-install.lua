@@ -1,70 +1,151 @@
-local serverHostname = "https://frekos.cc/api/computercraft/"
+app_config = {
+    has_ssl = true,
+    hostname = "frekos.cc",
+    api_path = "/api",
+    scripts_path = "/api/computercraft",
+    update_url = "https://update.frekos.cc",
+}
+
+local protocol = "http"
+if app_config.has_ssl then
+    protocol = protocol .. "s"
+end
+
+local serverHostname = protocol .. "://" .. app_config.hostname .. app_config.scripts_path
+
+local args = {...}
+local device_uuid = args[1]
+
+if not device_uuid then
+    print("Error: No UUID specified.")
+    print("Usage: wget run <url> <uuid>")
+    return
+end
 
 function main()
-    download("startup.lua", "/startup.lua")
+    clear()
 
-    -- region { System files - Applications }
+    print("Installing FrekOS v0.1")
+    print(hr())
+    print()
 
-    download("frekos/apps/startup.lua", "/frekos/apps/startup.lua")
-    download("frekos/apps/update.lua", "/frekos/apps/update.lua")
-    download("frekos/apps/lockscreen.lua", "/frekos/apps/lockscreen.lua")
+    bulkDownload({
+        "/startup.lua",
+        "/frekos/startup.lua",
 
-    -- endregion
+        -- region { System files - Applications }
 
-    -- region { System files - Libraries }
+        "/frekos/apps/update.lua",
+        "/frekos/apps/lockscreen.lua",
+        "/frekos/apps/welcome_screen.lua",
 
-    -- endregion
+        -- endregion
 
-    -- region { Applications }
+        -- region { System files - Libraries }
 
-    download("apps/storage.lua", "/apps/storage.lua")
+        "/frekos/libs/fileUtils.lua",
+        "/frekos/libs/FrekOS.lua",
+        "/frekos/libs/backendUtils.lua",
+        "/frekos/libs/screenUtils.lua",
 
-    -- endregion
+        -- endregion
 
+        -- region { Applications }
 
-    print("\n\nInstall complete!\n\n")
-    -- reboot()
+        "/apps/storage.lua",
+        "/apps/teleport.lua",
+        "/apps/quartz_miner.lua",
+        "/apps/quartz_replacer.lua",
+
+        -- endregion
+    })
+
+    print()
+    print(hr())
+    print()
+
+    local config = {
+        device_uuid = device_uuid,
+        has_ssl = app_config.has_ssl,
+        hostname = app_config.hostname,
+        api_path = app_config.api_path,
+        update_url = app_config.update_url
+    }
+
+    saveConfig("/frekos/settings.table", config)
+
+    print("Install complete!")
+    print()
+    print()
+
+    reboot()
+end
+
+function clear()
+    term.clear()
+    term.setCursorPos(1,1)
+end
+
+function hr()
+    local w = term.getSize()
+    return string.rep("-", w)
+end
+
+function saveConfig(path, variable)
+    local file = fs.open(path, "w")
+    file.write(textutils.serialize(variable))
+    file.close()
 end
 
 function get(url)
-	local ok, err = http.checkURL(url)
-	if not ok then
-		return nil
-	end
-	
-	local response = http.get(url, nil, true)
-	if not response then
-		return nil
-	end
-	
-	local text = response.readAll()
-	response.close()
-	
-	return text
+    local ok, err = http.checkURL(url)
+    if not ok then
+        return nil
+    end
+
+    local response = http.get(url, nil, true)
+    if not response then
+        return nil
+    end
+
+    local text = response.readAll()
+    response.close()
+
+    return text
+end
+
+function bulkDownload(filepaths)
+    print("Downloading files...")
+    print(hr())
+    for _, filepath in ipairs(filepaths) do
+        download(filepath)
+    end
 end
 
 function download(filepath, save_path)
-	print("Downloading file '"..filepath.."' as '"..save_path.."'!")
-	local fileContent = get(serverHostname..filepath)
-	
-	if (fileContent == nil) then
-		print("Download failed!\n")
-		return false
-	end
+    if save_path == nil then
+        save_path = filepath
+    end
 
-	if (fs.exists(save_path)) then
-		fs.delete(save_path)
-	end
+    print("- " .. filepath)
+    local fileContent = get(serverHostname .. filepath)
 
-	ensureDir(save_path)
+    if (fileContent == nil) then
+        print("  - Download failed!\n")
+        return false
+    end
 
-	local file = fs.open(save_path, "w")
-	file.write(fileContent)
-	file.close()
-	
-	print("Download complete!\n")
-	
-	return true
+    if (fs.exists(save_path)) then
+        fs.delete(save_path)
+    end
+
+    ensureDir(save_path)
+
+    local file = fs.open(save_path, "w")
+    file.write(fileContent)
+    file.close()
+
+    return true
 end
 
 function ensureDir(path)
@@ -75,7 +156,7 @@ function ensureDir(path)
 end
 
 function reboot()
-   write("Rebooting in 3.. ")
+    write("Rebooting in 3.. ")
     os.sleep(1)
 
     write("2.. ")

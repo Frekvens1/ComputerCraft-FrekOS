@@ -187,3 +187,34 @@ end
 -- endregion
 
 main()
+
+-- Fast lookup ( list() ):
+
+-- count: int
+-- name: str (ItemID)
+-- nbt: str (Hashed. If item is changed)
+
+-- Item fields ( getItemDetail(slot) ):
+
+-- itemGroups = {}
+-- maxCount: int
+-- maxDamage: int
+-- damage: int
+-- durability?: float (percentage)
+-- unbreakable?: bool
+-- displayName: str
+-- name: str (ItemID)
+-- nbt: str (Hashed. If item is changed)
+-- lore: { string }
+-- tags: {[key: str]: bool}
+-- mapColour?: int
+-- mapColor?: int
+-- enchantments
+-- -- name: str (enchantID)
+-- -- displayName: str
+-- -- level: int
+-- potionEffects
+-- -- name: str (enchantID)
+-- -- displayName: str
+-- -- duration?: int
+-- -- potency?: int

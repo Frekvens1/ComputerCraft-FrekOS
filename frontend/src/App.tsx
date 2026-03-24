@@ -1,25 +1,74 @@
 import './App.css'
 
-import {Button} from '@/components/ui/button'
-import {Card, CardFooter, CardHeader, CardTitle} from '@/components/ui/card.tsx';
+import {createBrowserRouter, Navigate, RouterProvider} from 'react-router-dom';
+import {DashboardPage} from '@/pages/dashboard/DashboardPage.tsx';
+import {DevicesPage} from '@/pages/devices/DevicesPage.tsx';
+import {SidebarLayout} from '@/pages/SidebarLayout.tsx';
+import {TeleportPage} from '@/pages/apps/teleport/TeleportPage.tsx';
+import {NewDevicePage} from "@/pages/devices/NewDevicePage.tsx";
+
+export interface RouterHandle {
+    title: string;
+}
+
+const router = createBrowserRouter([
+    {
+        path: '/',
+        element: <SidebarLayout/>,
+        children: [
+            {
+                index: true,
+                element: <Navigate to='/dashboard' replace/>,
+            },
+            {
+                path: 'dashboard',
+                element: <DashboardPage/>,
+                handle: {title: 'Dashboard'} as RouterHandle,
+            },
+            {
+                path: 'devices',
+                children: [
+                    {
+                        index: true,
+                        element: <DevicesPage/>,
+                        handle: {title: 'Devices'} as RouterHandle,
+                    },
+                    {
+                        path: 'new',
+                        element: <NewDevicePage/>,
+                        handle: {title: 'Add device'} as RouterHandle,
+                    }
+                ]
+            },
+            {
+                path: 'apps',
+                children: [
+                    {
+                        index: true,
+                        element: <Navigate to='teleport' replace/>,
+                    },
+                    {
+                        path: 'teleport',
+                        element: <TeleportPage/>,
+                        handle: {title: 'Teleport Manager'} as RouterHandle,
+                    },
+                    {
+                        path: '*',
+                        element: <Navigate to='/apps' replace/>,
+                    },
+                ]
+            },
+            {
+                path: '*',
+                element: <Navigate to='/' replace/>,
+            },
+        ],
+    },
+]);
 
 function App() {
-
     return (
-        <main className='h-screen md:h-dvh flex flex-col'>
-            <div className='h-full flex flex-col gap-2 items-center justify-center'>
-                <Card size='sm' className='mx-auto w-full max-w-sm'>
-                    <CardHeader>
-                        <CardTitle className='text-center'>Hello ComputerCraft!</CardTitle>
-                    </CardHeader>
-                    <CardFooter>
-                        <Button variant='outline' size='sm' className='w-full'>
-                            Action
-                        </Button>
-                    </CardFooter>
-                </Card>
-            </div>
-        </main>
+        <RouterProvider router={router}/>
     )
 }
 
