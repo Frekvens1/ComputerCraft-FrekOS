@@ -1,4 +1,26 @@
-local serverHostname = "https://frekos.cc/api/computercraft/"
+app_config = {
+    has_ssl = true,
+    hostname = "frekos.cc",
+    api_path = "/api",
+    scripts_path = "/api/computercraft",
+    update_url = "https://update.frekos.cc",
+}
+
+local protocol = "http"
+if app_config.has_ssl then
+    protocol = protocol .. "s"
+end
+
+local serverHostname = protocol .. "://" .. app_config.hostname .. app_config.scripts_path
+
+local args = {...}
+local device_uuid = args[1]
+
+if not device_uuid then
+    print("Error: No UUID specified.")
+    print("Usage: wget run <url> <uuid>")
+    return
+end
 
 function main()
     clear()
@@ -8,27 +30,32 @@ function main()
     print()
 
     bulkDownload({
-        "startup.lua",
+        "/startup.lua",
+        "/frekos/startup.lua",
 
         -- region { System files - Applications }
 
-        "frekos/apps/startup.lua",
-        "frekos/apps/update.lua",
-        "frekos/apps/lockscreen.lua",
-        "frekos/apps/welcome_screen.lua",
+        "/frekos/apps/update.lua",
+        "/frekos/apps/lockscreen.lua",
+        "/frekos/apps/welcome_screen.lua",
 
         -- endregion
 
         -- region { System files - Libraries }
 
+        "/frekos/libs/fileUtils.lua",
+        "/frekos/libs/FrekOS.lua",
+        "/frekos/libs/backendUtils.lua",
+        "/frekos/libs/screenUtils.lua",
+
         -- endregion
 
         -- region { Applications }
 
-        "apps/storage.lua",
-        "apps/teleport.lua",
-        "apps/quartz_miner.lua",
-        "apps/quartz_replacer.lua",
+        "/apps/storage.lua",
+        "/apps/teleport.lua",
+        "/apps/quartz_miner.lua",
+        "/apps/quartz_replacer.lua",
 
         -- endregion
     })
@@ -37,11 +64,21 @@ function main()
     print(hr())
     print()
 
+    local config = {
+        device_uuid = device_uuid,
+        has_ssl = app_config.has_ssl,
+        hostname = app_config.hostname,
+        api_path = app_config.api_path,
+        update_url = app_config.update_url
+    }
+
+    saveConfig("/frekos/settings.table", config)
+
     print("Install complete!")
     print()
     print()
 
-    -- reboot()
+    reboot()
 end
 
 function clear()
@@ -52,6 +89,12 @@ end
 function hr()
     local w = term.getSize()
     return string.rep("-", w)
+end
+
+function saveConfig(path, variable)
+    local file = fs.open(path, "w")
+    file.write(textutils.serialize(variable))
+    file.close()
 end
 
 function get(url)
@@ -81,7 +124,7 @@ end
 
 function download(filepath, save_path)
     if save_path == nil then
-        save_path = "/" .. filepath
+        save_path = filepath
     end
 
     print("- " .. filepath)

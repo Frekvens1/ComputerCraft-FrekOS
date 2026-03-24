@@ -1,4 +1,8 @@
-term.clear()
-term.setCursorPos(1,1)
+screenUtils.clear()
 
-print("FrekOS v0.1")
+local status = "Offline"
+if backendUtils.connection then
+    status = "Online"
+end
+
+print("FrekOS v0.1 - " .. status)

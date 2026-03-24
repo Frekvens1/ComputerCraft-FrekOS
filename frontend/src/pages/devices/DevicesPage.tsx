@@ -9,15 +9,23 @@ import {DeviceRepository} from '@/core/modules/devices/api.ts';
 import {CreateDeviceDialog} from '@/core/modules/devices/modals/CreateDeviceDialog.tsx';
 import {ConfirmDialog} from "@/core/modals/ConfirmDialog.tsx";
 import {StatusDot} from "@/core/components/StatusDot.tsx";
+import {Field, FieldLabel} from "@/components/ui/field.tsx";
+import {ButtonGroup} from "@/components/ui/button-group.tsx";
+import {Input} from "@/components/ui/input.tsx";
 
 const deviceRepository = new DeviceRepository();
 
 export function DevicesPage() {
     const [devices, setDevices] = useState<Device[]>([]);
+    const [onlineDevices, setOnlineDevices] = useState<string[]>([]);
 
     useEffect(() => {
         deviceRepository.getDevices().then((devices) => {
             setDevices(devices);
+        });
+
+        deviceRepository.getOnlineDevices().then((devices) => {
+            setOnlineDevices(devices);
         });
     }, []);
 
@@ -31,12 +39,20 @@ export function DevicesPage() {
         setDevices((prev) => prev.filter((d) => d.device_uuid !== deviceUUID));
     }
 
+    function getInstallURL(uuid: string) {
+        return `wget run https://install.frekos.cc ${uuid}`;
+    }
+
+    function isDeviceOnline(uuid: string): boolean {
+        return onlineDevices.includes(uuid);
+    }
+
     return (
         <div className='px-4 lg:px-6 w-full flex flex-col'>
             <Card className='h-full flex flex-col'>
                 <CardHeader className='flex flex-row items-center justify-between mx-1 border-b px-6'>
                     <CardTitle className='text-2xl'>Devices</CardTitle>
-                    <CreateDeviceDialog onSubmit={addDevice}/>
+                    <CreateDeviceDialog onSubmit={addDevice}/> {/* TODO: #27 - Use /devices/new */}
                 </CardHeader>
 
                 <CardContent className="flex-1 overflow-hidden p-0">
@@ -50,7 +66,8 @@ export function DevicesPage() {
                                     <CardHeader className="flex flex-col border-b pb-2">
                                         <div className="w-full flex flex-row items-center justify-between">
                                             <div className="w-full flex flex-row items-center gap-2">
-                                                <StatusDot status={device.description ? 'online' : 'offline'}/>
+                                                <StatusDot
+                                                    status={isDeviceOnline(device.device_uuid) ? 'online' : 'offline'}/>
                                                 <CardTitle className="text-base">{device.name}</CardTitle>
                                             </div>
                                             <ConfirmDialog
@@ -78,12 +95,20 @@ export function DevicesPage() {
                                     </CardHeader>
 
                                     <CardContent className='flex flex-col gap-2'>
-                                        <p className="text-sm">
-                                            Device UUID:
-                                        </p>
-                                        <p className="text-sm text-muted-foreground">
-                                            {device.device_uuid}
-                                        </p>
+                                        {isDeviceOnline(device.device_uuid) ?
+                                            (
+                                                <p>Device is online</p>
+                                            ) : (
+                                                <Field className='max-w-lg'>
+                                                    <FieldLabel htmlFor="input-install-url">Install</FieldLabel>
+                                                    <ButtonGroup>
+                                                        <Input id="input-install-url" disabled
+                                                               value={getInstallURL(device.device_uuid)}/>
+                                                        <Button variant="outline"
+                                                                onClick={() => navigator.clipboard.writeText(getInstallURL(device.device_uuid))}>Copy</Button>
+                                                    </ButtonGroup>
+                                                </Field>
+                                            )}
                                     </CardContent>
                                 </Card>
                             ))}

@@ -20,4 +20,8 @@ export class DeviceRepository {
         const response = await backend.delete<DeleteStatus>(`/device/${deviceUUID}`);
         return response.status;
     }
+
+    async getOnlineDevices(): Promise<string[]> {
+        return backend.get('/devices/online');
+    }
 }

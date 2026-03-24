@@ -38,20 +38,20 @@ class DeviceState(BaseModel):
     gps_position: Optional[Position]
 
 
-# region { Device model }
+# region { Device model } // TODO: #27 - More device settings
 
 class DeviceData(BaseModel):
     name: str
-    device_name: str
+ #   device_name: str
     description: str
 
-    use_gps: bool
-    password: str
-    use_lockscreen: bool
+#    use_gps: bool
+#    password: str
+#    use_lockscreen: bool
 
-    custom_startup_script: str
-    device_position: Optional[Position]
-    device_state: Optional[DeviceState]
+ #   custom_startup_script: str
+ #   device_position: Optional[Position]
+ #   device_state: Optional[DeviceState]
 
 
 class Device(DeviceData):
