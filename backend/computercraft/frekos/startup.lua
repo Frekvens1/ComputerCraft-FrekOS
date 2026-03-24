@@ -1,13 +1,10 @@
-local pullEvent = os.pullEvent
-os.pullEvent = os.pullEventRaw
-
 function main()
     print("FrekOS is booting up...")
-     printLine()
+    printLine()
 
     shell.setPath(shell.path() .. ":/frekos/apps:/apps")
     loadLibraries("/frekos/libs")
-    os.sleep(2)
+    FrekOS.events.inject()
 end
 
 function loadLibraries(library_path)
@@ -89,6 +86,3 @@ end
 
 clear()
 main()
-
-os.pullEvent = pullEvent
-clear()

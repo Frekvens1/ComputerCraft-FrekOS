@@ -36,15 +36,29 @@ async def update():
 
 @app.get('/teleport/{device_uuid}')
 async def teleport(device_uuid: str):
-    device = devices[device_uuid]
-    if device:
+    if device_uuid in devices:
+        device = devices[device_uuid]
         await device.send_text('Teleport!')
         return {'message': 'Teleport requested!'}
     return {'message': 'No teleport active!'}
 
-@app.get('/device-online/{device_uuid}')
+
+@app.get('/device/{device_uuid}/event')
+async def device_event(device_uuid: str):
+    if device_uuid in devices:
+        device = devices[device_uuid]
+        await device.send_json([
+            "char",
+            "k",
+        ])
+        return {'message': 'Event sent!'}
+    return {'message': 'Device not online!'}
+
+
+@app.get('/device/{device_uuid}/online')
 async def device_online(device_uuid: str) -> bool:
     return device_uuid in devices
+
 
 @app.get('/devices/online')
 async def devices_online() -> List[str]:
@@ -65,5 +79,6 @@ async def device_websocket(device_uuid: str, websocket: WebSocket):
     except WebSocketDisconnect:
         devices.pop(device_uuid, None)
         print(f"Device disconnected: {device_uuid}")
+
 
 devices_api(app)

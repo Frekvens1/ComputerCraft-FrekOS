@@ -1,8 +1,12 @@
+-- region { private }
+
 local api = {}
+
+-- endregion
 
 function api.saveConfig(path, variable)
     local file = fs.open(path, "w")
-    file.write(textutils.serialize(variable))
+    file.write(textutils.serialize(sanitize(variable)))
     file.close()
 end
 
@@ -13,11 +17,27 @@ function api.loadConfig(path)
     return textutils.unserialize(data)
 end
 
-function beforeLoad()
+function api.sanitize(value)
+    if type(value) == "function" then
+        return nil
+    elseif type(value) == "table" then
+        local out = {}
+        for k, v in pairs(value) do
+            if type(v) ~= "function" then
+                out[k] = api.sanitize(v)
+            end
+        end
+        return out
+    else
+        return value
+    end
+end
+
+local function beforeLoad()
 
 end
 
-function afterLoad()
+local function afterLoad()
 
 end
 

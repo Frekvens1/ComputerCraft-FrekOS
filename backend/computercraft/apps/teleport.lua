@@ -3,7 +3,7 @@ trapdoor_side = "front"
 function main()
     resetRedstone(trapdoor_side)
     while true do
-        local msg = backendUtils.connection.receive()
+        local msg = backendUtils.getConnection().receive()
         if msg then
             toggleRedstone(trapdoor_side)
         end

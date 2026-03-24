@@ -47,6 +47,7 @@ function main()
         "/frekos/libs/FrekOS.lua",
         "/frekos/libs/backendUtils.lua",
         "/frekos/libs/screenUtils.lua",
+        "/frekos/libs/backgroundTasks.lua",
 
         -- endregion
 
