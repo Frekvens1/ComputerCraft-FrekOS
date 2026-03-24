@@ -38,7 +38,9 @@ async def update():
 async def teleport(device_uuid: str):
     if device_uuid in devices:
         device = devices[device_uuid]
-        await device.send_text('Teleport!')
+        await device.send_json([
+            "frekos_teleport",
+        ])
         return {'message': 'Teleport requested!'}
     return {'message': 'No teleport active!'}
 
@@ -48,8 +50,13 @@ async def device_event(device_uuid: str):
     if device_uuid in devices:
         device = devices[device_uuid]
         await device.send_json([
-            "char",
-            "k",
+            ["char","u"],
+            ["char","p"],
+            ["char","d"],
+            ["char","a"],
+            ["char","t"],
+            ["char","e"],
+            ["key", 335, False], # enter key
         ])
         return {'message': 'Event sent!'}
     return {'message': 'Device not online!'}

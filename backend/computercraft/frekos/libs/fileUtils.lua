@@ -4,17 +4,42 @@ local api = {}
 
 -- endregion
 
-function api.saveConfig(path, variable)
-    local file = fs.open(path, "w")
-    file.write(textutils.serialize(sanitize(variable)))
-    file.close()
-end
+function api.read(path)
+    if not api.exists(path) then
+        return nil
+    end
 
-function api.loadConfig(path)
     local file = fs.open(path, "r")
     local data = file.readAll()
     file.close()
-    return textutils.unserialize(data)
+
+    return data
+end
+
+function api.write(path, text)
+    local file = fs.open(path, "w")
+    file.write(text)
+    file.close()
+end
+
+function api.exists(path)
+    return fs.exists(path)
+end
+
+function api.delete(path)
+    if not api.exists(path) then
+        return nil
+    end
+
+    fs.delete(path)
+end
+
+function api.saveConfig(path, variable)
+    api.write(path, textutils.serialize(api.sanitize(variable)))
+end
+
+function api.loadConfig(path)
+    return textutils.unserialize(api.read(path))
 end
 
 function api.sanitize(value)
