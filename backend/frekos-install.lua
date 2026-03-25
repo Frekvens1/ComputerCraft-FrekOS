@@ -47,6 +47,7 @@ function main()
 
         "/frekos/libs/FrekOS.lua",
         "/frekos/libs/fileUtils.lua",
+        "/frekos/libs/deviceApi.lua",
         "/frekos/libs/stringUtils.lua",
         "/frekos/libs/backendUtils.lua",
         "/frekos/libs/screenUtils.lua",
@@ -57,6 +58,7 @@ function main()
 
         "/apps/storage.lua",
         "/apps/teleport.lua",
+        "/apps/teleport_requester.lua",
         "/apps/quartz_miner.lua",
         "/apps/quartz_replacer.lua",
 

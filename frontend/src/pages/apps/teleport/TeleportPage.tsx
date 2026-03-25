@@ -1,12 +1,10 @@
 import {Button} from "@/components/ui/button.tsx";
 import {Card, CardDescription, CardFooter, CardHeader, CardTitle} from "@/components/ui/card.tsx";
-import {TeleportRepository} from "@/core/modules/apps/teleport/api.ts";
 import {useEffect, useState} from "react";
 import type {Device} from "@/core/modules/devices/models.ts";
 import {DeviceRepository} from "@/core/modules/devices/api.ts";
 
 const deviceRepository = new DeviceRepository();
-const teleportRepository = new TeleportRepository();
 
 export function TeleportPage() {
     const [devices, setDevices] = useState<Device[]>([]);
@@ -31,7 +29,7 @@ export function TeleportPage() {
                     </CardHeader>
                     <CardFooter className="flex-col items-start gap-1.5 text-sm">
                         <Button size='lg' className='cursor-pointer w-full'
-                                onClick={() => teleportRepository.requestTeleport(device.device_uuid)}>
+                                onClick={() => deviceRepository.events.teleport(device.device_uuid)}>
                             Request teleport
                         </Button>
                     </CardFooter>

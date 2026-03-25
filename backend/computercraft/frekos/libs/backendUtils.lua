@@ -30,7 +30,7 @@ end
 
 -- endregion
 
-function api.get(path)
+function api.get(path, raw)
     local url = getProtocolHTTP() .. getHostname(path)
     local ok, _ = http.checkURL(url)
     if not ok then
@@ -45,7 +45,11 @@ function api.get(path)
     local text = response.readAll()
     response.close()
 
-    return text
+    if raw then
+        return text
+    else
+        return textutils.unserialiseJSON(text)
+    end
 end
 
 function api.websocket(path)
