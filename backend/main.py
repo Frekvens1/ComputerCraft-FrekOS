@@ -30,17 +30,6 @@ async def update():
     return FileResponse('frekos-install.lua', media_type='text/plain')
 
 
-@app.get('/teleport/{device_uuid}')
-async def teleport(device_uuid: str):
-    if device_uuid in devices_logic.devices:
-        device = devices_logic.devices[device_uuid]
-        await device.send_json([
-            "frekos_teleport",
-        ])
-        return {'message': 'Teleport requested!'}
-    return {'message': 'No teleport active!'}
-
-
 @app.get('/device/{device_uuid}/event')
 async def device_event(device_uuid: str):
     if device_uuid in devices_logic.devices:

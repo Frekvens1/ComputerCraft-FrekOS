@@ -65,3 +65,13 @@ def initialize(app: FastAPI):
         except WebSocketDisconnect:
             logic.devices.pop(device_uuid, None)
             print(f"Device disconnected: {device_uuid}")
+
+    @app.get('/device/{device_uuid}/events/teleport')
+    async def teleport(device_uuid: str):
+        if device_uuid in logic.devices:
+            device = logic.devices[device_uuid]
+            await device.send_json([
+                "frekos_teleport",
+            ])
+            return {'message': 'Teleport requested!'}
+        return {'message': 'No teleport active!'}

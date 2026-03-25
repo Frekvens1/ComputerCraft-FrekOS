@@ -24,6 +24,15 @@ function table.compare(self, value)
     return true
 end
 
+function table.includes(table, item)
+    for _, value in ipairs(table) do
+        if value == item then
+            return true
+        end
+    end
+    return false
+end
+
 -- endregion
 
 function api.clear()

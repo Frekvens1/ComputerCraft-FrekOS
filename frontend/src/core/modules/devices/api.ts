@@ -28,4 +28,10 @@ export class DeviceRepository {
     async getOnlineDevices(): Promise<string[]> {
         return backend.get('/devices/online');
     }
+
+    events = new class {
+        async teleport(deviceUUID: string): Promise<void> {
+            return backend.get(`/device/${deviceUUID}/events/teleport`);
+        }
+    }
 }
