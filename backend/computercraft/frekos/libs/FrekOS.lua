@@ -5,7 +5,7 @@ local api = {}
 -- endregion
 
 function api.refreshSettings()
-    api.settings = fileUtils.loadConfig("/frekos/settings.table")
+    api.settings = fileUtils.loadConfig("/frekos/settings.conf")
 end
 
 -- region { Events }

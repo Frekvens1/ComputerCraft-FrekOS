@@ -82,9 +82,12 @@ function Button(x, y, width, height, text, onClick)
         paintutils.drawFilledBox(self.x, self.y, self.width + self.x, self.height + self.y, self.fillColor)
         paintutils.drawBox(self.x, self.y, self.width + self.x, self.height + self.y, self.borderColor)
 
+        local center_x = math.floor( (self.width / 2) - (string.len(self.text) / 2) + self.x )
+        local center_y = (self.height / 2) + self.y
+
         term.setTextColor(self.textColor)
         term.setBackgroundColor(self.fillColor)
-        term.setCursorPos((self.width / 2) - (string.len(self.text) / 2) + self.x + 1, (self.height / 2) + self.y)
+        term.setCursorPos(center_x, center_y)
         term.write(self.text)
 
         self.requestDraw = false

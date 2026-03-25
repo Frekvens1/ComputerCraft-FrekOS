@@ -11,10 +11,22 @@ if not success then
     print(error)
     print()
 
-    print("=== Press a key to reboot ===")
+    local config_path = "/frekos/settings.conf"
+    if not fs.exists(config_path) then
+        print("=== Press a key to reboot ===")
+        os.pullEvent("key")
+        os.reboot()
+    else
+        print("=== Press a key to update ===")
+        os.pullEvent("key")
 
-    os.pullEvent("key")
-    os.reboot()
+        local file = fs.open(config_path, "r")
+        local settings = textutils.unserialize(file.readAll())
+        file.close()
+
+        shell.run("wget run " .. settings.update_url .. " " .. settings.device_uuid)
+        os.reboot()
+    end
 end
 
 os.pullEvent = pullEvent

@@ -1,4 +1,6 @@
 local completion = require "cc.shell.completion"
+local error_loading_libraries = false
+local errors = {}
 
 function main()
     print("FrekOS is booting up...")
@@ -27,26 +29,38 @@ function loadLibraries(library_path)
     for _, file in ipairs(fs.list(library_path)) do
         local file_path = fs.combine(library_path, file)
 
-        if not fs.isDir(file_path) and file:match("%.lua$") then
-            local name = file:gsub("%.lua$", "")
-
-            print("- Loading '" .. name .. "'...")
-
-            local fn = loadfile(file_path)
-            local api, beforeLoad, afterLoad = fn()
-
-            if api then
-                _G[name] = api
-            end
-
-            if beforeLoad then
-                libs.before[name] = beforeLoad
-            end
-
-            if afterLoad then
-                libs.after[name] = afterLoad
-            end
+        if fs.isDir(file_path) or not file:match("%.lua$") then
+            goto continue
         end
+
+        local name = file:gsub("%.lua$", "")
+        print("- Loading '" .. name .. "'...")
+
+        local okLoad, fn = pcall(loadfile, file_path)
+        if not okLoad then
+            error_loading_libraries = true
+            goto continue
+        end
+
+        local okRun, api, beforeLoad, afterLoad = pcall(fn)
+        if not okRun then
+            error_loading_libraries = true
+            goto continue
+        end
+
+        if api then
+            _G[name] = api
+        end
+
+        if beforeLoad then
+            libs.before[name] = beforeLoad
+        end
+
+        if afterLoad then
+            libs.after[name] = afterLoad
+        end
+
+        :: continue ::
     end
 
     print()
@@ -56,7 +70,12 @@ function loadLibraries(library_path)
     for name, hook in pairs(libs.before) do
         print(name)
         printLine(#name)
-        hook()
+        local ok, err = pcall(hook)
+        if not ok then
+            error_loading_libraries = true
+            print("Crashed:")
+            print(err)
+        end
         print()
     end
 
@@ -67,12 +86,24 @@ function loadLibraries(library_path)
     for name, hook in pairs(libs.after) do
         print(name)
         printLine(#name)
-        hook()
+        local ok, err = pcall(hook)
+        if not ok then
+            error_loading_libraries = true
+            print("Crashed:")
+            print(err)
+        end
         print()
     end
 
     print()
-    print(":: Libraries fully loaded")
+    if not error_loading_libraries then
+        print(":: Libraries fully loaded")
+    else
+        print("Failed loading libraries")
+        print()
+        print("= Press a key to continue =")
+        os.pullEvent("key")
+    end
 end
 
 function clear()
