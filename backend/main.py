@@ -1,17 +1,13 @@
-from typing import Optional, Dict, List
-
 from fastapi import FastAPI
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
-from starlette.websockets import WebSocket, WebSocketDisconnect
 
 from libraries import mongo_lib
 
 from modules.devices.api import initialize as devices_api
+from modules.devices import logic as devices_logic
 
 # pip install 'uvicorn[standard]'
-teleport_websocket: Optional[WebSocket] = None
-devices: Dict[str, WebSocket] = {}
 
 app = FastAPI()
 mongo_lib.initialize()
@@ -36,8 +32,8 @@ async def update():
 
 @app.get('/teleport/{device_uuid}')
 async def teleport(device_uuid: str):
-    if device_uuid in devices:
-        device = devices[device_uuid]
+    if device_uuid in devices_logic.devices:
+        device = devices_logic.devices[device_uuid]
         await device.send_json([
             "frekos_teleport",
         ])
@@ -47,45 +43,19 @@ async def teleport(device_uuid: str):
 
 @app.get('/device/{device_uuid}/event')
 async def device_event(device_uuid: str):
-    if device_uuid in devices:
-        device = devices[device_uuid]
+    if device_uuid in devices_logic.devices:
+        device = devices_logic.devices[device_uuid]
         await device.send_json([
-            ["char","u"],
-            ["char","p"],
-            ["char","d"],
-            ["char","a"],
-            ["char","t"],
-            ["char","e"],
-            ["key", 335, False], # enter key
+            ["char", "u"],
+            ["char", "p"],
+            ["char", "d"],
+            ["char", "a"],
+            ["char", "t"],
+            ["char", "e"],
+            ["key", 335, False],  # enter key
         ])
         return {'message': 'Event sent!'}
     return {'message': 'Device not online!'}
-
-
-@app.get('/device/{device_uuid}/online')
-async def device_online(device_uuid: str) -> bool:
-    return device_uuid in devices
-
-
-@app.get('/devices/online')
-async def devices_online() -> List[str]:
-    return list(devices.keys())
-
-
-@app.websocket("/device/{device_uuid}")
-async def device_websocket(device_uuid: str, websocket: WebSocket):
-    global devices
-
-    await websocket.accept()
-    devices[device_uuid] = websocket
-    print(f"Device connected: {device_uuid}")
-    try:
-        while True:
-            msg = await websocket.receive_text()
-            print(f"{device_uuid}: ", msg)
-    except WebSocketDisconnect:
-        devices.pop(device_uuid, None)
-        print(f"Device disconnected: {device_uuid}")
 
 
 devices_api(app)

@@ -1,6 +1,8 @@
 from typing import List
 
 from fastapi import FastAPI
+from starlette.websockets import WebSocket, WebSocketDisconnect
+
 from modules.devices import logic
 from modules.devices.models import (
     DeleteDeviceResponse, DeviceData, Device,
@@ -11,6 +13,10 @@ def initialize(app: FastAPI):
     @app.get("/devices", response_model=List[Device])
     async def get_devices():
         return logic.get_devices()
+
+    @app.get("/devices/type/{device_type}", response_model=List[Device])
+    async def get_devices_by_type(device_type: str):
+        return logic.get_devices_by_type(device_type)
 
     @app.get("/device/{device_uuid}", response_model=Device)
     async def get_device(device_uuid: str):
@@ -36,3 +42,26 @@ def initialize(app: FastAPI):
             success=success,
             message="Device deleted" if success else "Device not found"
         )
+
+    # Experimental functions
+
+    @app.get('/device/{device_uuid}/online')
+    async def device_online(device_uuid: str) -> bool:
+        return device_uuid in logic.devices
+
+    @app.get('/devices/online')
+    async def devices_online() -> List[str]:
+        return list(logic.devices.keys())
+
+    @app.websocket("/device/{device_uuid}")
+    async def device_websocket(device_uuid: str, websocket: WebSocket):
+        await websocket.accept()
+        logic.devices[device_uuid] = websocket
+        print(f"Device connected: {device_uuid}")
+        try:
+            while True:
+                msg = await websocket.receive_text()
+                print(f"{device_uuid}: ", msg)
+        except WebSocketDisconnect:
+            logic.devices.pop(device_uuid, None)
+            print(f"Device disconnected: {device_uuid}")
