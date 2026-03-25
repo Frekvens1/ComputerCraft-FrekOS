@@ -14,33 +14,44 @@ local api = {}
 -- region { table overwrites }
 
 function table.compare(self, value)
-    if not self or not value then return false end
-    if #self ~= #value then return false end
+    if not self or not value then
+        return false
+    end
+
+    if #self ~= #value then
+        return false
+    end
+
     for i = 1, #self do
         if self[i] ~= value[i] then
             return false
         end
     end
+
     return true
 end
 
-function table.includes(table, item)
-    for _, value in ipairs(table) do
-        if value == item then
-            return true
+function table.includes(self, item)
+    for i = 1, #self do
+        if self[i] == item then
+            return true, i
         end
     end
+
+    return false, 0
+end
+
+function table.removeValue(self, item)
+    local found, i = table.includes(self, item)
+    if found then
+        table.remove(self, i)
+        return true
+    end
+
     return false
 end
 
 -- endregion
-
-function api.clear()
-    term.clear()
-    term.setCursorPos(1, 1)
-end
-
-
 
 local function beforeLoad()
 

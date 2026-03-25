@@ -1,3 +1,6 @@
+local pullEvent = os.pullEvent
+os.pullEvent = os.pullEventRaw
+
 app_config = {
     has_ssl = true,
     hostname = "frekos.cc",
@@ -51,6 +54,7 @@ function main()
         "/frekos/libs/stringUtils.lua",
         "/frekos/libs/backendUtils.lua",
         "/frekos/libs/screenUtils.lua",
+        "/frekos/libs/peripheralsLib.lua",
 
         -- endregion
 
@@ -77,7 +81,7 @@ function main()
         update_url = app_config.update_url
     }
 
-    saveConfig("/frekos/settings.table", config)
+    saveConfig("/frekos/settings.conf", config)
 
     print("Install complete!")
     print()
@@ -174,3 +178,5 @@ function reboot()
 end
 
 main()
+
+os.pullEvent = pullEvent
