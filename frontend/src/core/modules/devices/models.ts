@@ -28,14 +28,16 @@ export interface DeviceState {
 
 export interface DeviceData {
     name: string;
-    device_name: string;
+    device_name?: string;
     description: string;
 
-    use_gps: boolean;
-    password: string;
-    use_lockscreen: boolean;
+    type: string;
 
-    custom_startup_script: string;
+    use_gps?: boolean;
+    password?: string;
+    use_lockscreen?: boolean;
+
+    custom_startup_script?: string;
     device_position?: Position;
     device_state?: DeviceType;
 }

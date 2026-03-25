@@ -44,6 +44,7 @@ class DeviceData(BaseModel):
     name: str
  #   device_name: str
     description: str
+    type: str
 
 #    use_gps: bool
 #    password: str

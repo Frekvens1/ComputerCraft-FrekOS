@@ -8,6 +8,10 @@ export class DeviceRepository {
         return backend.get('/devices');
     }
 
+    async getDevicesByType(device_type: string): Promise<Device[]> {
+        return backend.get(`/devices/type/${device_type}`);
+    }
+
     async getDevice(deviceUUID: string): Promise<Device> {
         return backend.get(`/device/${deviceUUID}`);
     }

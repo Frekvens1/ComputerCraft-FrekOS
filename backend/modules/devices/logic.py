@@ -1,8 +1,12 @@
-from typing import List, Optional
+from typing import List, Optional, Dict
+
+from starlette.websockets import WebSocket
 
 from libraries import mongo_lib
 from libraries import security_lib
 from modules.devices.models import Device, DeviceBackend, DeviceData
+
+devices: Dict[str, WebSocket] = {}
 
 
 def device_collection():
@@ -17,6 +21,11 @@ def device_collection():
 
 def get_devices() -> List[DeviceBackend]:
     docs = list(device_collection().find({}))
+    return [DeviceBackend(**doc) for doc in docs]
+
+
+def get_devices_by_type(device_type: str) -> List[DeviceBackend]:
+    docs = list(device_collection().find({'type': device_type}))
     return [DeviceBackend(**doc) for doc in docs]
 
 

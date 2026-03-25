@@ -98,7 +98,8 @@ export function DevicesPage() {
                                         {isDeviceOnline(device.device_uuid) ?
                                             (
                                                 <>
-                                                    <p>Device is online</p>
+                                                    <p>Device type: {device.type}</p>
+                                                    <br/>
                                                     <p>Device ID</p>
                                                     <p>{device.device_uuid}</p>
                                                 </>
