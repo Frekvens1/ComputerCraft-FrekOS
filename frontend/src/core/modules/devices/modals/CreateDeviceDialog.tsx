@@ -90,6 +90,13 @@ export function CreateDeviceDialog({onSubmit}: Props) {
                             >
                                 <span className="text-md">Teleport Module</span>
                             </ToggleGroupItem>
+                            <ToggleGroupItem
+                                value="miner"
+                                aria-label="Light"
+                                className="flex items-center justify-center rounded-xl cursor-pointer"
+                            >
+                                <span className="text-md">Miner</span>
+                            </ToggleGroupItem>
                         </ToggleGroup>
                     </Field>
 

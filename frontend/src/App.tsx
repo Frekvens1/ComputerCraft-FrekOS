@@ -6,6 +6,7 @@ import {DevicesPage} from '@/pages/devices/DevicesPage.tsx';
 import {SidebarLayout} from '@/pages/SidebarLayout.tsx';
 import {TeleportPage} from '@/pages/apps/teleport/TeleportPage.tsx';
 import {NewDevicePage} from "@/pages/devices/NewDevicePage.tsx";
+import {MinerPage} from "@/pages/apps/miner/MinerPage.tsx";
 
 export interface RouterHandle {
     title: string;
@@ -51,6 +52,11 @@ const router = createBrowserRouter([
                         path: 'teleport',
                         element: <TeleportPage/>,
                         handle: {title: 'Teleport Manager'} as RouterHandle,
+                    },
+                    {
+                        path: 'miner',
+                        element: <MinerPage/>,
+                        handle: {title: 'Remote Miner'} as RouterHandle,
                     },
                     {
                         path: '*',
