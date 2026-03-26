@@ -46,6 +46,9 @@ function loadLibraries(library_path)
         if not okRun then
             error_loading_libraries = true
             goto continue
+
+            print("= Press a key to continue =")
+            os.pullEvent("key")
         end
 
         if api then
@@ -75,6 +78,9 @@ function loadLibraries(library_path)
             error_loading_libraries = true
             print("Crashed:")
             print(err)
+
+            print("= Press a key to continue =")
+            os.pullEvent("key")
         end
         print()
     end
@@ -91,6 +97,9 @@ function loadLibraries(library_path)
             error_loading_libraries = true
             print("Crashed:")
             print(err)
+
+            print("= Press a key to continue =")
+            os.pullEvent("key")
         end
         print()
     end

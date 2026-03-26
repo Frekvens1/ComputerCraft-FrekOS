@@ -9,6 +9,7 @@ import {
     IconHelicopter,
     IconInnerShadowTop,
     IconSettings,
+    IconDiamond,
 } from '@tabler/icons-react'
 
 import {NavDocuments} from '@/components/nav-documents'
@@ -78,6 +79,11 @@ const data: { [p: string]: navigation[] } = {
             title: 'Teleport Manager',
             url: '/apps/teleport',
             icon: IconHelicopter,
+        },
+        {
+            title: 'Remote Miner',
+            url: '/apps/miner',
+            icon: IconDiamond,
         },
         /*
         {

@@ -30,6 +30,10 @@ export class DeviceRepository {
     }
 
     events = new class {
+        async raw<T>(deviceUUID: string, data: T[] | T[][]): Promise<void> {
+            return backend.post(`/device/${deviceUUID}/event`, data);
+        }
+        
         async teleport(deviceUUID: string): Promise<void> {
             return backend.get(`/device/${deviceUUID}/events/teleport`);
         }

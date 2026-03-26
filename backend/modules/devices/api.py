@@ -1,6 +1,6 @@
 from typing import List
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Body, HTTPException
 from starlette.websockets import WebSocket, WebSocketDisconnect
 
 from modules.devices import logic
@@ -65,6 +65,19 @@ def initialize(app: FastAPI):
         except WebSocketDisconnect:
             logic.devices.pop(device_uuid, None)
             print(f"Device disconnected: {device_uuid}")
+
+    @app.post("/device/{device_uuid}/event")
+    async def device_event(device_uuid: str, event=Body(...)):
+        if device_uuid not in logic.devices:
+            raise HTTPException(status_code=404, detail="Device not online")
+
+        if not isinstance(event, list):
+            raise HTTPException(status_code=400, detail="Event must be a list or nested list")
+
+        device = logic.devices[device_uuid]
+        await device.send_json(event)
+
+        return {"message": "Event sent!"}
 
     @app.get('/device/{device_uuid}/events/teleport')
     async def teleport(device_uuid: str):

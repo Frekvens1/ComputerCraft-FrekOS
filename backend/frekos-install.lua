@@ -51,6 +51,7 @@ function main()
         "/frekos/libs/FrekOS.lua",
         "/frekos/libs/fileUtils.lua",
         "/frekos/libs/deviceApi.lua",
+        "/frekos/libs/turtleUtils.lua",
         "/frekos/libs/stringUtils.lua",
         "/frekos/libs/backendUtils.lua",
         "/frekos/libs/screenUtils.lua",
