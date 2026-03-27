@@ -9,6 +9,54 @@ app_config = {
     update_url = "https://update.frekos.cc",
 }
 
+local downloads = {
+    "/startup.lua",
+    "/frekos/startup.lua",
+
+    -- region { System files - Applications }
+
+    "/frekos/apps/cat.lua",
+    "/frekos/apps/update.lua",
+    "/frekos/apps/lockscreen.lua",
+    "/frekos/apps/clean_install.lua",
+    "/frekos/apps/welcome_screen.lua",
+
+    -- endregion
+
+    -- region { System files - Libraries }
+
+    "/frekos/libs/FrekOS.lua",
+    "/frekos/libs/fileUtils.lua",
+    "/frekos/libs/deviceApi.lua",
+    "/frekos/libs/turtleUtils.lua",
+    "/frekos/libs/stringUtils.lua",
+    "/frekos/libs/backendUtils.lua",
+    "/frekos/libs/screenUtils.lua",
+    "/frekos/libs/peripheralsLib.lua",
+
+    -- endregion
+
+    -- region { Applications }
+
+    "/apps/storage.lua",
+    "/apps/teleport.lua",
+    "/apps/teleport_requester.lua",
+
+    -- endregion
+}
+
+local downloads_turtle = {
+    -- region { Applications - Turtle }
+
+    "/apps/turtle/lava_refill.lua",
+    "/apps/turtle/chunk_miner.lua",
+    "/apps/turtle/tunnel_miner.lua",
+    "/apps/turtle/quartz_miner.lua",
+    "/apps/turtle/quartz_replacer.lua",
+
+    -- endregion
+}
+
 local protocol = "http"
 if app_config.has_ssl then
     protocol = protocol .. "s"
@@ -32,43 +80,12 @@ function main()
     print(hr())
     print()
 
-    bulkDownload({
-        "/startup.lua",
-        "/frekos/startup.lua",
+    local all_downloads = downloads
+    if turtle then
+        all_downloads = table.combine(all_downloads, downloads_turtle)
+    end
 
-        -- region { System files - Applications }
-
-        "/frekos/apps/cat.lua",
-        "/frekos/apps/update.lua",
-        "/frekos/apps/lockscreen.lua",
-        "/frekos/apps/wipe_system.lua",
-        "/frekos/apps/welcome_screen.lua",
-
-        -- endregion
-
-        -- region { System files - Libraries }
-
-        "/frekos/libs/FrekOS.lua",
-        "/frekos/libs/fileUtils.lua",
-        "/frekos/libs/deviceApi.lua",
-        "/frekos/libs/turtleUtils.lua",
-        "/frekos/libs/stringUtils.lua",
-        "/frekos/libs/backendUtils.lua",
-        "/frekos/libs/screenUtils.lua",
-        "/frekos/libs/peripheralsLib.lua",
-
-        -- endregion
-
-        -- region { Applications }
-
-        "/apps/storage.lua",
-        "/apps/teleport.lua",
-        "/apps/teleport_requester.lua",
-        "/apps/quartz_miner.lua",
-        "/apps/quartz_replacer.lua",
-
-        -- endregion
-    })
+    bulkDownload(all_downloads)
 
     print()
     print(hr())
@@ -79,7 +96,8 @@ function main()
         has_ssl = app_config.has_ssl,
         hostname = app_config.hostname,
         api_path = app_config.api_path,
-        update_url = app_config.update_url
+        update_url = app_config.update_url,
+        send_events = false,
     }
 
     saveConfig("/frekos/settings.conf", config)
@@ -176,6 +194,19 @@ function reboot()
     os.sleep(1)
 
     os.reboot()
+end
+
+function table.combine(a, b)
+    local result = {}
+    for i = 1, #a do
+        result[#result + 1] = a[i]
+    end
+
+    for i = 1, #b do
+        result[#result + 1] = b[i]
+    end
+
+    return result
 end
 
 main()

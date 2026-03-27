@@ -6,6 +6,10 @@ local function wipeRoot()
     end
 end
 
-print("Wiping system (excluding ROM and disk)...")
+local env = setmetatable({}, { __index = _ENV })
+env.shell = shell
+
+local update_function = loadfile("/frekos/apps/update.lua", env)
+
 wipeRoot()
-print("Done.")
+update_function()

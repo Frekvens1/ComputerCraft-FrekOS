@@ -21,7 +21,10 @@ function api.events.inject()
         local event = { pullEventRaw(...) }
 
         if not table.compare(event, lastEvent) then
-            api.server.send(fileUtils.sanitize(event))
+            if api.settings.send_events then
+                api.server.send(fileUtils.sanitize(event))
+            end
+
             api.events.handleTasks(event)
         end
 
