@@ -6,7 +6,7 @@ function main()
     print("FrekOS is booting up...")
     printLine()
 
-    shell.setPath(shell.path() .. ":/frekos/apps:/apps")
+    shell.setPath(shell.path() .. ":/frekos/apps:/apps:/apps/turtle")
     shell.setCompletionFunction("frekos/apps/cat.lua", function(shell, index, text, previous)
         if index == 1 then
             return completion.file(shell, text)
