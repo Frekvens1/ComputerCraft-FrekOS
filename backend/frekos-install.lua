@@ -48,6 +48,7 @@ local downloads = {
 local downloads_turtle = {
     -- region { Applications - Turtle }
 
+    "/apps/turtle/build_roof.lua",
     "/apps/turtle/lava_refill.lua",
     "/apps/turtle/chunk_miner.lua",
     "/apps/turtle/tunnel_miner.lua",

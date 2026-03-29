@@ -4,12 +4,6 @@ local tunnel_width = tonumber(args[1])
 local tunnel_length = tonumber(args[2])
 local tunnel_height = tonumber(args[3])
 
-local blocks_mined = 0
-local volume_checked = 0
-local volume_above_area = tunnel_width * tunnel_length * 2
-local volume_inside_area = tunnel_width * tunnel_length * tunnel_height
-local volume_to_check = volume_inside_area + volume_above_area
-
 if tunnel_width == nil then
     tunnel_width = 16
 end
@@ -21,6 +15,12 @@ end
 if tunnel_height == nil then
     tunnel_height = 256
 end
+
+local blocks_mined = 0
+local volume_checked = 0
+local volume_above_area = tunnel_width * tunnel_length * 2
+local volume_inside_area = tunnel_width * tunnel_length * tunnel_height
+local volume_to_check = volume_inside_area + volume_above_area
 
 function printProgress()
     screenUtils.clear()
