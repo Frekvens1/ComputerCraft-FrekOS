@@ -77,9 +77,15 @@ function loadLibraries(library_path)
     print("=== Running beforeLoad hooks ===")
     printLine()
 
+    local env = {}
+    env._ENV = env
+    setmetatable(env, { __index = _ENV })
+    env.shell = shell
+
     for name, hook in pairs(libs.before) do
         print(name)
         printLine(#name)
+        setfenv(hook, env)
         local ok, err = pcall(hook)
         if not ok then
             error_loading_libraries = true
@@ -92,6 +98,10 @@ function loadLibraries(library_path)
         print()
     end
 
+    env._ENV = env
+    setmetatable(env, { __index = _ENV })
+    env.shell = shell
+
     print()
     print("=== Running afterLoad hooks ===")
     printLine()
@@ -99,6 +109,7 @@ function loadLibraries(library_path)
     for name, hook in pairs(libs.after) do
         print(name)
         printLine(#name)
+        setfenv(hook, env)
         local ok, err = pcall(hook)
         if not ok then
             error_loading_libraries = true

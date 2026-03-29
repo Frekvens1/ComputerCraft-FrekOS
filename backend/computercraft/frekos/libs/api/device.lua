@@ -4,23 +4,23 @@ local api = {}
 
 -- endregion
 
-function api.getDevices()
+function api.getAll()
     return backendUtils.get("/devices")
 end
 
-function api.getDevicesOnline()
+function api.getAllOnline()
     return backendUtils.get("/devices/online")
 end
 
-function api.getDevicesByType(device_type)
+function api.getByType(device_type)
     return backendUtils.get("/devices/type/" .. device_type)
 end
 
-function api.getDevice(device_uuid)
+function api.get(device_uuid)
     return backendUtils.get("/device/" .. device_uuid)
 end
 
-function api.getDeviceOnline(device_uuid)
+function api.getOnline(device_uuid)
     return backendUtils.get("/device/" .. device_uuid .. "/online")
 end
 
@@ -30,12 +30,4 @@ function api.events.teleport(device_uuid)
     return backendUtils.get("/device/" .. device_uuid .. "/events/teleport")
 end
 
-local function beforeLoad()
-
-end
-
-local function afterLoad()
-
-end
-
-return api, beforeLoad, afterLoad
+return api

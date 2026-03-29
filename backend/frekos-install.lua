@@ -27,8 +27,6 @@ local downloads = {
 
     "/frekos/libs/FrekOS.lua",
     "/frekos/libs/fileUtils.lua",
-    "/frekos/libs/deviceApi.lua",
-    "/frekos/libs/turtleUtils.lua",
     "/frekos/libs/stringUtils.lua",
     "/frekos/libs/backendUtils.lua",
     "/frekos/libs/screenUtils.lua",
@@ -36,9 +34,14 @@ local downloads = {
 
     -- endregion
 
+    -- region { System files - Libraries - APIs}
+
+    "/frekos/libs/api/device.lua",
+
+    -- endregion
+
     -- region { Applications }
 
-    "/apps/storage.lua",
     "/apps/teleport.lua",
     "/apps/teleport_requester.lua",
 
@@ -46,7 +49,7 @@ local downloads = {
 }
 
 local downloads_turtle = {
-    -- region { Applications - Turtle }
+    "/frekos/libs/turtleUtils.lua",
 
     "/apps/turtle/build_roof.lua",
     "/apps/turtle/lava_refill.lua",
@@ -54,16 +57,20 @@ local downloads_turtle = {
     "/apps/turtle/tunnel_miner.lua",
     "/apps/turtle/quartz_miner.lua",
     "/apps/turtle/quartz_replacer.lua",
+}
 
-    -- endregion
+local downloads_storage = {
+    "/frekos/libs/api/storage.lua",
+
+    "/frekos/libs/storageUtils.lua",
+
+    "/apps/storage.lua",
 }
 
 local protocol = "http"
 if app_config.has_ssl then
     protocol = protocol .. "s"
 end
-
-local serverHostname = protocol .. "://" .. app_config.hostname .. app_config.scripts_path
 
 local args = {...}
 local device_uuid = args[1]
@@ -74,6 +81,9 @@ if not device_uuid then
     return
 end
 
+local server_hostname = protocol .. "://" .. app_config.hostname .. app_config.scripts_path
+local device_config_url = protocol .. "://" .. app_config.hostname .. "/api/device/" .. device_uuid
+
 function main()
     clear()
 
@@ -81,9 +91,16 @@ function main()
     print(hr())
     print()
 
+    local device_config = textutils.unserializeJSON(get(device_config_url))
+    os.setComputerLabel(device_config.name)
+
     local all_downloads = downloads
     if turtle then
         all_downloads = table.combine(all_downloads, downloads_turtle)
+    end
+
+    if device_config.type == "storage" then
+        all_downloads = table.combine(all_downloads, downloads_storage)
     end
 
     bulkDownload(all_downloads)
@@ -92,7 +109,7 @@ function main()
     print(hr())
     print()
 
-    local config = {
+    local settings = {
         device_uuid = device_uuid,
         has_ssl = app_config.has_ssl,
         hostname = app_config.hostname,
@@ -101,7 +118,8 @@ function main()
         send_events = false,
     }
 
-    saveConfig("/frekos/settings.conf", config)
+    saveConfig("/frekos/settings.conf", settings)
+    saveConfig("/frekos/device.conf", device_config)
 
     print("Install complete!")
     print()
@@ -157,7 +175,7 @@ function download(filepath, save_path)
     end
 
     print("- " .. filepath)
-    local fileContent = get(serverHostname .. filepath)
+    local fileContent = get(server_hostname .. filepath)
 
     if (fileContent == nil) then
         print("  - Download failed!\n")

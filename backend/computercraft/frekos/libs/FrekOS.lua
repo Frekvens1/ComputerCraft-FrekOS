@@ -6,6 +6,7 @@ local api = {}
 
 function api.refreshSettings()
     api.settings = fileUtils.loadConfig("/frekos/settings.conf")
+    api.device = fileUtils.loadConfig("/frekos/device.conf")
 end
 
 function api.run(file_path, ...)
@@ -75,17 +76,38 @@ end
 
 -- endregion
 
--- region { Server }
+-- region { APIs }
 
-api.server = {}
+api.api = {}
 
-function api.server.send(...)
-    local args = { ... }
-    backendUtils.getConnection().send(textutils.serialize(args))
+local function loadAPI(name, file_path)
+    if not fs.exists(file_path) then
+        return
+    end
+
+    local env = {}
+    env._ENV = env
+    setmetatable(env, { __index = _ENV })
+    env.shell = shell
+
+    local okLoad, fn = pcall(loadfile, file_path)
+    if not okLoad then
+        return
+    end
+
+    setfenv(fn, env)
+
+    local okRun, fn_api = pcall(fn)
+    if not okRun then
+        return
+    end
+
+    api.api[name] = fn_api
 end
 
-function api.server.event()
-
+local function loadAPIs()
+    loadAPI("device", "/frekos/libs/api/device.lua")
+    loadAPI("storage", "/frekos/libs/api/storage.lua")
 end
 
 -- endregion
@@ -93,6 +115,7 @@ end
 local function beforeLoad()
     print("Loading settings...")
     api.refreshSettings()
+    loadAPIs()
 end
 
 local function afterLoad()

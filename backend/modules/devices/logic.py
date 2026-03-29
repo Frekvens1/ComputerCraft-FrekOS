@@ -37,27 +37,27 @@ def get_device(device_uuid: str) -> Optional[DeviceBackend]:
 def create_device(device_data: DeviceData) -> DeviceBackend:
     device = Device(
         device_uuid=str(security_lib.generate_uuid()),
-        **device_data.model_dump(),
+        **device_data.model_dump(exclude_none=True),
     )
-    result = device_collection().insert_one(device.model_dump())
+    result = device_collection().insert_one(device.model_dump(exclude_none=True))
 
     created = device_collection().find_one({"_id": result.inserted_id})
     return DeviceBackend(**created)
 
 
-def update_device(device: Device) -> DeviceBackend:
+def update_device(device_uuid: str, device: Device) -> DeviceBackend:
     device_collection().update_one(
-        {'device_uuid': device.device_uuid},
-        {'$set': device.model_dump()}
+        {'device_uuid': device_uuid},
+        {'$set': device.model_dump(exclude_none=True)}
     )
     updated = device_collection().find_one({'device_uuid': device.device_uuid})
     return DeviceBackend(**updated) if updated else None
 
 
-def patch_device(device: Device) -> DeviceBackend:
+def patch_device(device_uuid: str, device: Device) -> DeviceBackend:
     device_collection().update_one(
-        {'device_uuid': device.device_uuid},
-        {'$set': device.model_dump()}
+        {'device_uuid': device_uuid},
+        {'$set': device.model_dump(exclude_none=True)}
     )
     updated = device_collection().find_one({'device_uuid': device.device_uuid})
     return DeviceBackend(**updated) if updated else None

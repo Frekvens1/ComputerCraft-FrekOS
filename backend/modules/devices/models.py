@@ -32,17 +32,16 @@ class DeviceState(BaseModel):
     has_color: bool
     connected_peripherals: dict
 
-    current_volume: Optional[int]
-    fuel_amount: Optional[int]
-    fuel_amount_max: Optional[int]
-    gps_position: Optional[Position]
+    current_volume: Optional[int] = None
+    fuel_amount: Optional[int] = None
+    fuel_amount_max: Optional[int] = None
+    gps_position: Optional[Position] = None
 
 
 # region { Device model } // TODO: #27 - More device settings
 
 class DeviceData(BaseModel):
     name: str
- #   device_name: str
     description: str
     type: str
 
@@ -51,8 +50,8 @@ class DeviceData(BaseModel):
 #    use_lockscreen: bool
 
  #   custom_startup_script: str
- #   device_position: Optional[Position]
- #   device_state: Optional[DeviceState]
+ #   device_position: Optional[Position] = None
+ #   device_state: Optional[DeviceState] = None
 
 
 class Device(DeviceData):
@@ -73,6 +72,6 @@ class DeviceBackend(Device):
 
 class DeleteDeviceResponse(BaseModel):
     success: bool
-    message: str | None = None
+    message: Optional[str] = None
 
 # endregion
