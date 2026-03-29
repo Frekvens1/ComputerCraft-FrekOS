@@ -1,3 +1,4 @@
+import json
 from typing import List
 
 from fastapi import FastAPI, Body, HTTPException
@@ -10,31 +11,31 @@ from modules.devices.models import (
 
 
 def initialize(app: FastAPI):
-    @app.get("/devices", response_model=List[Device])
+    @app.get("/devices", response_model=List[Device], response_model_exclude_none=True)
     async def get_devices():
         return logic.get_devices()
 
-    @app.get("/devices/type/{device_type}", response_model=List[Device])
+    @app.get("/devices/type/{device_type}", response_model=List[Device], response_model_exclude_none=True)
     async def get_devices_by_type(device_type: str):
         return logic.get_devices_by_type(device_type)
 
-    @app.get("/device/{device_uuid}", response_model=Device)
-    async def get_device(device_uuid: str):
-        return logic.get_device(device_uuid)
-
-    @app.post("/device", response_model=Device)
+    @app.post("/device", response_model=Device, response_model_exclude_none=True)
     async def create_device(device_data: DeviceData):
         return logic.create_device(device_data)
 
-    @app.put("/device", response_model=Device)
-    async def update_device(device: Device):
-        return logic.update_device(device)
+    @app.get("/device/{device_uuid}", response_model=Device, response_model_exclude_none=True)
+    async def get_device(device_uuid: str):
+        return logic.get_device(device_uuid)
 
-    @app.patch("/device", response_model=Device)
-    async def patch_device(device: Device):
-        return logic.patch_device(device)
+    @app.post("/device/{device_uuid}", response_model=Device, response_model_exclude_none=True)
+    async def update_device(device_uuid: str, device: Device):
+        return logic.update_device(device_uuid, device)
 
-    @app.delete("/device/{device_uuid}", response_model=DeleteDeviceResponse)
+    @app.patch("/device/{device_uuid}", response_model=Device, response_model_exclude_none=True)
+    async def patch_device(device_uuid: str, device: Device):
+        return logic.patch_device(device_uuid, device)
+
+    @app.delete("/device/{device_uuid}", response_model=DeleteDeviceResponse, response_model_exclude_none=True)
     async def delete_device(device_uuid: str):
         success = logic.delete_device(device_uuid)
 
@@ -61,7 +62,12 @@ def initialize(app: FastAPI):
         try:
             while True:
                 msg = await websocket.receive_text()
-                print(f"{device_uuid}: ", msg)
+                try:
+                    parsed = json.loads(msg)
+                    pretty = json.dumps(parsed, indent=4, ensure_ascii=False)
+                    print(f"{device_uuid} (JSON):\n{pretty}")
+                except json.JSONDecodeError:
+                    print(f"{device_uuid}: {msg}")
         except WebSocketDisconnect:
             logic.devices.pop(device_uuid, None)
             print(f"Device disconnected: {device_uuid}")

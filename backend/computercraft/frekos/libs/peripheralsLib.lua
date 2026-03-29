@@ -18,6 +18,10 @@ local function setActivePeripheral(name)
     if not api.types[name] then
         api.types[name] = { peripheral.getType(name) }
     end
+
+    if storageUtils then
+        storageUtils.updateInventory(name)
+    end
 end
 
 local function setDetachedPeripheral(name)
@@ -39,12 +43,25 @@ function api.reload()
     end
 end
 
+function api.isInventory(name)
+    local types = { peripheral.getType(name) }
+    for _, type in ipairs(types) do
+        if type == "inventory" then
+            return true
+        end
+    end
+    return false
+end
+
 local function beforeLoad()
 
 end
 
 local function afterLoad()
     print("Fetching connected peripherals...")
+    if storageUtils then
+        print("Updating storage system...")
+    end
 
     api.reload()
     FrekOS.events.addTask("peripherals", function(event)

@@ -30,14 +30,26 @@ end
 
 -- endregion
 
-function api.get(path, raw)
+local function getURL(path)
     local url = getProtocolHTTP() .. getHostname(path)
     local ok, _ = http.checkURL(url)
     if not ok then
         return nil
     end
 
-    local response = http.get(url, nil, true)
+    return url
+end
+
+function api.get(path, raw)
+    local url = getURL(path)
+    if not url then
+        return nil
+    end
+
+    local response = http.get({
+        url = url,
+        binary = true
+    })
     if not response then
         return nil
     end
@@ -52,6 +64,76 @@ function api.get(path, raw)
     end
 end
 
+function api.post(path, data)
+    local url = getURL(path)
+    if not url then
+        return nil
+    end
+
+    data = fileUtils.sanitize(data)
+    local response = http.post({
+        url = url,
+        body = textutils.serialiseJSON(data),
+        headers = {
+        ["Content-Type"] = "application/json"
+    }
+    })
+    if not response then
+        return nil
+    end
+
+    local text = response.readAll()
+    response.close()
+
+    return textutils.unserialiseJSON(text)
+end
+
+function api.patch(path, data)
+    local url = getURL(path)
+    if not url then
+        return nil
+    end
+
+    data = fileUtils.sanitize(data)
+    local response = http.post({
+        url = url,
+        body = textutils.serialiseJSON(data),
+        method = "PATCH",
+        headers = {
+        ["Content-Type"] = "application/json"
+    }
+    })
+    if not response then
+        return nil
+    end
+
+    local text = response.readAll()
+    response.close()
+
+    return textutils.unserialiseJSON(text)
+end
+
+function api.delete(path)
+    local url = getURL(path)
+    if not url then
+        return nil
+    end
+
+    local response = http.post({
+        url = url,
+        method = "DELETE",
+        binary = true
+    })
+    if not response then
+        return nil
+    end
+
+    local text = response.readAll()
+    response.close()
+
+    return textutils.unserialiseJSON(text)
+end
+
 function api.websocket(path)
     local url = getProtocolWS() .. getHostname(path)
     local ws, err = http.websocket(url)
@@ -61,6 +143,11 @@ function api.websocket(path)
     end
 
     return ws
+end
+
+function api.send(...)
+    local args = fileUtils.sanitize({ ... })
+    backendUtils.getConnection().send(textutils.serializeJSON(table.unpack(args)))
 end
 
 function api.refreshConnection()

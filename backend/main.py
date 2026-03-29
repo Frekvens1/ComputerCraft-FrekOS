@@ -5,6 +5,7 @@ from fastapi.staticfiles import StaticFiles
 from libraries import mongo_lib
 
 from modules.devices.api import initialize as devices_api
+from modules.storage.api import initialize as storage_api
 
 # pip install 'uvicorn[standard]'
 
@@ -30,3 +31,4 @@ async def update():
 
 
 devices_api(app)
+storage_api(app)

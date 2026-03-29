@@ -19,8 +19,8 @@ function main()
 end
 
 function refreshDevices()
-    local devices = deviceApi.getDevicesByType("teleport_module")
-    local online_devices = deviceApi.getDevicesOnline()
+    local devices = FrekOS.api.device.getByType("teleport_module")
+    local online_devices = FrekOS.api.device.getAllOnline()
 
     draw()
 
@@ -37,7 +37,7 @@ function refreshDevices()
 end
 
 function doTeleport(device_uuid)
-    deviceApi.events.teleport(device_uuid)
+    FrekOS.api.device.events.teleport(device_uuid)
 end
 
 -- UI --
