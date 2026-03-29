@@ -5,6 +5,7 @@ import {DeviceRepository} from "@/core/modules/devices/api.ts";
 import {StorageRepository} from "@/core/modules/storage/api.ts";
 import {StatusDot} from "@/core/components/StatusDot.tsx";
 import type {Storage} from "@/core/modules/storage/models.ts";
+import {StorageInventory} from "@/core/modules/storage/components/StorageInventory.tsx";
 
 const deviceRepository = new DeviceRepository();
 const storageRepository = new StorageRepository();
@@ -67,6 +68,8 @@ export function StoragePage() {
                                                             <p>Slots total: {storage.slots_total}</p>
                                                             <p>Slots used: {storage.slots_used}</p>
                                                             <p>Slots free: {storage.slots_total - storage.slots_used}</p>
+
+                                                            <StorageInventory storage={storage}/>
                                                         </div>
                                                     )
                                                 })
