@@ -8,6 +8,8 @@ import {TeleportPage} from '@/pages/apps/teleport/TeleportPage.tsx';
 import {NewDevicePage} from "@/pages/devices/NewDevicePage.tsx";
 import {MinerPage} from "@/pages/apps/miner/MinerPage.tsx";
 import {StoragePage} from "@/pages/apps/storage/StoragePage.tsx";
+import {useEffect, useState} from "react";
+import {loadGuiAssets} from "@/core/modules/storage/components/StorageAssets.ts";
 
 export interface RouterHandle {
     title: string;
@@ -79,6 +81,18 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
+    const [ready, setReady] = useState(false);
+
+    useEffect(() => {
+        loadGuiAssets().then(() => setReady(true));
+    }, []);
+
+    if (!ready) return (
+        <div>
+            <p>Loading...</p>
+        </div>
+    );
+
     return (
         <RouterProvider router={router}/>
     )

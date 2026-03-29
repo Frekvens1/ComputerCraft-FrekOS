@@ -29,63 +29,27 @@ export function StorageInventory({storage}: Props) {
     const [textures, setTextures] = useState<{ [key: string]: Texture } | null>(null);
 
     useEffect(() => {
-        Assets.load([
-            '/gui/header-left.png',
-            '/gui/header-slot.png',
-            '/gui/header-right.png',
+        const textures = {
+            headerLeft: Assets.get('headerLeft'),
+            headerSlot: Assets.get('headerSlot'),
+            headerRight: Assets.get('headerRight'),
 
-            '/gui/slot-left.png',
-            '/gui/slot.png',
-            '/gui/slot-empty.png',
-            '/gui/slot-right.png',
+            slotLeft: Assets.get('slotLeft'),
+            slot: Assets.get('slot'),
+            slotEmpty: Assets.get('slotEmpty'),
+            slotRight: Assets.get('slotRight'),
 
-            '/gui/footer-left.png',
-            '/gui/footer-slot.png',
-            '/gui/footer-right.png',
-        ]).then(() => {
-            const headerLeft = Assets.get('/gui/header-left.png');
-            const headerSlot = Assets.get('/gui/header-slot.png');
-            const headerRight = Assets.get('/gui/header-right.png');
+            footerLeft: Assets.get('footerLeft'),
+            footerSlot: Assets.get('footerSlot'),
+            footerRight: Assets.get('footerRight'),
+        };
 
-            const slotLeft = Assets.get('/gui/slot-left.png');
-            const slot = Assets.get('/gui/slot.png');
-            const slotEmpty = Assets.get('/gui/slot-empty.png');
-            const slotRight = Assets.get('/gui/slot-right.png');
-
-            const footerLeft = Assets.get('/gui/footer-left.png');
-            const footerSlot = Assets.get('/gui/footer-slot.png');
-            const footerRight = Assets.get('/gui/footer-right.png');
-
-            [
-                headerLeft,
-                headerSlot,
-                headerRight,
-                slotLeft,
-                slot,
-                slotEmpty,
-                slotRight,
-                footerLeft,
-                footerSlot,
-                footerRight,
-            ].forEach(tex => {
-                tex.source.style.scaleMode = 'nearest';
-            });
-
-            setTextures({
-                headerLeft,
-                headerSlot,
-                headerRight,
-                slotLeft,
-                slot,
-                slotEmpty,
-                slotRight,
-                footerLeft,
-                footerSlot,
-                footerRight,
-            });
+        Object.values(textures).forEach(tex => {
+            tex.source.style.scaleMode = 'nearest';
         });
-    }, []);
 
+        setTextures(textures);
+    }, []);
 
     if (!textures) return null;
 
