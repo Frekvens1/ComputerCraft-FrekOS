@@ -7,6 +7,7 @@ import {SidebarLayout} from '@/pages/SidebarLayout.tsx';
 import {TeleportPage} from '@/pages/apps/teleport/TeleportPage.tsx';
 import {NewDevicePage} from "@/pages/devices/NewDevicePage.tsx";
 import {MinerPage} from "@/pages/apps/miner/MinerPage.tsx";
+import {StoragePage} from "@/pages/apps/storage/StoragePage.tsx";
 
 export interface RouterHandle {
     title: string;
@@ -46,7 +47,12 @@ const router = createBrowserRouter([
                 children: [
                     {
                         index: true,
-                        element: <Navigate to='teleport' replace/>,
+                        element: <Navigate to='storage' replace/>,
+                    },
+                    {
+                        path: 'storage',
+                        element: <StoragePage/>,
+                        handle: {title: 'Storage Manager'} as RouterHandle,
                     },
                     {
                         path: 'teleport',

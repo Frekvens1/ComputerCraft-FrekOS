@@ -19,6 +19,11 @@ def get_storages() -> List[Storage]:
     return [Storage(**doc) for doc in docs]
 
 
+def get_storages_by_device(device_uuid: str) -> List[Storage]:
+    docs = list(storage_collection().find({'device_uuid': device_uuid}))
+    return [Storage(**doc) for doc in docs]
+
+
 def get_storage(inventory_name: str) -> Optional[Storage]:
     doc = storage_collection().find_one({'name': inventory_name})
     return Storage(**doc) if doc else None

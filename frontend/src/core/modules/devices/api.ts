@@ -1,4 +1,4 @@
-import type {DeleteStatus, Device, DeviceData} from '@/core/modules/devices/models.ts';
+import type {DeleteDeviceStatus, Device, DeviceData} from '@/core/modules/devices/models.ts';
 import {BackendService} from '@/core/services/backend.service';
 
 const backend = new BackendService();
@@ -20,9 +20,8 @@ export class DeviceRepository {
         return backend.post('/device', device);
     }
 
-    async deleteDevice(deviceUUID: string): Promise<boolean> {
-        const response = await backend.delete<DeleteStatus>(`/device/${deviceUUID}`);
-        return response.status;
+    async deleteDevice(deviceUUID: string): Promise<DeleteDeviceStatus> {
+        return backend.delete(`/device/${deviceUUID}`);
     }
 
     async getOnlineDevices(): Promise<string[]> {

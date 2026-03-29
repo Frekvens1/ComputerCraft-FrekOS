@@ -102,6 +102,10 @@ export function DevicesPage() {
                                                     <br/>
                                                     <p>Device ID</p>
                                                     <p>{device.device_uuid}</p>
+
+                                                    <Button className='cursor-pointer' onClick={() => deviceRepository.events.raw(device.device_uuid, ["terminate"])}>
+                                                        Terminate application
+                                                    </Button>
                                                 </>
                                             ) : (
                                                 <Field className='max-w-lg'>
