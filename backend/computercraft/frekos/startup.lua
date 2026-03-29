@@ -36,11 +36,18 @@ function loadLibraries(library_path)
         local name = file:gsub("%.lua$", "")
         print("- Loading '" .. name .. "'...")
 
+        local env = {}
+        env._ENV = env
+        setmetatable(env, { __index = _ENV })
+        env.shell = shell
+
         local okLoad, fn = pcall(loadfile, file_path)
         if not okLoad then
             error_loading_libraries = true
             goto continue
         end
+
+        setfenv(fn, env)
 
         local okRun, api, beforeLoad, afterLoad = pcall(fn)
         if not okRun then

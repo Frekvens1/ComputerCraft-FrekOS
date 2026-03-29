@@ -8,6 +8,32 @@ function api.refreshSettings()
     api.settings = fileUtils.loadConfig("/frekos/settings.conf")
 end
 
+function api.run(file_path, ...)
+    term.setCursorBlink(false)
+
+    local env = {}
+    env._ENV = env
+    setmetatable(env, { __index = _ENV })
+    env.shell = shell
+
+    local okLoad, fn = pcall(loadfile, file_path)
+    if not okLoad then
+        term.setCursorBlink(true)
+        return
+    end
+
+    setfenv(fn, env)
+
+    local okRun = pcall(fn, ...)
+    if not okRun then
+        term.setCursorBlink(true)
+        return
+    end
+
+    term.setCursorBlink(true)
+end
+
+
 -- region { Events }
 
 api.events = {

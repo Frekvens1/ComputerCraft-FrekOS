@@ -90,6 +90,43 @@ function api.digDown()
     turtle.digDown()
 end
 
+function api.place()
+    turtle.place()
+end
+
+function api.placeUp()
+    turtle.placeUp()
+end
+
+function api.placeDown()
+    turtle.placeDown()
+end
+
+function api.select(index)
+    index = tonumber(index)
+    if index == nil then
+        index = 1
+    end
+
+    if index > 16 then
+        index = 16
+    end
+
+    if index < 1 then
+        index = 1
+    end
+
+    turtle.select(index)
+end
+
+function api.buildRoof(...)
+    FrekOS.run("/apps/turtle/build_roof.lua", ...)
+end
+
+function api.chunkMiner(...)
+    FrekOS.run("/apps/turtle/chunk_miner.lua", ...)
+end
+
 -- getSelectedSlot
 -- getItemSpace
 -- getItemDetail
@@ -119,7 +156,7 @@ local function afterLoad()
 
         local task = event[2]
         if api[task] ~= nil then
-            api[task](event)
+            api[task](table.unpack(event, 3, #event))
         end
     end)
 end
