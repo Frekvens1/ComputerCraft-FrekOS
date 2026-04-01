@@ -63,12 +63,33 @@ function api.updateInventory(name)
     FrekOS.api.storage.update(name, inventory)
 end
 
+function api.moveItems(storage_1, slot_1, storage_2, slot_2, amount)
+    slot_1 = tonumber(slot_1)
+    slot_2 = tonumber(slot_2)
+    amount = tonumber(amount)
+
+    peripheralsLib.peripherals[storage_1].pushItems(storage_2, slot_1, amount, slot_2)
+    api.updateInventory(storage_1)
+    if storage_1 ~= storage_2 then
+        api.updateInventory(storage_2)
+    end
+end
+
 local function beforeLoad()
 
 end
 
 local function afterLoad()
+    FrekOS.events.addTask("storage", function(event)
+        if event[1] ~= "frekos_storage" then
+            return
+        end
 
+        local task = event[2]
+        if api[task] ~= nil then
+            api[task](table.unpack(event, 3, #event))
+        end
+    end)
 end
 
 return api, beforeLoad, afterLoad
