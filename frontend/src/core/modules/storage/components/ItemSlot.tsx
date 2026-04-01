@@ -2,13 +2,14 @@ import {Assets, Texture} from "pixi.js";
 import {useEffect, useState} from "react";
 import type {StorageItem} from "@/core/modules/storage/models.ts";
 
-export function ItemSlot({x, y, SLOTS_MULTIPLIER, item, textures, itemTextureCache}: {
+export function ItemSlot({x, y, SLOTS_MULTIPLIER, item, textures, itemTextureCache, isSelected}: {
     x: number;
     y: number;
     SLOTS_MULTIPLIER: number;
     item: StorageItem;
     textures: { [key: string]: Texture };
     itemTextureCache: Map<string, Texture>;
+    isSelected: boolean;
 }) {
     const item_path = item?.name.replace(/:/, '/');
     const item_url = item ? `/items/${item_path}.png` : null;
@@ -64,7 +65,7 @@ export function ItemSlot({x, y, SLOTS_MULTIPLIER, item, textures, itemTextureCac
             y={y + SLOTS_MULTIPLIER / 2 + (SLOTS_MULTIPLIER * 17)}
             anchor={1}
             style={{
-                fill: "white",
+                fill: isSelected ? "red" : "white",
                 fontSize: 9 * SLOTS_MULTIPLIER,
                 fontFamily: "Monocraft",
                 fontWeight: "bold",

@@ -82,7 +82,7 @@ function Button(x, y, width, height, text, onClick)
         paintutils.drawFilledBox(self.x, self.y, self.width + self.x, self.height + self.y, self.fillColor)
         paintutils.drawBox(self.x, self.y, self.width + self.x, self.height + self.y, self.borderColor)
 
-        local center_x = math.floor( (self.width / 2) - (string.len(self.text) / 2) + self.x )
+        local center_x = math.ceil( (self.width / 2) - (string.len(self.text) / 2) + self.x )
         local center_y = (self.height / 2) + self.y
 
         term.setTextColor(self.textColor)

@@ -11,7 +11,7 @@ import {
     Text,
 } from 'pixi.js'
 import {useEffect, useState} from 'react'
-import type {Storage} from "@/core/modules/storage/models.ts";
+import type {Storage, StorageItem} from "@/core/modules/storage/models.ts";
 import {ItemSlot} from "@/core/modules/storage/components/ItemSlot.tsx";
 
 extend({
@@ -23,12 +23,15 @@ extend({
 
 type Props = {
     storage: Storage;
+    selectedSlot: number;
+    onSlotEventClick: (slot: number) => Promise<void>;
+    onItemEventClick: (item: StorageItem, slot: number) => Promise<void>;
 };
 
 const SLOTS_WIDTH = 9;
 const SLOTS_MULTIPLIER = 4;
 
-export function StorageInventory({storage}: Props) {
+export function StorageInventory({storage, selectedSlot, onSlotEventClick, onItemEventClick}: Props) {
     const [textures, setTextures] = useState<{ [key: string]: Texture } | null>(null);
     const itemTextureCache = new Map<string, Texture>();
 
@@ -74,6 +77,19 @@ export function StorageInventory({storage}: Props) {
 
     function scaledHeight(texture: Texture) {
         return texture.height * SCALE;
+    }
+
+    async function onSlotClick(slot: number) {
+        if (storage.items[slot]) {
+            await onItemClick(slot);
+        }
+
+        if (onSlotEventClick) await onSlotEventClick(slot);
+    }
+
+    async function onItemClick(slot: number) {
+        const item: StorageItem = storage.items[slot];
+        if (onItemEventClick) await onItemEventClick(item, slot);
     }
 
     const slotW = scaledWidth(textures.slot);
@@ -154,27 +170,61 @@ export function StorageInventory({storage}: Props) {
                                 for (let col = 0; col < SLOTS_WIDTH; col++) {
                                     const slotIndex = rowIndex * SLOTS_WIDTH + col;
                                     const hasSlot = slotIndex < storage.slots_total;
+                                    const isSelected = selectedSlot - 1 == slotIndex;
 
-                                    elements.push(
-                                        <pixiSprite
-                                            key={hasSlot ? slotIndex : `empty-${rowIndex}-${col}`}
-                                            texture={hasSlot ? textures.slot : textures.slotEmpty}
-                                            x={x}
-                                            y={slotY}
-                                            scale={scaleToSlot()}
-                                            zIndex={0}
-                                        />
-                                    );
+                                    if (hasSlot) {
+                                        elements.push(
+                                            <pixiSprite
+                                                key={slotIndex}
+                                                texture={textures.slot}
+                                                x={x}
+                                                y={slotY}
+                                                interactive={true}
+                                                eventMode="static"
+                                                scale={scaleToSlot()}
+                                                zIndex={0}
+                                                onPointerTap={() => onSlotClick(slotIndex + 1)}
+                                            />
+                                        );
+                                    } else {
+                                        elements.push(
+                                            <pixiSprite
+                                                key={`empty-${rowIndex}-${col}`}
+                                                texture={textures.slotEmpty}
+                                                x={x}
+                                                y={slotY}
+                                                scale={scaleToSlot()}
+                                                zIndex={0}
+                                            />
+                                        );
+                                    }
+
 
                                     if (hasSlot) {
                                         const item = storage.items[slotIndex + 1];
                                         if (item) {
                                             elements.push(
                                                 <ItemSlot item={item} textures={textures}
-                                                          itemTextureCache={itemTextureCache}
+                                                          itemTextureCache={itemTextureCache} isSelected={isSelected}
                                                           SLOTS_MULTIPLIER={SLOTS_MULTIPLIER} x={x} y={slotY}/>
                                             );
                                         }
+                                    }
+
+                                    if (isSelected) {
+                                        elements.push(
+                                            <pixiGraphics
+                                                x={x}
+                                                y={slotY}
+                                                zIndex={5}
+                                                draw={g => {
+                                                    g.clear();
+                                                    g.beginFill(0x000000, 0.4);
+                                                    g.drawRect(0, 0, 17 * SLOTS_MULTIPLIER, 17 * SLOTS_MULTIPLIER);
+                                                    g.endFill();
+                                                }}
+                                            />
+                                        );
                                     }
 
                                     x += slotW;

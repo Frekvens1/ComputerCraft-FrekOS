@@ -24,9 +24,9 @@ function api.delete(storage_name)
     return backendUtils.delete("/storage/" .. storage_name)
 end
 
-api.events = {}
+api.tasks = {}
 
-function api.events.teleport(device_uuid)
+function api.tasks.moveItems(device_uuid)
     return backendUtils.get("/device/" .. device_uuid .. "/events/teleport")
 end
 
