@@ -7,14 +7,20 @@ function main()
     printLine()
 
     shell.setPath(shell.path() .. ":/frekos/apps:/apps:/apps/turtle")
-    shell.setCompletionFunction("frekos/apps/cat.lua", function(shell, index, text, previous)
+
+    setAutoComplete("frekos/apps/audio.lua")
+    setAutoComplete("frekos/apps/cat.lua")
+
+    loadLibraries("/frekos/libs")
+    FrekOS.events.inject()
+end
+
+function setAutoComplete(file_path)
+    shell.setCompletionFunction(file_path, function(shell, index, text, previous)
         if index == 1 then
             return completion.file(shell, text)
         end
     end)
-
-    loadLibraries("/frekos/libs")
-    FrekOS.events.inject()
 end
 
 function loadLibraries(library_path)
