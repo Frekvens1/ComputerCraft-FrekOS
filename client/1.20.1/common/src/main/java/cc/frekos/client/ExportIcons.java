@@ -49,6 +49,10 @@ public class ExportIcons extends Screen {
         super.render(gfx, mouseX, mouseY, delta);
 
         Minecraft mc = Minecraft.getInstance();
+        Window window = mc.getWindow();
+
+        GL11.glClearColor(0f, 0f, 0f, 0f);
+        GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 
         String text = "Exporting " + index + " / " + items.size();
         gfx.drawString(mc.font, text, ICON_SIZE + 10, 10, 0xFFFFFF);
@@ -61,8 +65,6 @@ public class ExportIcons extends Screen {
         Item item = items.get(index);
         ItemStack stack = new ItemStack(item);
 
-        gfx.fill(0, 0, ICON_SIZE, ICON_SIZE, 0xFFFF00FF);
-
         PoseStack pose = gfx.pose();
         pose.pushPose();
 
@@ -70,9 +72,7 @@ public class ExportIcons extends Screen {
         gfx.renderItem(stack, 0, 0);
         pose.popPose();
 
-        NativeImage img = captureRegion(0, 0, ICON_SIZE, ICON_SIZE);
-
-        removeBackground(img);
+        NativeImage img = captureRegion(window, 0, 0, ICON_SIZE, ICON_SIZE);
 
         ResourceLocation id = BuiltInRegistries.ITEM.getKey(item);
         Path output = exportDir
@@ -85,10 +85,7 @@ public class ExportIcons extends Screen {
         index++;
     }
 
-    public static NativeImage captureRegion(int guiX, int guiY, int guiW, int guiH) {
-        Minecraft mc = Minecraft.getInstance();
-        Window window = mc.getWindow();
-
+    public static NativeImage captureRegion(Window window, int guiX, int guiY, int guiW, int guiH) {
         double scale = window.getGuiScale();
 
         int fbX = (int) (guiX * scale);
@@ -128,24 +125,4 @@ public class ExportIcons extends Screen {
         MemoryUtil.nmemFree(buffer);
         return result;
     }
-
-    public static void removeBackground(NativeImage img) {
-        int w = img.getWidth();
-        int h = img.getHeight();
-
-        for (int y = 0; y < h; y++) {
-            for (int x = 0; x < w; x++) {
-                int color = img.getPixelRGBA(x, y);
-
-                int r = color & 0xFF;
-                int g = (color >> 8) & 0xFF;
-                int b = (color >> 16) & 0xFF;
-
-                if (r == 255 && g == 0 && b == 255) {
-                    img.setPixelRGBA(x, y, 0x00000000);
-                }
-            }
-        }
-    }
-
 }
