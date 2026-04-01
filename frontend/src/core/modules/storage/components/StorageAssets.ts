@@ -13,6 +13,8 @@ export const guiAssets = {
     footerLeft: '/gui/footer-left.png',
     footerSlot: '/gui/footer-slot.png',
     footerRight: '/gui/footer-right.png',
+
+    dirt: '/items/minecraft/dirt.png',
 };
 
 Assets.addBundle('gui', guiAssets);

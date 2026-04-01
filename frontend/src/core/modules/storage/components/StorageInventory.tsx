@@ -8,14 +8,17 @@ import {
     Graphics,
     Sprite,
     Texture,
+    Text,
 } from 'pixi.js'
 import {useEffect, useState} from 'react'
 import type {Storage} from "@/core/modules/storage/models.ts";
+import {ItemSlot} from "@/core/modules/storage/components/ItemSlot.tsx";
 
 extend({
     Container,
     Graphics,
     Sprite,
+    Text,
 })
 
 type Props = {
@@ -23,10 +26,11 @@ type Props = {
 };
 
 const SLOTS_WIDTH = 9;
-const SLOTS_SIZE = 64;
+const SLOTS_MULTIPLIER = 4;
 
 export function StorageInventory({storage}: Props) {
     const [textures, setTextures] = useState<{ [key: string]: Texture } | null>(null);
+    const itemTextureCache = new Map<string, Texture>();
 
     useEffect(() => {
         const textures = {
@@ -42,6 +46,8 @@ export function StorageInventory({storage}: Props) {
             footerLeft: Assets.get('footerLeft'),
             footerSlot: Assets.get('footerSlot'),
             footerRight: Assets.get('footerRight'),
+
+            dirt: Assets.get('dirt'),
         };
 
         Object.values(textures).forEach(tex => {
@@ -54,20 +60,20 @@ export function StorageInventory({storage}: Props) {
     if (!textures) return null;
 
     const rows = Math.ceil(storage.slots_total / SLOTS_WIDTH);
-
     const BASE_HEIGHT = textures.slot.height;
-    const SCALE = SLOTS_SIZE / BASE_HEIGHT;
+    const SCALE = (18 * SLOTS_MULTIPLIER) / BASE_HEIGHT;
+
 
     function scaleToSlot() {
         return {x: SCALE, y: SCALE};
     }
 
-    function scaledWidth(tex: Texture) {
-        return tex.width * SCALE;
+    function scaledWidth(texture: Texture) {
+        return texture.width * SCALE;
     }
 
-    function scaledHeight(tex: Texture) {
-        return tex.height * SCALE;
+    function scaledHeight(texture: Texture) {
+        return texture.height * SCALE;
     }
 
     const slotW = scaledWidth(textures.slot);
@@ -89,13 +95,13 @@ export function StorageInventory({storage}: Props) {
                     const isFirst = rowIndex === 0;
                     const isLast = rowIndex === rows - 1;
 
-                    const slotY = isFirst ? SLOTS_SIZE : 0;
-                    const footerY = isFirst ? SLOTS_SIZE * 2 : SLOTS_SIZE;
+                    const slotY = isFirst ? (18 * SLOTS_MULTIPLIER) : 0;
+                    const footerY = isFirst ? (18 * SLOTS_MULTIPLIER) * 2 : (18 * SLOTS_MULTIPLIER);
 
                     const headerY = slotY - headerH;
 
                     const row = (
-                        <pixiContainer key={rowIndex} y={currentY}>
+                        <pixiContainer key={rowIndex} y={currentY} sortableChildren={true}>
 
                             {/* HEADER */}
                             {isFirst && (
@@ -156,8 +162,20 @@ export function StorageInventory({storage}: Props) {
                                             x={x}
                                             y={slotY}
                                             scale={scaleToSlot()}
+                                            zIndex={0}
                                         />
                                     );
+
+                                    if (hasSlot) {
+                                        const item = storage.items[slotIndex + 1];
+                                        if (item) {
+                                            elements.push(
+                                                <ItemSlot item={item} textures={textures}
+                                                          itemTextureCache={itemTextureCache}
+                                                          SLOTS_MULTIPLIER={SLOTS_MULTIPLIER} x={x} y={slotY}/>
+                                            );
+                                        }
+                                    }
 
                                     x += slotW;
                                 }
@@ -207,9 +225,9 @@ export function StorageInventory({storage}: Props) {
                         </pixiContainer>
                     );
 
-                    if (isFirst) currentY += SLOTS_SIZE * 2;
-                    else if (isLast) currentY += SLOTS_SIZE * 2;
-                    else currentY += SLOTS_SIZE;
+                    if (isFirst) currentY += (18 * SLOTS_MULTIPLIER) * 2;
+                    else if (isLast) currentY += (18 * SLOTS_MULTIPLIER) * 2;
+                    else currentY += (18 * SLOTS_MULTIPLIER);
 
                     return row;
                 })}
