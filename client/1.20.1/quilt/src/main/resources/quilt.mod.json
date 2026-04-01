@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "quilt_loader": {
+    "group": "${group}",
+    "id": "frekos_client",
+    "version": "${version}",
+    "metadata": {
+      "name": "FrekOS Client",
+      "description": "This is an example description! Tell everyone what your mod is about!",
+      "contributors": {
+        "Me!": "Author"
+      },
+      "icon": "assets/frekos_client/icon.png"
+    },
+    "intermediate_mappings": "net.fabricmc:intermediary",
+    "entrypoints": {
+      "init": [
+        "cc.frekos.client.quilt.ExampleModQuilt"
+      ]
+    },
+    "depends": [
+      {
+        "id": "quilt_loader",
+        "version": "*"
+      },
+      {
+        "id": "quilt_base",
+        "version": "*"
+      },
+      {
+        "id": "minecraft",
+        "version": ">=1.20.1"
+      },
+      {
+        "id": "architectury",
+        "version": ">=9.2.14"
+      }
+    ]
+  },
+  "mixin": [
+    "frekos_client.mixins.json"
+  ]
+}
