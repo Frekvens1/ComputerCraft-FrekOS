@@ -4,6 +4,10 @@ local api = {}
 
 -- endregion
 
+local function updateInventory()
+    storageUtils.updateTurtleInventory()
+end
+
 function api.isTurtle()
     return turtle ~= nil
 end
@@ -102,6 +106,64 @@ function api.placeDown()
     turtle.placeDown()
 end
 
+function api.drop(count)
+    if count ~= nil then
+        count = tonumber(count)
+    end
+
+    turtle.drop(count)
+end
+
+function api.dropUp(count)
+    if count ~= nil then
+        count = tonumber(count)
+    end
+
+    turtle.dropUp(count)
+end
+
+function api.dropDown(count)
+    if count ~= nil then
+        count = tonumber(count)
+    end
+
+    turtle.dropDown(count)
+end
+
+function api.suck(count)
+    if count ~= nil then
+        count = tonumber(count)
+    end
+
+    turtle.suck(count)
+end
+
+function api.suckUp(count)
+    if count ~= nil then
+        count = tonumber(count)
+    end
+
+    turtle.suckUp(count)
+end
+
+function api.suckDown(count)
+    if count ~= nil then
+        count = tonumber(count)
+    end
+
+    turtle.suckDown(count)
+end
+
+function api.craft(count)
+    if count ~= nil then
+        count = tonumber(count)
+    else
+        count = 1
+    end
+
+    turtle.craft(count)
+end
+
 function api.select(index)
     index = tonumber(index)
     if index == nil then
@@ -117,6 +179,7 @@ function api.select(index)
     end
 
     turtle.select(index)
+    updateInventory()
 end
 
 function api.buildRoof(...)

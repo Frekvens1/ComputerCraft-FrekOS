@@ -24,32 +24,32 @@ def get_storages_by_device(device_uuid: str) -> List[Storage]:
     return [Storage(**doc) for doc in docs]
 
 
-def get_storage(inventory_name: str) -> Optional[Storage]:
-    doc = storage_collection().find_one({'name': inventory_name})
+def get_storage(storage_uuid: str) -> Optional[Storage]:
+    doc = storage_collection().find_one({'storage_uuid': storage_uuid})
     return Storage(**doc) if doc else None
 
 
-def update_storage(inventory_name: str, storage: Storage) -> Storage:
+def update_storage(storage_uuid: str, storage: Storage) -> Storage:
     storage_collection().update_one(
-        {'name': inventory_name},
+        {'storage_uuid': storage_uuid},
         {'$set': storage.model_dump(exclude_none=True)},
         upsert=True,
     )
-    updated = storage_collection().find_one({'name': storage.name})
+    updated = storage_collection().find_one({'storage_uuid': storage.storage_uuid})
     return Storage(**updated) if updated else None
 
 
-def patch_storage(inventory_name: str, storage: Storage) -> Storage:
+def patch_storage(storage_uuid: str, storage: Storage) -> Storage:
     storage_collection().update_one(
-        {'name': inventory_name},
+        {'storage_uuid': storage_uuid},
         {'$set': storage.model_dump(exclude_none=True)}
     )
-    updated = storage_collection().find_one({'name': storage.name})
+    updated = storage_collection().find_one({'storage_uuid': storage.storage_uuid})
     return Storage(**updated) if updated else None
 
 
-def delete_storage(inventory_name: str) -> bool:
-    result = storage_collection().delete_one({'name': inventory_name})
+def delete_storage(storage_uuid: str) -> bool:
+    result = storage_collection().delete_one({'storage_uuid': storage_uuid})
     return result.deleted_count > 0
 
 # endregion

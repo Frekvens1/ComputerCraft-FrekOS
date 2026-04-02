@@ -1,9 +1,14 @@
 local completion = require "cc.shell.completion"
 local error_loading_libraries = false
-local errors = {}
+local logs = {}
 
-function main()
-    print("FrekOS is booting up...")
+local function printLog(text)
+    table.insert(logs, text)
+    print(text)
+end
+
+local function main()
+    printLog("FrekOS is booting up...")
     printLine()
 
     shell.setPath(shell.path() .. ":/frekos/apps:/apps:/apps/turtle")
@@ -28,8 +33,8 @@ function loadLibraries(library_path)
         before = {},
         after = {}
     }
-    print()
-    print("=== Loading libraries ===")
+    printLog()
+    printLog("=== Loading libraries ===")
     printLine()
 
     for _, file in ipairs(fs.list(library_path)) do
@@ -40,7 +45,7 @@ function loadLibraries(library_path)
         end
 
         local name = file:gsub("%.lua$", "")
-        print("- Loading '" .. name .. "'...")
+        printLog("- Loading '" .. name .. "'...")
 
         local env = {}
         env._ENV = env
@@ -50,6 +55,8 @@ function loadLibraries(library_path)
         local okLoad, fn = pcall(loadfile, file_path)
         if not okLoad then
             error_loading_libraries = true
+            printLog("Crashed while reading library:")
+            printLog(fn)
             goto continue
         end
 
@@ -58,10 +65,9 @@ function loadLibraries(library_path)
         local okRun, api, beforeLoad, afterLoad = pcall(fn)
         if not okRun then
             error_loading_libraries = true
+            printLog("Crashed while loading library:")
+            printLog(api)
             goto continue
-
-            print("= Press a key to continue =")
-            os.pullEvent("key")
         end
 
         if api then
@@ -79,8 +85,8 @@ function loadLibraries(library_path)
         :: continue ::
     end
 
-    print()
-    print("=== Running beforeLoad hooks ===")
+    printLog()
+    printLog("=== Running beforeLoad hooks ===")
     printLine()
 
     local env = {}
@@ -89,52 +95,52 @@ function loadLibraries(library_path)
     env.shell = shell
 
     for name, hook in pairs(libs.before) do
-        print(name)
+        printLog(name)
         printLine(#name)
         setfenv(hook, env)
         local ok, err = pcall(hook)
         if not ok then
             error_loading_libraries = true
-            print("Crashed:")
-            print(err)
-
-            print("= Press a key to continue =")
-            os.pullEvent("key")
+            printLog("Crashed:")
+            printLog(err)
         end
-        print()
+        printLog()
     end
 
     env._ENV = env
     setmetatable(env, { __index = _ENV })
     env.shell = shell
 
-    print()
-    print("=== Running afterLoad hooks ===")
+    printLog()
+    printLog("=== Running afterLoad hooks ===")
     printLine()
 
     for name, hook in pairs(libs.after) do
-        print(name)
+        printLog(name)
         printLine(#name)
         setfenv(hook, env)
         local ok, err = pcall(hook)
         if not ok then
             error_loading_libraries = true
-            print("Crashed:")
-            print(err)
-
-            print("= Press a key to continue =")
-            os.pullEvent("key")
+            printLog("Crashed:")
+            printLog(err)
         end
-        print()
+        printLog()
     end
 
-    print()
+    printLog()
     if not error_loading_libraries then
-        print(":: Libraries fully loaded")
+        printLog(":: Libraries fully loaded")
     else
-        print("Failed loading libraries")
-        print()
-        print("= Press a key to continue =")
+        printLog("Failed loading libraries")
+        printLog()
+        printLog("= Press a key to continue =")
+
+        backendUtils.send({
+            storage_uuid = name,
+            inventory = inventory
+        })
+
         os.pullEvent("key")
     end
 end
@@ -154,7 +160,7 @@ function printLine(count)
         count = termSize
     end
 
-    print(string.rep("-", count))
+    printLog(string.rep("-", count))
 end
 
 clear()

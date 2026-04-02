@@ -102,7 +102,7 @@ function main()
         all_downloads = table.combine(all_downloads, downloads_turtle)
     end
 
-    if device_config.type == "storage" then
+    if device_config.type == "storage_module" or turtle then
         all_downloads = table.combine(all_downloads, downloads_storage)
     end
 

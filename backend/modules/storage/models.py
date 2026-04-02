@@ -55,11 +55,14 @@ class StorageLookup(StorageItem):
 
 class Storage(BaseModel):
     device_uuid: str
-    name: str
+    storage_uuid: str
+
     slots_used: int
     slots_total: int
     items_total: int
     items: Dict[str, StorageItem]
     lookup: Dict[str, Dict[str, StorageLookup]]
+    is_turtle: Optional[bool] = None
+    selected_slot: Optional[int] = None
 
 # endregion

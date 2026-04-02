@@ -10,7 +10,7 @@ import {StorageInventory} from "@/core/modules/storage/components/StorageInvento
 const deviceRepository = new DeviceRepository();
 const storageRepository = new StorageRepository();
 
-interface ClickedStorageItem {
+export interface ClickedStorageItem {
     device_uuid: string;
     storage: Storage;
     slot: number;
@@ -24,9 +24,13 @@ export function StoragePage() {
     const [currentSelectedSlot, setCurrentSelectedSlot] = useState<Required<ClickedStorageItem> | null>(null);
 
     useEffect(() => {
-        deviceRepository.getDevicesByType('storage').then((devices) => {
-            setDevices(devices);
+        Promise.all([
+            deviceRepository.getDevicesByType('storage_module'),
+            deviceRepository.getDevicesByType('miner')
+        ]).then(([storages, miners]) => {
+            setDevices([...storages, ...miners]);
         });
+
 
         deviceRepository.getOnlineDevices().then((devices) => {
             setOnlineDevices(devices);
@@ -41,7 +45,7 @@ export function StoragePage() {
         const updatedStorage = await storageRepository.getStorage(storageName);
         setStorages(prev =>
             prev.map(storage =>
-                storage.name === updatedStorage.name ? updatedStorage : storage
+                storage.storage_uuid === updatedStorage.storage_uuid ? updatedStorage : storage
             )
         );
     }
@@ -55,6 +59,11 @@ export function StoragePage() {
         await deviceRepository.events.raw(device_uuid, ['frekos_storage', ...eventList])
     }
 
+    async function sendTurtleEvent(device_uuid: string, events: string | string[]): Promise<void> {
+        const eventList = Array.isArray(events) ? events : [events]
+        await deviceRepository.events.raw(device_uuid, ['frekos_turtle', ...eventList])
+    }
+
     async function onItemClick(selectedSlot: Required<ClickedStorageItem>): Promise<void> {
         if (!currentSelectedSlot) {
             setCurrentSelectedSlot(selectedSlot);
@@ -63,9 +72,9 @@ export function StoragePage() {
                 currentSelectedSlot.device_uuid,
                 [
                     'moveItems',
-                    currentSelectedSlot.storage.name,
+                    currentSelectedSlot.storage.storage_uuid,
                     String(currentSelectedSlot.slot),
-                    selectedSlot.storage.name,
+                    selectedSlot.storage.storage_uuid,
                     String(selectedSlot.slot),
                     String(currentSelectedSlot.item.count)
                 ]
@@ -73,9 +82,9 @@ export function StoragePage() {
 
             setCurrentSelectedSlot(null);
             setTimeout(async () => {
-                const storageUpdates: Promise<void>[] = [updateStorage(currentSelectedSlot.storage.name)];
-                if (currentSelectedSlot.storage.name != selectedSlot.storage.name) {
-                    storageUpdates.push(updateStorage(selectedSlot.storage.name));
+                const storageUpdates: Promise<void>[] = [updateStorage(currentSelectedSlot.storage.storage_uuid)];
+                if (currentSelectedSlot.storage.storage_uuid != selectedSlot.storage.storage_uuid) {
+                    storageUpdates.push(updateStorage(selectedSlot.storage.storage_uuid));
                 }
 
                 await Promise.all(storageUpdates);
@@ -88,34 +97,63 @@ export function StoragePage() {
         await moveItems(currentSelectedSlot, selectedSlot);
     }
 
+    async function onSlotDoubleClick(selectedSlot: ClickedStorageItem): Promise<void> {
+        if (!selectedSlot.storage.is_turtle) return;
+        await sendTurtleEvent(selectedSlot.device_uuid, ['select', String(selectedSlot.slot)]);
+        setTimeout(async () => updateStorage(selectedSlot.storage.storage_uuid), 250);
+    }
+
     async function moveItems(currentSlot: Required<ClickedStorageItem>, selectedSlot: ClickedStorageItem): Promise<void> {
-        await sendEvent(
-            currentSlot.device_uuid,
-            [
-                'moveItems',
-                currentSlot.storage.name,
-                String(currentSlot.slot),
-                selectedSlot.storage.name,
-                String(selectedSlot.slot),
-                String(currentSlot.item.count)
-            ]
-        );
+        if (currentSlot.storage.is_turtle != selectedSlot.storage.is_turtle) {
+            setCurrentSelectedSlot(null);
+            return;
+        }
+
+        if (currentSlot.storage.is_turtle && currentSlot.storage.storage_uuid != selectedSlot.storage.storage_uuid) {
+            setCurrentSelectedSlot(null);
+            return;
+        }
+
+        if (currentSlot.storage.is_turtle) {
+            await sendEvent(
+                currentSlot.device_uuid,
+                [
+                    'moveTurtleItems',
+                    String(currentSlot.slot),
+                    String(selectedSlot.slot),
+                    String(currentSlot.item.count)
+                ]
+            );
+
+        } else {
+            await sendEvent(
+                currentSlot.device_uuid,
+                [
+                    'moveItems',
+                    currentSlot.storage.storage_uuid,
+                    String(currentSlot.slot),
+                    selectedSlot.storage.storage_uuid,
+                    String(selectedSlot.slot),
+                    String(currentSlot.item.count)
+                ]
+            );
+        }
 
         setCurrentSelectedSlot(null);
         setTimeout(async () => {
-            const storageUpdates: Promise<void>[] = [updateStorage(currentSlot.storage.name)];
-            if (currentSlot.storage.name != selectedSlot.storage.name) {
-                storageUpdates.push(updateStorage(selectedSlot.storage.name));
+            const storageUpdates: Promise<void>[] = [updateStorage(currentSlot.storage.storage_uuid)];
+            if (currentSlot.storage.storage_uuid != selectedSlot.storage.storage_uuid) {
+                storageUpdates.push(updateStorage(selectedSlot.storage.storage_uuid));
             }
 
             await Promise.all(storageUpdates);
         }, 500);
     }
 
-    function getSelectedSlot(device_uuid: string, storage_name: string): number {
+    function getSelectedSlot(device_uuid: string, storage_uuid: string): number {
         if (!currentSelectedSlot) return -1;
         if (currentSelectedSlot.device_uuid !== device_uuid) return -1;
-        if (currentSelectedSlot.storage.name !== storage_name) return -1;
+        if (currentSelectedSlot.storage.storage_uuid !== storage_uuid) return -1;
         return currentSelectedSlot.slot;
     }
 
@@ -125,7 +163,7 @@ export function StoragePage() {
             {
                 devices.map((device) => {
                     const id = device.device_uuid;
-                    const deviceStorages = storages.map((storage) => storage.device_uuid == id);
+                    const deviceStorages = storages.filter((storage) => storage.device_uuid == id);
 
                     return (
                         <Card key={id} className="@container/card">
@@ -137,8 +175,8 @@ export function StoragePage() {
                                 </div>
                                 <CardDescription>{device.description}</CardDescription>
                             </CardHeader>
-                            <CardFooter className="flex-col items-start gap-1.5 text-sm">
-                                <div className="flex flex-col items-center justify-center gap-4">
+                            <CardFooter className="flex flex-col items-start gap-1.5 text-sm">
+                                <div className="flex-1 flex flex-col items-center justify-center gap-4">
 
                                     <div className="flex flex-col gap-2 items-center">
                                         <p>Inventories: {deviceStorages.length}</p>
@@ -146,10 +184,10 @@ export function StoragePage() {
                                         <div
                                             className="grid grid-cols-1 gap-4 @xl/main:grid-cols-2 @5xl/main:grid-cols-4">
                                             {
-                                                storages.map((storage: Storage) => {
+                                                deviceStorages.map((storage: Storage) => {
                                                     return (
                                                         <div className='flex flex-col'>
-                                                            <p>Name: {storage.name}</p>
+                                                            <p>UUID: {storage.storage_uuid}</p>
                                                             <p>Items total: {storage.items_total}</p>
                                                             <p>Slots total: {storage.slots_total}</p>
                                                             <p>Slots used: {storage.slots_used}</p>
@@ -158,7 +196,14 @@ export function StoragePage() {
 
                                                             <StorageInventory
                                                                 storage={storage}
-                                                                selectedSlot={getSelectedSlot(id, storage.name)}
+                                                                selectedSlot={getSelectedSlot(id, storage.storage_uuid)}
+                                                                onSlotEventDoubleClick={(slot: number) =>
+                                                                    onSlotDoubleClick({
+                                                                        device_uuid: id,
+                                                                        storage: storage,
+                                                                        slot: slot,
+                                                                    })
+                                                                }
                                                                 onSlotEventClick={(slot: number) =>
                                                                     onSlotClick({
                                                                         device_uuid: id,
