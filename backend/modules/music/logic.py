@@ -3,8 +3,8 @@ from typing import List, Optional
 from fastapi import UploadFile
 from starlette.responses import StreamingResponse
 
-from libraries import mongo_lib, security_lib, s3_lib
-from libraries.s3_lib import S3Bucket
+from libraries import mongo_lib, security_lib, s3_lib, ffmpeg_lib
+from libraries.s3_lib import S3Bucket, FileData
 from modules.music.models import DFPWM, Playlist, PlaylistData, DFPWMData
 
 dfpwm_bucket = S3Bucket(
@@ -109,12 +109,22 @@ def get_dfpwm_download(dfpwm_uuid: str):
 
 
 def create_dfpwm(dfpwm_data: DFPWMData, file: UploadFile) -> DFPWM:
-    file_details = s3_lib.upload(dfpwm_bucket, file)
+    file_data = FileData(
+        filename=file.filename,
+        data_stream=file.file,
+    )
+
+    file_type = file.filename.lower().rsplit(".", 1)[-1]
+    if not file_type.lower() == "dfpwm":
+        file_data = ffmpeg_lib.convert_to_dfpwm(file_data)
+
+    file_details = s3_lib.upload(dfpwm_bucket, file_data)
 
     dfpwm = DFPWM(
         dfpwm_uuid=str(security_lib.generate_uuid()),
         file_uuid=str(file_details.file_uuid),
         filename=str(file_details.filename),
+        size=file_details.size,
         **dfpwm_data.model_dump(exclude_none=True),
     )
     result = dfpwm_collection().insert_one(dfpwm.model_dump(exclude_none=True))
@@ -150,7 +160,7 @@ def delete_dfpwm(dfpwm_uuid: str) -> bool:
     dfpwm = get_dfpwm(dfpwm_uuid)
     if not dfpwm:
         return False
-    
+
     s3_lib.delete_file(dfpwm_bucket, dfpwm.file_uuid)
     result = dfpwm_collection().delete_one({'dfpwm_uuid': dfpwm_uuid})
     return result.deleted_count > 0

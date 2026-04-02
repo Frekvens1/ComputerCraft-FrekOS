@@ -17,6 +17,10 @@ export class MusicRepository {
         return backend.postForm('/music/dfpwm', formData);
     }
 
+    async downloadDFPWM(dfpwm_uuid: string, filename: string): Promise<void> {
+        await backend.download(`/music/dfpwm/${dfpwm_uuid}/download`, filename);
+    }
+
     async getDFPWM(dfpwm_uuid: string): Promise<DFPWM> {
         return backend.get(`/music/dfpwm/${dfpwm_uuid}`);
     }

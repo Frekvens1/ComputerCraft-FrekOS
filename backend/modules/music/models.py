@@ -12,7 +12,6 @@ class PlaylistData(BaseModel):
 class DFPWMData(BaseModel):
     name: str
     seconds: Optional[int] = None
-    size: Optional[int] = None
 
 # endregion
 
@@ -25,5 +24,6 @@ class DFPWM(DFPWMData):
     dfpwm_uuid: str
     file_uuid: str
     filename: str
+    size: int
 
 # endregion

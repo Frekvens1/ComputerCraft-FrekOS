@@ -29,6 +29,29 @@ export class BackendService {
         return new WebSocket(urlFull);
     }
 
+    async download(url: string, filename: string): Promise<void> {
+        /**
+         * Download is used to start user downloads from backend
+         * @param url - Query for server
+         * */
+
+        const response = await fetch(this.buildUrl(url), {
+            method: 'GET',
+            credentials: 'include'
+        });
+
+        const blob = await response.blob();
+        const blobUrl = window.URL.createObjectURL(blob);
+
+        const a = document.createElement('a');
+        a.href = blobUrl;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(blobUrl);
+    }
+
     async get<T>(url: string): Promise<T> {
         /**
          * GET is used to retrieve data from the database

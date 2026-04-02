@@ -30,6 +30,10 @@ export function MusicPage() {
         setDFPWM((prev) => prev.filter((d) => d.dfpwm_uuid !== dfpwmUUID));
     }
 
+    async function downloadFile(dfpwmUUID: string, filename: string) {
+        await musicRepository.downloadDFPWM(dfpwmUUID, filename);
+    }
+
     return (
         <div className='px-4 lg:px-6 w-full flex flex-col'>
             <Card className='h-full flex flex-col'>
@@ -75,6 +79,11 @@ export function MusicPage() {
                                         <p>UUID: {dfpwm.dfpwm_uuid}</p>
                                         <p>File ID: {dfpwm.file_uuid}</p>
                                         <p>Filename: {dfpwm.filename}</p>
+                                        <p>File size: {Math.round(dfpwm.size / 1000)}KiB</p>
+
+                                        <Button onClick={() => downloadFile(dfpwm.dfpwm_uuid, dfpwm.filename)}>
+                                            Download file
+                                        </Button>
                                     </CardContent>
                                 </Card>
                             ))}

@@ -1,17 +1,23 @@
-from fastapi import UploadFile
+from typing import Optional, BinaryIO
+
 from minio import Minio
 from pydantic import BaseModel
-
 from libraries import security_lib, environment_lib
 
+
+class FileData:
+    def __init__(self, filename: str, data_stream: BinaryIO):
+        self.filename = filename
+        self.data_stream = data_stream
 
 class S3Bucket(BaseModel):
     name: str
 
 
-class File(BaseModel):
+class FileResponse(BaseModel):
     file_uuid: str
     filename: str
+    size: int
 
 
 s3: Minio
@@ -44,22 +50,26 @@ def create_bucket(bucket: S3Bucket):
         s3.make_bucket(bucket.name)
 
 
-def upload(bucket: S3Bucket, file: UploadFile) -> File:
+def upload(bucket: S3Bucket, file: FileData) -> FileResponse:
     create_bucket(bucket)
     file_uuid = str(security_lib.generate_uuid())
 
     s3.put_object(
         bucket.name,
         file_uuid,
-        file.file,
-        length=-1,  # unknown size → streaming
-        part_size=10 * 1024 * 1024  # 10MB chunks
+        file.data_stream,
+        length=-1,
+        part_size=10 * 1024 * 1024
     )
 
-    return File(
+    stat = s3.stat_object(bucket.name, file_uuid)
+
+    return FileResponse(
         file_uuid=file_uuid,
-        filename=file.filename
+        filename=file.filename,
+        size=stat.size
     )
+
 
 def download(bucket: S3Bucket, file_uuid: str):
     if not s3.bucket_exists(bucket.name):

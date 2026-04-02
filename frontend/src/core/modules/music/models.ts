@@ -9,7 +9,6 @@ export interface PlaylistData {
 export interface DFPWMData {
     name: string;
     seconds?: number;
-    size?: number;
 }
 
 // endregion
@@ -25,6 +24,7 @@ export interface DFPWM extends DFPWMData {
     dfpwm_uuid: string;
     file_uuid: string;
     filename: string;
+    size: number;
 }
 
 // endregion
