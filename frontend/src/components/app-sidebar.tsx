@@ -9,8 +9,8 @@ import {
     IconHelicopter,
     IconInnerShadowTop,
     IconSettings,
-    IconDiamond,
-    IconMusic,
+    IconMusic, 
+    IconPick,
 } from '@tabler/icons-react'
 
 import {NavDocuments} from '@/components/nav-documents'
@@ -84,7 +84,7 @@ const data: { [p: string]: navigation[] } = {
         {
             title: 'Remote Miner',
             url: '/apps/miner',
-            icon: IconDiamond,
+            icon: IconPick,
         },
         {
             title: 'Music',

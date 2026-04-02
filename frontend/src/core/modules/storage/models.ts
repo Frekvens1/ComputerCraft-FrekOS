@@ -55,12 +55,15 @@ export interface StorageLookup extends StorageItem {
 
 export interface Storage {
     device_uuid: string;
-    name: string;
+    storage_uuid: string;
+
     slots_used: number;
     slots_total: number;
     items_total: number;
     items: {[slot: string]: StorageItem};
     lookup: {[itemId: string]: {[hash: string]: StorageLookup}};
+    is_turtle?: boolean;
+    selected_slot?: number;
 }
 
 // endregion

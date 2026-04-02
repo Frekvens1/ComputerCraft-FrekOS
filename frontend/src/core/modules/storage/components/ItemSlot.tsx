@@ -2,7 +2,7 @@ import {Assets, Texture} from "pixi.js";
 import {useEffect, useState} from "react";
 import type {StorageItem} from "@/core/modules/storage/models.ts";
 
-export function ItemSlot({x, y, SLOTS_MULTIPLIER, item, textures, itemTextureCache, isSelected}: {
+export function ItemSlot({x, y, SLOTS_MULTIPLIER, item, textures, itemTextureCache, isSelected, onPointerTap}: {
     x: number;
     y: number;
     SLOTS_MULTIPLIER: number;
@@ -10,6 +10,7 @@ export function ItemSlot({x, y, SLOTS_MULTIPLIER, item, textures, itemTextureCac
     textures: { [key: string]: Texture };
     itemTextureCache: Map<string, Texture>;
     isSelected: boolean;
+    onPointerTap: (event: PointerEvent) => void;
 }) {
     const item_path = item?.name.replace(/:/, '/');
     const item_url = item ? `/items/${item_path}.png` : null;
@@ -83,6 +84,7 @@ export function ItemSlot({x, y, SLOTS_MULTIPLIER, item, textures, itemTextureCac
                     x={x + SLOTS_MULTIPLIER}
                     y={y + SLOTS_MULTIPLIER}
                     scale={scaleItem(texture)}
+                    onPointerTap={onPointerTap}
                     zIndex={1}
                 />
 
@@ -97,6 +99,7 @@ export function ItemSlot({x, y, SLOTS_MULTIPLIER, item, textures, itemTextureCac
                     x={x + SLOTS_MULTIPLIER}
                     y={y + SLOTS_MULTIPLIER}
                     scale={scaleItem(textures.dirt)}
+                    onPointerTap={onPointerTap}
                     zIndex={1}
                 />
 

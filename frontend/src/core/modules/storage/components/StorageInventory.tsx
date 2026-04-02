@@ -24,16 +24,21 @@ extend({
 type Props = {
     storage: Storage;
     selectedSlot: number;
-    onSlotEventClick: (slot: number) => Promise<void>;
-    onItemEventClick: (item: StorageItem, slot: number) => Promise<void>;
+    onSlotEventClick?: (slot: number) => Promise<void>;
+    onSlotEventDoubleClick?: (slot: number) => Promise<void>;
+    onItemEventClick?: (item: StorageItem, slot: number) => Promise<void>;
+    onItemEventDoubleClick?: (item: StorageItem, slot: number) => Promise<void>;
 };
 
-const SLOTS_WIDTH = 9;
-const SLOTS_MULTIPLIER = 4;
+const SLOTS_MULTIPLIER = 4; // scale: 16/18 * SLOTS_MULTIPLIER
+const DOUBLE_TAP_DELAY = 250; // ms
 
-export function StorageInventory({storage, selectedSlot, onSlotEventClick, onItemEventClick}: Props) {
+export function StorageInventory({storage, selectedSlot, onSlotEventClick, onSlotEventDoubleClick, onItemEventClick, onItemEventDoubleClick}: Props) {
     const [textures, setTextures] = useState<{ [key: string]: Texture } | null>(null);
     const itemTextureCache = new Map<string, Texture>();
+    const SLOTS_WIDTH = storage.is_turtle ? 4 : 9;
+    let clickTimeout: any = null;
+    let lastTapTime = 0;
 
     useEffect(() => {
         const textures = {
@@ -62,7 +67,7 @@ export function StorageInventory({storage, selectedSlot, onSlotEventClick, onIte
 
     if (!textures) return null;
 
-    const rows = Math.ceil(storage.slots_total / SLOTS_WIDTH);
+    const SLOTS_HEIGHT = Math.ceil(storage.slots_total / SLOTS_WIDTH);
     const BASE_HEIGHT = textures.slot.height;
     const SCALE = (18 * SLOTS_MULTIPLIER) / BASE_HEIGHT;
 
@@ -79,6 +84,26 @@ export function StorageInventory({storage, selectedSlot, onSlotEventClick, onIte
         return texture.height * SCALE;
     }
 
+    async function handleTap(slotIndex: number) {
+        const now = Date.now();
+
+        if (now - lastTapTime < DOUBLE_TAP_DELAY) {
+            clearTimeout(clickTimeout);
+            clickTimeout = null;
+
+            await onSlotDoubleClick(slotIndex);
+        } else {
+            clickTimeout = setTimeout(async () => {
+                await onSlotClick(slotIndex);
+                clickTimeout = null;
+            }, DOUBLE_TAP_DELAY);
+        }
+
+        lastTapTime = now;
+    }
+
+
+
     async function onSlotClick(slot: number) {
         if (storage.items[slot]) {
             await onItemClick(slot);
@@ -92,24 +117,38 @@ export function StorageInventory({storage, selectedSlot, onSlotEventClick, onIte
         if (onItemEventClick) await onItemEventClick(item, slot);
     }
 
+    async function onSlotDoubleClick(slot: number) {
+        if (storage.items[slot]) {
+            await onItemDoubleClick(slot);
+        }
+
+        if (onSlotEventDoubleClick) await onSlotEventDoubleClick(slot);
+    }
+
+    async function onItemDoubleClick(slot: number) {
+        const item: StorageItem = storage.items[slot];
+        if (onItemEventDoubleClick) await onItemEventDoubleClick(item, slot);
+    }
+
     const slotW = scaledWidth(textures.slot);
     const leftW = scaledWidth(textures.slotLeft);
     const headerH = scaledHeight(textures.headerSlot);
+    const footerH = scaledHeight(textures.footerSlot);
 
     let currentY = 0;
 
     return (
         <Application
-            width={800}
-            height={600}
+            width={18 * SLOTS_MULTIPLIER * SLOTS_WIDTH + (leftW * 2)}
+            height={18 * SLOTS_MULTIPLIER * SLOTS_HEIGHT + headerH + footerH + 1}
             autoDensity={false}
             antialias={false}
             resolution={1}>
             <pixiContainer x={0} y={0}>
 
-                {Array.from({length: rows}).map((_, rowIndex) => {
+                {Array.from({length: SLOTS_HEIGHT}).map((_, rowIndex) => {
                     const isFirst = rowIndex === 0;
-                    const isLast = rowIndex === rows - 1;
+                    const isLast = rowIndex === SLOTS_HEIGHT - 1;
 
                     const slotY = isFirst ? (18 * SLOTS_MULTIPLIER) : 0;
                     const footerY = isFirst ? (18 * SLOTS_MULTIPLIER) * 2 : (18 * SLOTS_MULTIPLIER);
@@ -171,6 +210,7 @@ export function StorageInventory({storage, selectedSlot, onSlotEventClick, onIte
                                     const slotIndex = rowIndex * SLOTS_WIDTH + col;
                                     const hasSlot = slotIndex < storage.slots_total;
                                     const isSelected = selectedSlot - 1 == slotIndex;
+                                    const isTurtleSelected = storage.selected_slot != null && storage.selected_slot - 1 == slotIndex;
 
                                     if (hasSlot) {
                                         elements.push(
@@ -183,7 +223,7 @@ export function StorageInventory({storage, selectedSlot, onSlotEventClick, onIte
                                                 eventMode="static"
                                                 scale={scaleToSlot()}
                                                 zIndex={0}
-                                                onPointerTap={() => onSlotClick(slotIndex + 1)}
+                                                onPointerTap={() => handleTap(slotIndex + 1)}
                                             />
                                         );
                                     } else {
@@ -206,12 +246,13 @@ export function StorageInventory({storage, selectedSlot, onSlotEventClick, onIte
                                             elements.push(
                                                 <ItemSlot item={item} textures={textures}
                                                           itemTextureCache={itemTextureCache} isSelected={isSelected}
-                                                          SLOTS_MULTIPLIER={SLOTS_MULTIPLIER} x={x} y={slotY}/>
+                                                          SLOTS_MULTIPLIER={SLOTS_MULTIPLIER} x={x} y={slotY}
+                                                          onPointerTap={() => handleTap(slotIndex + 1)}/>
                                             );
                                         }
                                     }
 
-                                    if (isSelected) {
+                                    if (isTurtleSelected) {
                                         elements.push(
                                             <pixiGraphics
                                                 x={x}
@@ -219,10 +260,32 @@ export function StorageInventory({storage, selectedSlot, onSlotEventClick, onIte
                                                 zIndex={5}
                                                 draw={g => {
                                                     g.clear();
-                                                    g.beginFill(0x000000, 0.4);
-                                                    g.drawRect(0, 0, 17 * SLOTS_MULTIPLIER, 17 * SLOTS_MULTIPLIER);
-                                                    g.endFill();
+                                                    g.stroke({
+                                                        width: SLOTS_MULTIPLIER,
+                                                        color: 0xFFD700,
+                                                        alpha: 1
+                                                    });
+                                                    g.rect(-2, -2, 18 * SLOTS_MULTIPLIER, 18 * SLOTS_MULTIPLIER);
+                                                    g.stroke();
                                                 }}
+                                                onPointerTap={() => handleTap(slotIndex + 1)}
+                                            />
+                                        );
+                                    }
+
+                                    if (isSelected) {
+                                        elements.push(
+                                            <pixiGraphics
+                                                x={x}
+                                                y={slotY}
+                                                zIndex={6}
+                                                draw={g => {
+                                                    g.clear();
+                                                    g.fill({ color: 0x000000, alpha: 0.4 });
+                                                    g.rect(0, 0, 17 * SLOTS_MULTIPLIER, 17 * SLOTS_MULTIPLIER);
+                                                    g.fill();
+                                                }}
+                                                onPointerTap={() => handleTap(slotIndex + 1)}
                                             />
                                         );
                                     }
