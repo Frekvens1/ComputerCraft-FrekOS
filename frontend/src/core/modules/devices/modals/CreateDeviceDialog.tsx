@@ -49,7 +49,7 @@ export function CreateDeviceDialog({onSubmit}: Props) {
                 </Button>
             </DialogTrigger>
 
-            <DialogContent className='sm:max-w-sm'>
+            <DialogContent className='md:max-w-md'>
                 <form onSubmit={handleSubmit}>
                     <DialogHeader className='mb-8'>
                         <DialogTitle>Create device</DialogTitle>

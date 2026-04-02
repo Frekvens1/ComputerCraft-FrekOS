@@ -63,11 +63,3 @@ class Storage(BaseModel):
     lookup: Dict[str, Dict[str, StorageLookup]]
 
 # endregion
-
-# region { API responses }
-
-class DeleteStorageResponse(BaseModel):
-    success: bool
-    message: Optional[str] = None
-
-# endregion

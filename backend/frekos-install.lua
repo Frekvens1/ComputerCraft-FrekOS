@@ -16,7 +16,6 @@ local downloads = {
     -- region { System files - Applications }
 
     "/frekos/apps/cat.lua",
-    "/frekos/apps/audio.lua",
     "/frekos/apps/update.lua",
     "/frekos/apps/lockscreen.lua",
     "/frekos/apps/clean_install.lua",
@@ -27,6 +26,7 @@ local downloads = {
     -- region { System files - Libraries }
 
     "/frekos/libs/FrekOS.lua",
+    "/frekos/libs/audioUtils.lua",
     "/frekos/libs/fileUtils.lua",
     "/frekos/libs/stringUtils.lua",
     "/frekos/libs/backendUtils.lua",
@@ -38,11 +38,13 @@ local downloads = {
     -- region { System files - Libraries - APIs}
 
     "/frekos/libs/api/device.lua",
+    "/frekos/libs/api/music.lua",
 
     -- endregion
 
     -- region { Applications }
 
+    "/apps/music.lua",
     "/apps/teleport.lua",
     "/apps/teleport_requester.lua",
 

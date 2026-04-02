@@ -34,6 +34,27 @@ function api.run(file_path, ...)
     term.setCursorBlink(true)
 end
 
+-- region { Events }
+
+api.web = {}
+
+function api.web.get(url)
+	if not http.checkURL(url) then
+		return nil
+	end
+
+	local response = http.get(url, nil, true)
+	if not response then
+		return nil
+	end
+
+	local result = response.readAll()
+	response.close()
+
+	return result
+end
+
+-- endregion
 
 -- region { Events }
 
@@ -49,7 +70,7 @@ function api.events.inject()
 
         if not table.compare(event, lastEvent) then
             if api.settings.send_events then
-                api.server.send(fileUtils.sanitize(event))
+                backendUtils.send(fileUtils.sanitize(event))
             end
 
             api.events.handleTasks(event)
@@ -108,6 +129,7 @@ end
 local function loadAPIs()
     loadAPI("device", "/frekos/libs/api/device.lua")
     loadAPI("storage", "/frekos/libs/api/storage.lua")
+    loadAPI("music", "/frekos/libs/api/music.lua")
 end
 
 -- endregion

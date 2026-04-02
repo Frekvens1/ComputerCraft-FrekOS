@@ -10,6 +10,7 @@ import {MinerPage} from "@/pages/apps/miner/MinerPage.tsx";
 import {StoragePage} from "@/pages/apps/storage/StoragePage.tsx";
 import {useEffect, useState} from "react";
 import {loadGuiAssets} from "@/core/modules/storage/components/StorageAssets.ts";
+import {MusicPage} from "@/pages/apps/music/MusicPage.tsx";
 
 export interface RouterHandle {
     title: string;
@@ -23,56 +24,51 @@ const router = createBrowserRouter([
             {
                 index: true,
                 element: <Navigate to='/dashboard' replace/>,
-            },
-            {
+            }, {
                 path: 'dashboard',
                 element: <DashboardPage/>,
                 handle: {title: 'Dashboard'} as RouterHandle,
-            },
-            {
+            }, {
                 path: 'devices',
                 children: [
                     {
                         index: true,
                         element: <DevicesPage/>,
                         handle: {title: 'Devices'} as RouterHandle,
-                    },
-                    {
+                    }, {
                         path: 'new',
                         element: <NewDevicePage/>,
                         handle: {title: 'Add device'} as RouterHandle,
                     }
                 ]
-            },
-            {
+            }, {
                 path: 'apps',
                 children: [
                     {
                         index: true,
                         element: <Navigate to='storage' replace/>,
-                    },
-                    {
+                    }, {
                         path: 'storage',
                         element: <StoragePage/>,
                         handle: {title: 'Storage Manager'} as RouterHandle,
-                    },
-                    {
+                    }, {
                         path: 'teleport',
                         element: <TeleportPage/>,
                         handle: {title: 'Teleport Manager'} as RouterHandle,
-                    },
-                    {
+                    }, {
                         path: 'miner',
                         element: <MinerPage/>,
                         handle: {title: 'Remote Miner'} as RouterHandle,
-                    },
-                    {
+                    }, {
+                        path: 'music',
+                        element: <MusicPage/>,
+                        handle: {title: 'Music'} as RouterHandle,
+                    }, {
                         path: '*',
                         element: <Navigate to='/apps' replace/>,
                     },
                 ]
-            },
-            {
+            }, {
                 path: '*',
                 element: <Navigate to='/' replace/>,
             },

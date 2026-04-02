@@ -5,6 +5,7 @@ local api = {
     active = {},
     detached = {},
     peripherals = {},
+    speakers = {},
 }
 
 local function setActivePeripheral(name)

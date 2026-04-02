@@ -10,6 +10,7 @@ import {
     IconInnerShadowTop,
     IconSettings,
     IconDiamond,
+    IconMusic,
 } from '@tabler/icons-react'
 
 import {NavDocuments} from '@/components/nav-documents'
@@ -84,6 +85,11 @@ const data: { [p: string]: navigation[] } = {
             title: 'Remote Miner',
             url: '/apps/miner',
             icon: IconDiamond,
+        },
+        {
+            title: 'Music',
+            url: '/apps/music',
+            icon: IconMusic,
         },
         /*
         {

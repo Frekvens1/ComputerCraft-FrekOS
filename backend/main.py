@@ -2,15 +2,18 @@ from fastapi import FastAPI
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
-from libraries import mongo_lib
+from libraries import mongo_lib, s3_lib
 
 from modules.devices.api import initialize as devices_api
 from modules.storage.api import initialize as storage_api
+from modules.music.api import initialize as music_api
 
 # pip install 'uvicorn[standard]'
+# pip install python-multipart
 
 app = FastAPI()
 mongo_lib.initialize()
+s3_lib.initialize()
 
 app.mount('/computercraft', StaticFiles(directory='computercraft'), name='computercraft')
 
@@ -32,3 +35,4 @@ async def update():
 
 devices_api(app)
 storage_api(app)
+music_api(app)

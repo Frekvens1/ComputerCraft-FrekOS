@@ -67,11 +67,3 @@ class DeviceBackend(Device):
 
 
 # endregion
-
-# region { API responses }
-
-class DeleteDeviceResponse(BaseModel):
-    success: bool
-    message: Optional[str] = None
-
-# endregion

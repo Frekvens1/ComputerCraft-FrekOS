@@ -1,5 +1,6 @@
-import type {DeleteDeviceStatus, Device, DeviceData} from '@/core/modules/devices/models.ts';
+import type {Device, DeviceData} from '@/core/modules/devices/models.ts';
 import {BackendService} from '@/core/services/backend.service';
+import type {DeleteResponse} from "@/core/modules/common/modules.ts";
 
 const backend = new BackendService();
 
@@ -20,7 +21,7 @@ export class DeviceRepository {
         return backend.post('/device', device);
     }
 
-    async deleteDevice(deviceUUID: string): Promise<DeleteDeviceStatus> {
+    async deleteDevice(deviceUUID: string): Promise<DeleteResponse> {
         return backend.delete(`/device/${deviceUUID}`);
     }
 
