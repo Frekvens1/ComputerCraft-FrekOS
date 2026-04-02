@@ -64,12 +64,3 @@ export interface Storage {
 }
 
 // endregion
-
-// region { API responses }
-
-export interface DeleteStorageResponse {
-    success: boolean
-    message?: string
-}
-
-// endregion

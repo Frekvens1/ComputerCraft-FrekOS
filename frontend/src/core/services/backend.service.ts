@@ -62,6 +62,27 @@ export class BackendService {
         return await response.json();
     }
 
+    async postForm<T>(url: string, body: FormData): Promise<T> {
+        /**
+         * POST creates a new resource in the database
+         * @param url - Query for server
+         * @param body - Sent as FormData
+         * @returns {} - JSONObject response from server
+         * */
+
+        const response = await fetch(this.buildUrl(url), {
+            method: 'POST',
+            credentials: 'include',
+            body: body,
+        });
+
+        if (!response.ok) {
+            throw new Error("FormData upload failed");
+        }
+
+        return await response.json();
+    }
+
     async put<T, B>(url: string, body: B): Promise<T> {
         /**
          * PUT is used to update all fields in an existing resource in the database
@@ -106,7 +127,7 @@ export class BackendService {
          * @param url - Resource path
          * @returns {} - JSONObject response from server
          * */
-
+        console.log(`Deleting ${url}`);
         const response = await fetch(this.buildUrl(url), {
             method: 'DELETE',
             credentials: 'include',

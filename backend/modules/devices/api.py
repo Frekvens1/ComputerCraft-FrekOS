@@ -4,9 +4,10 @@ from typing import List
 from fastapi import FastAPI, Body, HTTPException
 from starlette.websockets import WebSocket, WebSocketDisconnect
 
+from modules.common.models import DeleteResponse
 from modules.devices import logic
 from modules.devices.models import (
-    DeleteDeviceResponse, DeviceData, Device,
+    DeviceData, Device,
 )
 
 
@@ -35,11 +36,11 @@ def initialize(app: FastAPI):
     async def patch_device(device_uuid: str, device: Device):
         return logic.patch_device(device_uuid, device)
 
-    @app.delete("/device/{device_uuid}", response_model=DeleteDeviceResponse, response_model_exclude_none=True)
+    @app.delete("/device/{device_uuid}", response_model=DeleteResponse, response_model_exclude_none=True)
     async def delete_device(device_uuid: str):
         success = logic.delete_device(device_uuid)
 
-        return DeleteDeviceResponse(
+        return DeleteResponse(
             success=success,
             message="Device deleted" if success else "Device not found"
         )

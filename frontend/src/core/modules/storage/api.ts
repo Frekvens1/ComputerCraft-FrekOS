@@ -1,5 +1,6 @@
 import {BackendService} from '@/core/services/backend.service';
-import type {DeleteStorageResponse, Storage} from "@/core/modules/storage/models.ts";
+import type {Storage} from "@/core/modules/storage/models.ts";
+import type {DeleteResponse} from "@/core/modules/common/modules.ts";
 
 const backend = new BackendService();
 
@@ -20,7 +21,7 @@ export class StorageRepository {
         return backend.post(`/storage/${storageName}`, storage);
     }
 
-    async deleteStorage(storageName: string): Promise<DeleteStorageResponse> {
+    async deleteStorage(storageName: string): Promise<DeleteResponse> {
         return backend.delete(`/storage/${storageName}`);
     }
 }

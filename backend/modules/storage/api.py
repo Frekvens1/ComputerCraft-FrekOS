@@ -2,8 +2,9 @@ from typing import List
 
 from fastapi import FastAPI
 
+from modules.common.models import DeleteResponse
 from modules.storage import logic
-from modules.storage.models import Storage, DeleteStorageResponse
+from modules.storage.models import Storage
 
 
 def initialize(app: FastAPI):
@@ -27,11 +28,11 @@ def initialize(app: FastAPI):
     async def patch_storage(inventory_name: str, storage: Storage):
         return logic.patch_storage(inventory_name, storage)
 
-    @app.delete("/storage/{inventory_name}", response_model=DeleteStorageResponse, response_model_exclude_none=True)
+    @app.delete("/storage/{inventory_name}", response_model=DeleteResponse, response_model_exclude_none=True)
     async def delete_storage(inventory_name: str):
         success = logic.delete_storage(inventory_name)
 
-        return DeleteStorageResponse(
+        return DeleteResponse(
             success=success,
             message="Storage deleted" if success else "Storage not found"
         )

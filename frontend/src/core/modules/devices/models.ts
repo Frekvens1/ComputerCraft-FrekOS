@@ -44,8 +44,3 @@ export interface DeviceData {
 export interface Device extends DeviceData {
     device_uuid: string;
 }
-
-export interface DeleteDeviceStatus {
-    status: boolean;
-    message?: string;
-}
