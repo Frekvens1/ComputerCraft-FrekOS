@@ -70,7 +70,7 @@ function api.events.inject()
 
         if not table.compare(event, lastEvent) then
             if api.settings.send_events then
-                api.server.send(fileUtils.sanitize(event))
+                backendUtils.send(fileUtils.sanitize(event))
             end
 
             api.events.handleTasks(event)
