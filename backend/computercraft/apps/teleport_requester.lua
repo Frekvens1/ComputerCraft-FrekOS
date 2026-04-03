@@ -1,3 +1,5 @@
+local button = gui.components.button
+
 function main()
     local app = gui.createApp(refreshDevices())
     gui.render(app)
@@ -15,11 +17,12 @@ function refreshDevices()
     local button_index = 0
     for _, device in ipairs(devices) do
         if table.includes(online_devices, device.device_uuid) then
-            table.insert(buttons,
-                gui.components.button(2, (button_index * 4) + 2, term.getSize() - 3, 2, device.name, function(self)
+            table.insert(buttons, button({
+                x = 2, y = (button_index * 4) + 2, width = term.getSize() - 3, height = 2,
+                text = device.name, onClick = function(self)
                     doTeleport(device.device_uuid)
-                end)
-            )
+                end
+            }))
             button_index = button_index + 1
         end
     end

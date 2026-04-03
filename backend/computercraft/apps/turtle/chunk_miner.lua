@@ -176,5 +176,11 @@ function doDig()
     digDown()
 end
 
-main()
+parallel.waitForAny(function()
+    os.pullEventRaw("terminate")
+end, main)
+
 printFinished()
+term.write("=== Press a key to continue ===")
+os.pullEvent("key")
+screen.clear()

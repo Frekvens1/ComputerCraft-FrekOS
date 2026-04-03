@@ -46,8 +46,8 @@ local function component(self, params)
         local visible = text:sub(self.scrollOffsetX + 1, self.scrollOffsetX + self.width)
 
         if self.textCentered then
-            local center_x = math.ceil((self.width / 2) - (#visible / 2) + self.x)
-            local center_y = (self.height / 2) + self.y
+            local center_x = math.max(math.ceil((self.width / 2) - (#visible / 2) + self.x), self.x + 1)
+            local center_y = math.max((self.height / 2) + self.y, math.min(self.y + 1, self.y + self.height))
             term.setCursorPos(center_x, center_y)
         else
             term.setCursorPos(self.x, self.y)

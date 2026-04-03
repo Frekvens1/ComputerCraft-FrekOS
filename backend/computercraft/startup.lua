@@ -37,4 +37,9 @@ if fs.exists("/custom_startup.lua") then
 end
 
 -- shell.run("/frekos/apps/lockscreen.lua")
+
+if turtle then
+    shell.run("/frekos/apps/turtle.lua")
+end
+
 shell.run("/frekos/apps/welcome_screen.lua")

@@ -5,9 +5,10 @@ if x_blocks == nil then
     x_blocks = "3"
 end
 
-print("Mining a tunnel '" .. x_blocks .. "' wide...")
-
 function main()
+    screen.clear()
+    print("Mining a tunnel '" .. x_blocks .. "' wide...")
+
     while true do
         if x_blocks == "1" then
             doDig()
@@ -80,4 +81,8 @@ function mineLeft()
     turtle.turnRight()
 end
 
-main()
+parallel.waitForAny(function()
+    os.pullEventRaw("terminate")
+end, main)
+
+screen.clear()

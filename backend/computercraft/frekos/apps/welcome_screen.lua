@@ -1,8 +1,21 @@
 screen.clear()
+screen.saveColors()
 
-local status = "Offline"
+term.setTextColor(colors.orange)
+term.write("FrekOS v0.1")
+
+term.setTextColor(colors.gray)
+term.write(" - ")
+
 if backendUtils.connection then
-    status = "Online"
+    term.setTextColor(colors.green)
+    print("Online")
+else
+    term.setTextColor(colors.red)
+    print("Offline")
 end
 
-print("FrekOS v0.1 - " .. status)
+term.setTextColor(colors.lightGray)
+screen.printLine()
+
+screen.restoreColors()

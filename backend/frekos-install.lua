@@ -67,6 +67,7 @@ local downloads = {
 }
 
 local downloads_turtle = {
+    "/frekos/apps/turtle.lua",
     "/frekos/libs/turtleUtils.lua",
 
     "/apps/turtle/build_roof.lua",

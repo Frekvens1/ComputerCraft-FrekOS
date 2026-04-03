@@ -16,10 +16,16 @@ local function placeQuartz()
     turtle.place()
 end
 
+local count = 0
 while true do
+    screen.clear()
+    print("Quartz replacer - Count: " .. count)
+    screen.printLine()
+
     if shouldDig() then
         dig()
         placeQuartz()
+        count = count + 1
     end
 
     os.sleep(0.1)

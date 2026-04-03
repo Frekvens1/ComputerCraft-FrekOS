@@ -20,3 +20,6 @@ end
 
 screen.clear()
 print("Turtle fuel reached max capacity!")
+print()
+print("=== Press a key to exit ===")
+os.pullEvent("key")

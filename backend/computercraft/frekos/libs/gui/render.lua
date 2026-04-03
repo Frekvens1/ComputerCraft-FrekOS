@@ -4,7 +4,13 @@ local function renderer(app)
     }
 
     local function main()
-        start()
+        parallel.waitForAny(function()
+            os.pullEventRaw("terminate")
+        end, function()
+            start()
+        end)
+
+        screen.clear()
     end
 
     function draw()
