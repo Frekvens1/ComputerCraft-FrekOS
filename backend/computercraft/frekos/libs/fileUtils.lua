@@ -64,14 +64,14 @@ function api.loadFolder(folder_path)
         local file_path = fs.combine(folder_path, file)
         if file:match("%.lua$") then
             local name = file:gsub("%.lua$", "")
-            result[name] = api.loadfile(file_path)
+            result[name] = api.loadFile(file_path)
         end
     end
 
     return result
 end
 
-function api.loadfile(file_path, ...)
+function api.loadFile(file_path, ...)
     if not fs.exists(file_path) then
         return nil
     end

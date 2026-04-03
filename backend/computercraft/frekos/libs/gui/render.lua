@@ -15,22 +15,12 @@ local function renderer(app)
     function update()
         event = { os.pullEvent() }
 
-        --print(event, key, x, y)
         for i = 1, #self.app.objects, 1 do
-            self.app.objects[i].event(event)
-        end
-
-        if (event[1] ~= "mouse_click") then
-            return nil
-        end
-        if (event[2] ~= 1) then
-            return nil
-        end
-
-        for i = 1, #self.app.objects, 1 do
-            if (self.app.objects[i].inside(event[3], event[4])) then
-                self.app.objects[i].onClick(self.app)
+            if event[1] == "mouse_click" then
+                self.app.objects[i].isSelected = false
             end
+
+            self.app.objects[i].event(event, app)
         end
     end
 
