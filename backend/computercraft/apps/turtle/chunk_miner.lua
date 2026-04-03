@@ -23,9 +23,9 @@ local volume_inside_area = tunnel_width * tunnel_length * tunnel_height
 local volume_to_check = volume_inside_area + volume_above_area
 
 function printProgress()
-    screenUtils.clear()
+    screen.clear()
     print("FrekOS Chunk Miner - In progress...")
-    screenUtils.printLine()
+    screen.printLine()
     print("Progress complete: " .. math.floor((volume_checked / volume_to_check) * 100 + 0.5) .. "%")
     print()
     print("Volume checked: " .. volume_checked .. " / " .. volume_to_check)
@@ -40,9 +40,9 @@ function printProgress()
 end
 
 function printFinished()
-    screenUtils.clear()
+    screen.clear()
     print("FrekOS Chunk Miner - Finished!")
-    screenUtils.printLine()
+    screen.printLine()
     print("Volume checked: " .. volume_checked .. " / " .. volume_to_check)
     print("Blocks mined: " .. blocks_mined)
     print()
@@ -176,5 +176,11 @@ function doDig()
     digDown()
 end
 
-main()
+parallel.waitForAny(function()
+    os.pullEventRaw("terminate")
+end, main)
+
 printFinished()
+term.write("=== Press a key to continue ===")
+os.pullEvent("key")
+screen.clear()

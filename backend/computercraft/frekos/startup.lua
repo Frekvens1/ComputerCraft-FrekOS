@@ -3,6 +3,10 @@ local error_loading_libraries = false
 local logs = {}
 
 local function printLog(text)
+    if text == nil then
+        text = ""
+    end
+
     table.insert(logs, text)
     print(text)
 end

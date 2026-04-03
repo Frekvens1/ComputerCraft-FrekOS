@@ -97,47 +97,10 @@ end
 
 -- endregion
 
--- region { APIs }
-
-api.api = {}
-
-local function loadAPI(name, file_path)
-    if not fs.exists(file_path) then
-        return
-    end
-
-    local env = {}
-    env._ENV = env
-    setmetatable(env, { __index = _ENV })
-    env.shell = shell
-
-    local okLoad, fn = pcall(loadfile, file_path)
-    if not okLoad then
-        return
-    end
-
-    setfenv(fn, env)
-
-    local okRun, fn_api = pcall(fn)
-    if not okRun then
-        return
-    end
-
-    api.api[name] = fn_api
-end
-
-local function loadAPIs()
-    loadAPI("device", "/frekos/libs/api/device.lua")
-    loadAPI("storage", "/frekos/libs/api/storage.lua")
-    loadAPI("music", "/frekos/libs/api/music.lua")
-end
-
--- endregion
-
 local function beforeLoad()
     print("Loading settings...")
     api.refreshSettings()
-    loadAPIs()
+    api.api = fileUtils.loadFolder("/frekos/libs/api")
 end
 
 local function afterLoad()

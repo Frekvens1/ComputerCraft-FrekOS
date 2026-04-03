@@ -58,6 +58,48 @@ function api.sanitize(value)
     end
 end
 
+function api.loadFolder(folder_path)
+    local result = {}
+    for _, file in ipairs(fs.list(folder_path)) do
+        local file_path = fs.combine(folder_path, file)
+        if file:match("%.lua$") then
+            local name = file:gsub("%.lua$", "")
+            result[name] = api.loadFile(file_path)
+        end
+    end
+
+    return result
+end
+
+function api.loadFile(file_path, ...)
+    if not fs.exists(file_path) then
+        return nil
+    end
+
+    local okLoad, fn = pcall(loadfile, file_path)
+    if not okLoad then
+        return nil, fn
+    end
+
+    return api.load(fn, ...)
+end
+
+function api.load(fn, ...)
+    local env = {}
+    env._ENV = env
+    setmetatable(env, { __index = _ENV })
+    env.shell = shell
+
+    setfenv(fn, env)
+
+    local result = { pcall(fn, ...) }
+    if not result[1] then
+        return result[1], result[2]
+    end
+
+    return table.unpack(result, 2, #result)
+end
+
 local function beforeLoad()
 
 end

@@ -2,9 +2,9 @@ local fuel = turtle.getFuelLevel()
 local fuelMax = turtle.getFuelLimit()
 
 while fuel ~= fuelMax do
-    screenUtils.clear()
+    screen.clear()
     print("Turtle lava refill")
-    screenUtils.printLine()
+    screen.printLine()
     print()
     print("Progress: " .. ((fuel / fuelMax) * 100) .. "%")
     print("Fuel: " .. fuel .. " / " .. fuelMax)
@@ -18,5 +18,8 @@ while fuel ~= fuelMax do
     fuel = turtle.getFuelLevel()
 end
 
-screenUtils.clear()
+screen.clear()
 print("Turtle fuel reached max capacity!")
+print()
+print("=== Press a key to exit ===")
+os.pullEvent("key")

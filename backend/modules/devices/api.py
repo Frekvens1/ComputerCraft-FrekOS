@@ -57,21 +57,25 @@ def initialize(app: FastAPI):
 
     @app.websocket("/device/{device_uuid}")
     async def device_websocket(device_uuid: str, websocket: WebSocket):
+        device = logic.get_device(device_uuid)
+        if device is None:
+            raise HTTPException(status_code=404, detail="Device not found")
+
         await websocket.accept()
         logic.devices[device_uuid] = websocket
-        print(f"Device connected: {device_uuid}")
+        print(f"Device connected: {device.name} ({device_uuid})")
         try:
             while True:
                 msg = await websocket.receive_text()
                 try:
                     parsed = json.loads(msg)
                     pretty = json.dumps(parsed, indent=4, ensure_ascii=False)
-                    print(f"{device_uuid} (JSON):\n{pretty}")
+                    print(f"{device.name} ({device_uuid}) (JSON):\n{pretty}")
                 except json.JSONDecodeError:
-                    print(f"{device_uuid}: {msg}")
+                    print(f"{device.name} ({device_uuid}): {msg}")
         except WebSocketDisconnect:
             logic.devices.pop(device_uuid, None)
-            print(f"Device disconnected: {device_uuid}")
+            print(f"Device disconnected: {device.name} ({device_uuid})")
 
     @app.post("/device/{device_uuid}/event")
     async def device_event(device_uuid: str, event=Body(...)):

@@ -32,9 +32,14 @@ end
 os.pullEvent = pullEvent
 
 if fs.exists("/custom_startup.lua") then
-    screenUtils.clear()
+    screen.clear()
     shell.run("/custom_startup.lua")
 end
 
 -- shell.run("/frekos/apps/lockscreen.lua")
+
+if turtle then
+    shell.run("/frekos/apps/turtle.lua")
+end
+
 shell.run("/frekos/apps/welcome_screen.lua")

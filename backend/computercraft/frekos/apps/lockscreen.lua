@@ -4,7 +4,7 @@ local pullEvent = os.pullEvent
 os.pullEvent = os.pullEventRaw
 
 while true do
-    screenUtils.clear()
+    screen.clear()
     print("Restricted access.\n")
     write("Password: ")
 
@@ -19,4 +19,4 @@ while true do
 end
 
 os.pullEvent = pullEvent
-screenUtils.clear()
+screen.clear()
