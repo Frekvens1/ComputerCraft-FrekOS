@@ -1,4 +1,4 @@
-screenUtils.clear()
+screen.clear()
 
 local status = "Offline"
 if backendUtils.connection then

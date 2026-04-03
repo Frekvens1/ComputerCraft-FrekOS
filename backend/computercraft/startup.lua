@@ -32,7 +32,7 @@ end
 os.pullEvent = pullEvent
 
 if fs.exists("/custom_startup.lua") then
-    screenUtils.clear()
+    screen.clear()
     shell.run("/custom_startup.lua")
 end
 

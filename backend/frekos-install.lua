@@ -26,11 +26,12 @@ local downloads = {
     -- region { System files - Libraries }
 
     "/frekos/libs/FrekOS.lua",
+    "/frekos/libs/gui.lua",
+    "/frekos/libs/screen.lua",
     "/frekos/libs/audioUtils.lua",
     "/frekos/libs/fileUtils.lua",
     "/frekos/libs/stringUtils.lua",
     "/frekos/libs/backendUtils.lua",
-    "/frekos/libs/screenUtils.lua",
     "/frekos/libs/peripheralsLib.lua",
 
     -- endregion
@@ -42,9 +43,19 @@ local downloads = {
 
     -- endregion
 
+    -- region { System files - Libraries - GUIs}
+
+    "/frekos/libs/gui/render.lua",
+    "/frekos/libs/gui/createApp.lua",
+
+    "/frekos/libs/gui/components/button.lua",
+
+    -- endregion
+
     -- region { Applications }
 
     "/apps/music.lua",
+    "/apps/gui_test.lua",
     "/apps/teleport.lua",
     "/apps/teleport_requester.lua",
 

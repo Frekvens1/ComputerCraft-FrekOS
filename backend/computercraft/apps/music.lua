@@ -21,15 +21,16 @@ while loop_songs do
 
     song = songs[song_index]
 
-    screenUtils.clear()
+    screen.clear()
 
     print("Now playing:")
-    screenUtils.printLine()
+    screen.printLine()
     print(song.name)
 
     -- TODO: Add coroutines so we can change music
     audioUtils.dfpwm.playStream(FrekOS.api.music.dfpwm.getStream(song.dfpwm_uuid))
+    song_index = song_index + 1
 end
 
-screenUtils.clear()
+screen.clear()
 FrekOS.events.removeTask("frekos_music")
