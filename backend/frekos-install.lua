@@ -20,6 +20,7 @@ local downloads = {
     "/frekos/apps/kiosk.lua",
     "/frekos/apps/update.lua",
     "/frekos/apps/lockscreen.lua",
+    "/frekos/apps/wipe_device.lua",
     "/frekos/apps/clean_install.lua",
     "/frekos/apps/welcome_screen.lua",
 
