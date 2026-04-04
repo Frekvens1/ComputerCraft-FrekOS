@@ -56,14 +56,29 @@ function table.removeValue(self, item)
 end
 
 function table.invert(self)
-   local inverted_table = {}
-   for key, value in pairs(self) do
-     inverted_table[value] = key
-   end
+    local inverted_table = {}
+    for key, value in pairs(self) do
+        inverted_table[value] = key
+    end
 
-   return inverted_table
+    return inverted_table
 end
 
+function table.length(self)
+    if self[1] ~= nil then
+        local n = #self
+        if self[n] ~= nil then
+            return n
+        end
+    end
+
+    local count = 0
+    for _ in pairs(self) do
+        count = count + 1
+    end
+
+    return count
+end
 
 local function beforeLoad()
 

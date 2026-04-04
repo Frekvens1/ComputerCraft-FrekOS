@@ -28,6 +28,10 @@ local function renderer(app)
 
             self.app.objects[i].event(event, app)
         end
+
+        if self.app.onEventFn then
+            self.app.onEventFn(event, app)
+        end
     end
 
     function start()
@@ -37,6 +41,11 @@ local function renderer(app)
         draw()
 
         while true do
+
+            if self.app.doRedraw then
+                draw()
+                self.app.doRedraw = false
+            end
 
             self.app.beforeRender()
 

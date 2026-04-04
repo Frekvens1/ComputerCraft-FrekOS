@@ -26,6 +26,10 @@ end
 
 api.events = {}
 
+function api.events.raw(device_uuid, event)
+    return backendUtils.post("/device/" .. device_uuid .. "/event", event)
+end
+
 function api.events.teleport(device_uuid)
     return backendUtils.get("/device/" .. device_uuid .. "/events/teleport")
 end

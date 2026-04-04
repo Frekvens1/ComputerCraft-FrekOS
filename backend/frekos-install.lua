@@ -16,6 +16,8 @@ local downloads = {
     -- region { System files - Applications }
 
     "/frekos/apps/cat.lua",
+    "/frekos/apps/tps.lua",
+    "/frekos/apps/kiosk.lua",
     "/frekos/apps/update.lua",
     "/frekos/apps/lockscreen.lua",
     "/frekos/apps/clean_install.lua",
@@ -51,6 +53,7 @@ local downloads = {
     "/frekos/libs/gui/createApp.lua",
 
     "/frekos/libs/gui/components/super.lua",
+    "/frekos/libs/gui/components/label.lua",
     "/frekos/libs/gui/components/input.lua",
     "/frekos/libs/gui/components/button.lua",
 
@@ -62,6 +65,13 @@ local downloads = {
     "/apps/gui_test.lua",
     "/apps/teleport.lua",
     "/apps/teleport_requester.lua",
+
+    -- endregion
+
+    -- region { Restaurant }
+
+    "/apps/restaurant/kitchen_terminal.lua",
+    "/apps/restaurant/order_terminal.lua",
 
     -- endregion
 }
