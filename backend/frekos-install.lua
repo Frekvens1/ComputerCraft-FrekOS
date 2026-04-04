@@ -16,6 +16,7 @@ local downloads = {
     -- region { System files - Applications }
 
     "/frekos/apps/cat.lua",
+    "/frekos/apps/tps.lua",
     "/frekos/apps/update.lua",
     "/frekos/apps/lockscreen.lua",
     "/frekos/apps/clean_install.lua",
