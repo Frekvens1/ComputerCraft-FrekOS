@@ -1,5 +1,6 @@
 local label = gui.components.label
 local button = gui.components.button
+local speaker = peripheral.find("speaker")
 
 local orders = {}
 
@@ -18,10 +19,19 @@ function updateOrders(event, app)
             products = event[4]
         })
 
+        if speaker then
+            speaker.playSound("block.note_block.chime", 1, 1)
+        end
+
         app.objects = createObjects()
 
     elseif event[2] == "delete_order" then
         table.remove(orders, event[3])
+
+        if speaker then
+            speaker.playSound("entity.player.levelup", 1, 1)
+        end
+
         app.updateObjects(createObjects())
     end
 end

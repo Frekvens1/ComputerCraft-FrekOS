@@ -27,11 +27,45 @@ function getProductText(product)
     return product .. " " .. tostring(getCount(product))
 end
 
+local input_offset = {
+    width = 3,
+}
+
+local button_order_offset = {
+    width = 7
+}
+
+local button_decrease_offset = {
+    x = 3, width = 2
+}
+
+local button_send_offset = {
+    x = 2, y = 20, width = term.getSize() - 3
+}
+
+if not pocket then
+    input_offset = {
+        width = 10
+    }
+
+    button_order_offset = {
+        width = 10
+    }
+
+    button_decrease_offset = {
+        x = 6, width = 5
+    }
+
+    button_send_offset = {
+        x = term.getSize() - 6, y = 2, width = 5
+    }
+end
+
 function orderPage()
     local objects = {}
 
     table.insert(objects, input({
-        x = 2, y = 2, width = term.getSize() - 3, height = 0,
+        x = 2, y = 2, width = term.getSize() - input_offset.width, height = 0,
         text = orderName, onChange = function(self, app, text)
             orderName = text
         end
@@ -39,7 +73,7 @@ function orderPage()
 
     for index, product in ipairs(products) do
         table.insert(objects, button({
-            x = 2, y = 4 * (index), width = term.getSize() - 7, height = 2,
+            x = 2, y = 4 * (index), width = term.getSize() - button_order_offset.width, height = 2,
             text = getProductText(product), onClick = function(self, app, x, y)
                 if currentOrder[product] == nil then
                     currentOrder[product] = 0
@@ -53,7 +87,7 @@ function orderPage()
         }))
 
         table.insert(objects, button({
-            x = term.getSize() - 3, y = 4 * (index), width = 2, height = 2,
+            x = term.getSize() - button_decrease_offset.x, y = 4 * (index), width = button_decrease_offset.width, height = 2,
             text = "-", onClick = function(self, app, x, y)
                 if currentOrder[product] == nil then
                     currentOrder[product] = 0
@@ -69,7 +103,7 @@ function orderPage()
     end
 
     table.insert(objects, button({
-        x = 2, y = 20, width = term.getSize() - 3, height = 0,
+        x = button_send_offset.x, y = button_send_offset.y, width = button_send_offset.width, height = 0,
         text = "Send", onClick = function(self, app, x, y)
             if table.length(currentOrder) == 0 then
                 return
