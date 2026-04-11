@@ -1,5 +1,28 @@
+term.clear()
+term.setCursorPos(1, 1)
+
+printError("WARNING! DO NOT UPDATE!")
+print("FrekOS is currently being rewritten.")
+print()
+print("Press enter to update, any other key to reboot.")
+
+local event, char = coroutine.yield("key")
+if char ~= keys.enter then
+    os.reboot()
+end
+
 local pullEvent = os.pullEvent
 os.pullEvent = os.pullEventRaw
+
+local args = { ... }
+local device_uuid = args[1]
+
+if not device_uuid then
+    print("Error: No UUID specified.")
+    print("Usage: wget run <url> <uuid>")
+    coroutine.yield("key")
+    shell.exit()
+end
 
 app_config = {
     has_ssl = true,
@@ -11,104 +34,59 @@ app_config = {
 
 local downloads = {
     "/startup.lua",
-    "/frekos/startup.lua",
+
+    -- region { System files - Boot }
+
+    "/frekos/boot/bios.lua",
+    "/frekos/boot/unbios.lua",
+
+    -- endregion
 
     -- region { System files - Applications }
 
-    "/frekos/apps/cat.lua",
-    "/frekos/apps/tps.lua",
-    "/frekos/apps/kiosk.lua",
+    "/frekos/apps/shell.lua",
     "/frekos/apps/update.lua",
-    "/frekos/apps/lockscreen.lua",
-    "/frekos/apps/wipe_device.lua",
     "/frekos/apps/clean_install.lua",
-    "/frekos/apps/welcome_screen.lua",
+
+    -- endregion
+
+    -- region { System files - Kernel }
+
+    "/frekos/kernel/init.lua",
+
+    "/frekos/kernel/api/frekos.lua",
+    "/frekos/kernel/api/fs.lua",
+    "/frekos/kernel/api/http.lua",
+    "/frekos/kernel/api/io.lua",
+    "/frekos/kernel/api/os.lua",
+    "/frekos/kernel/api/peripheral.lua",
+    "/frekos/kernel/api/redstone.lua",
+    "/frekos/kernel/api/textutils.lua",
+
+    "/frekos/kernel/core/events.lua",
+    "/frekos/kernel/core/loader.lua",
+    "/frekos/kernel/core/process.lua",
+    "/frekos/kernel/core/scheduler.lua",
+    "/frekos/kernel/core/syscalls.lua",
+    "/frekos/kernel/core/util.lua",
+
+    "/frekos/kernel/drivers/disk.lua",
+    "/frekos/kernel/drivers/gpu.lua",
+    "/frekos/kernel/drivers/modem.lua",
+    "/frekos/kernel/drivers/monitor.lua",
+
+    "/frekos/kernel/tasks/shell.lua",
 
     -- endregion
 
     -- region { System files - Libraries }
 
-    "/frekos/libs/gui.lua",
-    "/frekos/libs/utils.lua",
-    "/frekos/libs/FrekOS.lua",
-    "/frekos/libs/screen.lua",
-    "/frekos/libs/fileUtils.lua",
-    "/frekos/libs/audioUtils.lua",
-    "/frekos/libs/tableUtils.lua",
-    "/frekos/libs/stringUtils.lua",
-    "/frekos/libs/backendUtils.lua",
-    "/frekos/libs/peripheralsLib.lua",
-
     -- endregion
-
-    -- region { System files - Libraries - APIs}
-
-    "/frekos/libs/api/device.lua",
-    "/frekos/libs/api/music.lua",
-
-    -- endregion
-
-    -- region { System files - Libraries - GUIs}
-
-    "/frekos/libs/gui/render.lua",
-    "/frekos/libs/gui/createApp.lua",
-
-    "/frekos/libs/gui/components/super.lua",
-    "/frekos/libs/gui/components/label.lua",
-    "/frekos/libs/gui/components/input.lua",
-    "/frekos/libs/gui/components/button.lua",
-
-    -- endregion
-
-    -- region { Applications }
-
-    "/apps/music.lua",
-    "/apps/gui_test.lua",
-    "/apps/teleport.lua",
-    "/apps/teleport_requester.lua",
-
-    -- endregion
-
-    -- region { Restaurant }
-
-    "/apps/restaurant/kitchen_terminal.lua",
-    "/apps/restaurant/order_terminal.lua",
-
-    -- endregion
-}
-
-local downloads_turtle = {
-    "/frekos/apps/turtle.lua",
-    "/frekos/libs/turtleUtils.lua",
-
-    "/apps/turtle/build_roof.lua",
-    "/apps/turtle/lava_refill.lua",
-    "/apps/turtle/chunk_miner.lua",
-    "/apps/turtle/tunnel_miner.lua",
-    "/apps/turtle/quartz_miner.lua",
-    "/apps/turtle/quartz_replacer.lua",
-}
-
-local downloads_storage = {
-    "/frekos/libs/api/storage.lua",
-
-    "/frekos/libs/storageUtils.lua",
-
-    "/apps/storage.lua",
 }
 
 local protocol = "http"
 if app_config.has_ssl then
     protocol = protocol .. "s"
-end
-
-local args = {...}
-local device_uuid = args[1]
-
-if not device_uuid then
-    print("Error: No UUID specified.")
-    print("Usage: wget run <url> <uuid>")
-    return
 end
 
 local server_hostname = protocol .. "://" .. app_config.hostname .. app_config.scripts_path
@@ -125,14 +103,6 @@ function main()
     os.setComputerLabel(device_config.name)
 
     local all_downloads = downloads
-    if turtle then
-        all_downloads = table.combine(all_downloads, downloads_turtle)
-    end
-
-    if device_config.type == "storage_module" or turtle then
-        all_downloads = table.combine(all_downloads, downloads_storage)
-    end
-
     bulkDownload(all_downloads)
 
     print()
@@ -148,8 +118,8 @@ function main()
         send_events = false,
     }
 
-    saveConfig("/frekos/settings.conf", settings)
-    saveConfig("/frekos/device.conf", device_config)
+    saveConfig("/frekos/config/settings.conf", settings)
+    saveConfig("/frekos/config/device.conf", device_config)
 
     print("Install complete!")
     print()
@@ -160,7 +130,7 @@ end
 
 function clear()
     term.clear()
-    term.setCursorPos(1,1)
+    term.setCursorPos(1, 1)
 end
 
 function hr()
@@ -175,20 +145,26 @@ function saveConfig(path, variable)
 end
 
 function get(url)
-    local ok, err = http.checkURL(url)
+    local request = http.request or http.native.request
+
+    local ok, err = request(url)
     if not ok then
-        return nil
+        return nil, err
     end
 
-    local response = http.get(url, nil, true)
-    if not response then
-        return nil
+    while true do
+        local event, event_url, handle = coroutine.yield()
+
+        if event == "http_success" and event_url == url then
+            local content = handle.readAll()
+            handle.close()
+            return content, nil
+        end
+
+        if event == "http_failure" and event_url == url then
+            return nil, handle
+        end
     end
-
-    local text = response.readAll()
-    response.close()
-
-    return text
 end
 
 function bulkDownload(filepaths)

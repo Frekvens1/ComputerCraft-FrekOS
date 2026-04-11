@@ -16,7 +16,9 @@ function musicPage()
                     local event = {os.pullEventRaw("mouse_click")}
                     os.queueEvent(table.unpack(event))
                 end, function()
-                    playStream(song.dfpwm_uuid)
+                    while true do
+                        playStream(song.dfpwm_uuid)
+                    end
                 end)
             end
         }))

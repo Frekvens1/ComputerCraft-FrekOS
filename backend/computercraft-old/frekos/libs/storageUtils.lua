@@ -188,7 +188,7 @@ local function afterLoad()
         end
     end)
 
-    if turtle then
+    if turtle and false then
         FrekOS.events.addTask("turtle_storage", function(event)
             if event[1] ~= "turtle_inventory" then
                 return
