@@ -44,6 +44,7 @@ local downloads = {
 
     -- region { System files - Applications }
 
+    "/frekos/apps/tps.lua",
     "/frekos/apps/shell.lua",
     "/frekos/apps/update.lua",
     "/frekos/apps/clean_install.lua",
@@ -57,6 +58,7 @@ local downloads = {
 
     "/frekos/kernel/api/frekos.lua",
     "/frekos/kernel/api/backend.lua",
+    "/frekos/kernel/api/screen.lua",
     "/frekos/kernel/api/fs.lua",
     "/frekos/kernel/api/http.lua",
     "/frekos/kernel/api/io.lua",

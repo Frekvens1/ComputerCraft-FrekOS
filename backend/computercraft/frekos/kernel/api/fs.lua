@@ -130,17 +130,27 @@ function api.loadConfig(path)
     return textutils.unserialize(api.read(path))
 end
 
-function api.sanitize(value)
-    if type(value) == "function" then
-        return nil
-    elseif type(value) == "table" then
+function api.sanitize(value, seen)
+    seen = seen or {}
+
+    local t = type(value)
+    if t == "table" then
+        if seen[value] then
+            return "<recursive>"
+        end
+        seen[value] = true
+    end
+
+    if t == "function" then
+        return "<function>"
+
+    elseif t == "table" then
         local out = {}
         for k, v in pairs(value) do
-            if type(v) ~= "function" then
-                out[k] = api.sanitize(v)
-            end
+            out[k] = api.sanitize(v, seen)
         end
         return out
+
     else
         return value
     end

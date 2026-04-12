@@ -54,6 +54,10 @@ local function shell()
             os.run("/frekos/apps/wipe_device.lua")
         end)
 
+        self.register("tps", function()
+            os.run("/frekos/apps/tps.lua")
+        end)
+
         self.register("update", function()
             os.run("/frekos/apps/update.lua")
         end)
