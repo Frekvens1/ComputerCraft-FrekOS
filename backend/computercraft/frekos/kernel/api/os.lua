@@ -24,6 +24,10 @@ function api.version()
     return "FrekOS v0.1"
 end
 
+function api.queueEvent(name, ...)
+    api.native.queueEvent(name, ...)
+end
+
 function api.pullEvent(filter)
     return api.pullEventRaw("pull", filter)
 end

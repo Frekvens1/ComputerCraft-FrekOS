@@ -47,6 +47,7 @@ local downloads = {
     "/frekos/apps/shell.lua",
     "/frekos/apps/update.lua",
     "/frekos/apps/clean_install.lua",
+    "/frekos/apps/wipe_device.lua",
 
     -- endregion
 
@@ -55,6 +56,7 @@ local downloads = {
     "/frekos/kernel/init.lua",
 
     "/frekos/kernel/api/frekos.lua",
+    "/frekos/kernel/api/backend.lua",
     "/frekos/kernel/api/fs.lua",
     "/frekos/kernel/api/http.lua",
     "/frekos/kernel/api/io.lua",
@@ -68,7 +70,7 @@ local downloads = {
     "/frekos/kernel/core/process.lua",
     "/frekos/kernel/core/scheduler.lua",
     "/frekos/kernel/core/syscalls.lua",
-    "/frekos/kernel/core/util.lua",
+    "/frekos/kernel/core/utils.lua",
 
     "/frekos/kernel/drivers/disk.lua",
     "/frekos/kernel/drivers/gpu.lua",
@@ -76,6 +78,8 @@ local downloads = {
     "/frekos/kernel/drivers/monitor.lua",
 
     "/frekos/kernel/tasks/shell.lua",
+    "/frekos/kernel/tasks/backend.lua",
+    "/frekos/kernel/tasks/teleport.lua",
 
     -- endregion
 

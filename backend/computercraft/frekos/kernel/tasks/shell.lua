@@ -1,1 +1,1 @@
-return dofile("/frekos/apps/shell.lua").new()
+return dofile("/frekos/apps/shell.lua")

@@ -1,106 +1,107 @@
-local shell = {}
+local function shell()
+    local self = {}
 
-function shell.new()
-    term.setCursorBlink(true)
-    term.setTextColor(colors.orange)
-    term.setBackgroundColor(colors.black)
+    local function init()
+        self.cwd = "/"
+        self.commands = {}
 
-    term.clear()
-    term.setCursorPos(1, 1)
+        term.setCursorBlink(true)
+        term.setTextColor(colors.orange)
+        term.setBackgroundColor(colors.black)
 
-    print("FrekOS v0.1")
-    local width, height = term.getSize()
-    term.setTextColor(colors.lightGray)
-    print(string.rep("-", width))
-    term.setTextColor(1)
+        term.clear()
+        term.setCursorPos(1, 1)
 
-    local cwd = "/"
+        print("FrekOS v0.1")
+        term.setTextColor(colors.lightGray)
+        local width, height = term.getSize()
+        print(string.rep("\131", width))
+        term.setTextColor(colors.white)
 
-    local commands = {}
+        ---------------------------------------------------------
+        -- Built‑in commands
+        ---------------------------------------------------------
+        self.register("echo", function(args)
+            print(table.concat(args, " "))
+        end)
 
-    ---------------------------------------------------------
-    -- Register a command
-    ---------------------------------------------------------
-    local function register(name, fn)
-        commands[name] = fn
+        self.register("cd", function(args)
+            local path = args[1] or "/"
+            if fs.isDir(path) then
+                self.cwd = path
+            else
+                print("No such directory:", path)
+            end
+        end)
+
+        self.register("ls", function(args)
+            local list = fs.list(self.cwd)
+            for _, item in ipairs(list) do
+                print(item)
+            end
+        end)
+
+        self.register("exit", function()
+            print("Exiting shell")
+            return "exit"
+        end)
+
+        self.register("clean_install", function()
+            os.run("/frekos/apps/clean_install.lua")
+        end)
+
+        self.register("wipe_device", function()
+            os.run("/frekos/apps/wipe_device.lua")
+        end)
+
+        self.register("update", function()
+            os.run("/frekos/apps/update.lua")
+        end)
+
+        self.register("lua", function()
+            print("Entering Lua REPL. Type 'exit' to leave.")
+
+            while true do
+                write("lua> ")
+                local line = read()
+
+                if not line or line == "exit" then
+                    print("Leaving Lua REPL.")
+                    return
+                end
+
+                -- Try "return <expr>" first
+                local fn = load("return " .. line, "repl", "t", _G)
+                if not fn then
+                    -- Fall back to statement mode
+                    fn = load(line, "repl", "t", _G)
+                end
+
+                if fn then
+                    local ok, result = pcall(fn)
+                    if ok then
+                        print(result)
+                    else
+                        print("Error:", result)
+                    end
+                else
+                    print("Syntax error")
+                end
+            end
+        end)
     end
 
-    ---------------------------------------------------------
-    -- Built‑in commands
-    ---------------------------------------------------------
-    register("echo", function(args)
-        print(table.concat(args, " "))
-    end)
+    function self.register(name, fn)
+        self.commands[name] = fn
+    end
 
-    register("cd", function(args)
-        local path = args[1] or "/"
-        if fs.isDir(path) then
-            cwd = path
-        else
-            print("No such directory:", path)
-        end
-    end)
-
-    register("ls", function(args)
-        local list = fs.list(cwd)
-        for _, item in ipairs(list) do
-            print(item)
-        end
-    end)
-
-    register("exit", function()
-        print("Exiting shell")
-        return "exit"
-    end)
-
-    register("clean_install", function()
-        os.run("/frekos/apps/clean_install.lua")
-    end)
-
-    register("update", function()
-        os.run("/frekos/apps/update.lua")
-    end)
-
-    register("lua", function()
-        print("Entering Lua REPL. Type 'exit' to leave.")
+    function self.loop()
+        init()
 
         while true do
-            write("lua> ")
-            local line = read()
-
-            if not line or line == "exit" then
-                print("Leaving Lua REPL.")
-                return
-            end
-
-            -- Try "return <expr>" first
-            local fn = load("return " .. line, "repl", "t", _G)
-            if not fn then
-                -- Fall back to statement mode
-                fn = load(line, "repl", "t", _G)
-            end
-
-            if fn then
-                local ok, result = pcall(fn)
-                if ok then
-                    print(result)
-                else
-                    print("Error:", result)
-                end
-            else
-                print("Syntax error")
-            end
-        end
-    end)
-
-    return function()
-        ---------------------------------------------------------
-        -- Main shell loop
-        ---------------------------------------------------------
-        while true do
-            term.setTextColor(colors.yellow) -- yellow
-            write(cwd .. "> ")
-            term.setTextColor(colors.white) -- white
+            term.setTextColor(colors.yellow)
+            write(self.cwd .. "> ")
+            term.setTextColor(colors.white)
 
             local line = read()
 
@@ -113,7 +114,7 @@ function shell.new()
             table.remove(parts, 1)
 
             if cmd then
-                local fn = commands[cmd]
+                local fn = self.commands[cmd]
                 if fn then
                     local result = fn(parts)
                     if result == "exit" then
@@ -125,6 +126,8 @@ function shell.new()
             end
         end
     end
+
+    return self
 end
 
-return shell
+return shell().loop

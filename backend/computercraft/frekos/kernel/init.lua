@@ -41,6 +41,8 @@ local function KERNEL()
             frekos.spawn(fn)
         end
 
+        core.events.init()
+        
         while true do
             core.events.handleEvent()
         end
