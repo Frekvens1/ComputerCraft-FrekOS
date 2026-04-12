@@ -144,6 +144,10 @@ function api.websocket(path)
 end
 
 function api.send(...)
+    if not api.getConnection() then
+        return
+    end
+
     local args = fs.sanitize({ ... })
     api.getConnection().send(textutils.serializeJSON(table.unpack(args)))
 end

@@ -41,26 +41,14 @@ local function shell()
             end
         end)
 
-        self.register("exit", function()
+        self.register("exit", function(args)
             print("Exiting shell")
             return "exit"
         end)
 
-        self.register("clean_install", function()
-            os.run("/frekos/apps/clean_install.lua")
-        end)
-
-        self.register("wipe_device", function()
-            os.run("/frekos/apps/wipe_device.lua")
-        end)
-
-        self.register("tps", function()
-            os.run("/frekos/apps/tps.lua")
-        end)
-
-        self.register("update", function()
-            os.run("/frekos/apps/update.lua")
-        end)
+        self.registerFolder("/frekos/apps")
+        self.registerFolder("/apps/turtle")
+        self.registerFolder("/apps")
 
         self.register("lua", function()
             print("Entering Lua REPL. Type 'exit' to leave.")
@@ -97,6 +85,25 @@ local function shell()
 
     function self.register(name, fn)
         self.commands[name] = fn
+    end
+
+    function self.registerFolder(folder_path)
+        for _, file in ipairs(fs.list(folder_path)) do
+            local file_path = fs.combine(folder_path, file)
+
+            if not fs.isDir(file_path) and file:match("%.lua$") then
+                local name = file:gsub("%.lua$", "")
+
+                self.register(file, function(args)
+                    os.run(file_path, table.unpack(args))
+                end)
+
+                self.register(name, function(args)
+                    os.run(file_path, table.unpack(args))
+                end)
+            end
+
+        end
     end
 
     function self.loop()

@@ -35,6 +35,17 @@ app_config = {
 local downloads = {
     "/startup.lua",
 
+    -- region { Applications }
+
+    "/apps/turtle/build_roof.lua",
+    "/apps/turtle/chunk_miner.lua",
+    "/apps/turtle/lava_refill.lua",
+    "/apps/turtle/quartz_miner.lua",
+    "/apps/turtle/quartz_replacer.lua",
+    "/apps/turtle/tunnel_miner.lua",
+
+    -- endregion
+
     -- region { System files - Boot }
 
     "/frekos/boot/bios.lua",
@@ -66,6 +77,7 @@ local downloads = {
     "/frekos/kernel/api/peripheral.lua",
     "/frekos/kernel/api/redstone.lua",
     "/frekos/kernel/api/textutils.lua",
+    "/frekos/kernel/api/turtle.lua",
 
     "/frekos/kernel/core/events.lua",
     "/frekos/kernel/core/loader.lua",
@@ -82,6 +94,7 @@ local downloads = {
     "/frekos/kernel/tasks/shell.lua",
     "/frekos/kernel/tasks/backend.lua",
     "/frekos/kernel/tasks/teleport.lua",
+    "/frekos/kernel/tasks/turtle.lua",
 
     -- endregion
 
@@ -191,6 +204,7 @@ function download(filepath, save_path)
 
     if (fileContent == nil) then
         print("  - Download failed!\n")
+        coroutine.yield("key")
         return false
     end
 

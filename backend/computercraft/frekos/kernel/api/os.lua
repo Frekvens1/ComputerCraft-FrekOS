@@ -31,10 +31,21 @@ function api.version()
     return "FrekOS v0.1"
 end
 
-function api.run(path, selected_env)
-    local env = {}
+function api.run(env_or_path, path_or_nil, ...)
+    local env, path, args
+
+    if type(env_or_path) == "table" then
+        env = env_or_path
+        path = path_or_nil
+        args = { ... }
+    else
+        env = {}
+        path = env_or_path
+        args = { path_or_nil, ... }
+    end
+
     env._ENV = env
-    setmetatable(env, { __index = selected_env or _ENV })
+    setmetatable(env, { __index = _G })
 
     local fn, load_error = loadfile(path)
     if not fn then
@@ -46,11 +57,13 @@ function api.run(path, selected_env)
     setfenv(fn, env)
 
     term.setCursorBlink(false)
-    local ok, run_error = pcall(fn)
+    local ok, run_error = pcall(fn, table.unpack(args))
     term.setCursorBlink(true)
 
     if not ok then
-        printError("Failed to run program:")
+        if run_error ~= "Terminated" then
+            printError("Failed to run program:")
+        end
         printError(run_error)
         return nil, run_error
     end
