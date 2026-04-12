@@ -3,6 +3,7 @@
 
 local extra_allowed_apis = {
     textutils = true,
+    paintutils = true,
     keys = true,
     colors = true,
     colours = true,
