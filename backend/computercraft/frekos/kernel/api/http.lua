@@ -9,10 +9,7 @@ local function awaitResponse(url)
         local event, event_url, handle = coroutine.yield()
 
         if event == "http_success" and event_url == url then
-            local content = handle.readAll()
-            handle.close()
-
-            return content
+            return handle
         end
 
         if event == "http_failure" and event_url == url then
@@ -133,7 +130,7 @@ function api.checkURLAsync(url)
 end
 
 function api.checkURL(url)
-    return api.checkURL(url)
+    return api.checkURLAsync(url)
 end
 
 function api.websocketAsync(...)

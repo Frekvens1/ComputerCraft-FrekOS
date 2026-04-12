@@ -38,6 +38,7 @@ local downloads = {
     -- region { Applications }
 
     "/apps/gui_test.lua",
+    "/apps/teleport_requester.lua",
 
     "/apps/turtle/build_roof.lua",
     "/apps/turtle/chunk_miner.lua",
@@ -70,7 +71,6 @@ local downloads = {
     "/frekos/kernel/init.lua",
 
     "/frekos/kernel/api/frekos.lua",
-    "/frekos/kernel/api/backend.lua",
     "/frekos/kernel/api/screen.lua",
     "/frekos/kernel/api/fs.lua",
     "/frekos/kernel/api/http.lua",
@@ -82,8 +82,12 @@ local downloads = {
     "/frekos/kernel/api/turtle.lua",
     "/frekos/kernel/api/table.lua",
 
-    "/frekos/kernel/api/gui.lua",
+    "/frekos/kernel/api/backend.lua",
+    "/frekos/kernel/api/backend/device.lua",
+    "/frekos/kernel/api/backend/music.lua",
+    "/frekos/kernel/api/backend/storage.lua",
 
+    "/frekos/kernel/api/gui.lua",
     "/frekos/kernel/api/gui/createApp.lua",
     "/frekos/kernel/api/gui/render.lua",
 

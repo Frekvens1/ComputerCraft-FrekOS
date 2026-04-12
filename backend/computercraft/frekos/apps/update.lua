@@ -1,12 +1,12 @@
 local function main()
-    local content, getErr = http.get(frekos.settings.update_url)
-    if not content then
+    local response, getErr = http.get(frekos.settings.update_url)
+    if not response then
         printError("An error occurred while fetching the updater:")
         printError(getErr)
         return
     end
 
-    local fn, loadErr = load(content)
+    local fn, loadErr = load(response.readAll())
     if not fn then
         printError("An error occurred while loading the updater:")
         printError(loadErr)

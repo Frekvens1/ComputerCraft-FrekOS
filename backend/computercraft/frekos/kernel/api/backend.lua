@@ -169,4 +169,8 @@ function api.getConnection()
     return api.connection
 end
 
+function api.init()
+    api.api = fs.loadFolder("/frekos/kernel/api/backend")
+end
+
 return api
