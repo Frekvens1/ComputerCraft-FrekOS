@@ -1,23 +1,36 @@
 local function shell()
     local self = {}
+    local commands, folder_commands, current_path, is_running
+
+    local function registerFolder(tbl, folder_path)
+        for _, file in ipairs(fs.list(folder_path)) do
+            local file_path = fs.combine(folder_path, file)
+
+            if not fs.isDir(file_path) and file:match("%.lua$") then
+                local name = file:gsub("%.lua$", "")
+                local fn = function(args)
+                    os.run(_G, file_path, table.unpack(args))
+                end
+
+                tbl[file] = fn
+                tbl[name] = fn
+
+            end
+
+        end
+    end
 
     local function init()
-        self.cwd = "/"
-        self.commands = {}
+        if current_path == nil then
+            current_path = "/"
+        end
+
+        commands = {}
+        folder_commands = {}
+        is_running = true
 
         term.setCursorBlink(true)
-        term.setTextColor(colors.orange)
-        term.setBackgroundColor(colors.black)
-
-        term.clear()
-        term.setCursorPos(1, 1)
-
-        print("FrekOS v0.1")
-        term.setTextColor(colors.lightGray)
-        local width, height = term.getSize()
-        print(string.rep("\131", width))
-        term.setTextColor(colors.white)
-
+        os.run("/frekos/apps/welcome_screen.lua")
         ---------------------------------------------------------
         -- Built‑in commands
         ---------------------------------------------------------
@@ -27,38 +40,100 @@ local function shell()
 
         self.register("cd", function(args)
             local path = args[1] or "/"
+
+            if not string.find(path, "^/") then
+                path = fs.combine(current_path, path)
+            end
+
+            path = fs.normalize(path)
+
             if fs.isDir(path) then
-                self.cwd = path
+                self.setDir(path)
             else
                 print("No such directory:", path)
             end
         end)
 
         self.register("ls", function(args)
-            local list = fs.list(self.cwd)
-            for _, item in ipairs(list) do
-                print(item)
+            local path = args[1] and fs.combine(current_path, args[1]) or current_path
+            if not fs.exists(path) or not fs.isDir(path) then
+                print("No such directory:", path)
+                return
             end
+
+            local items = fs.list(path)
+
+            local dirs, files = {}, {}
+            for _, item in ipairs(items) do
+                local full = fs.combine(path, item)
+                if fs.isDir(full) then
+                    table.insert(dirs, item)
+                else
+                    table.insert(files, item)
+                end
+            end
+
+            table.sort(dirs)
+            table.sort(files)
+
+            local longest = 0
+            for _, item in ipairs(items) do
+                if #item > longest then
+                    longest = #item
+                end
+            end
+
+            local w = term.getSize()
+            local colWidth = longest + 2
+            local cols = math.max(1, math.floor(w / colWidth))
+
+            local function printGroup(list, color)
+                for i, item in ipairs(list) do
+                    term.setTextColor(color)
+                    term.write(item)
+                    term.write(string.rep(" ", colWidth - #item))
+
+                    if i % cols == 0 then
+                        print()
+                    end
+                end
+
+                if #list % cols ~= 0 then
+                    print()
+                end
+            end
+
+            if #dirs > 0 then
+                printGroup(dirs, colors.green)
+            end
+
+            if #files > 0 then
+                printGroup(files, colors.white)
+            end
+
+            term.setTextColor(colors.white)
         end)
 
         self.register("exit", function(args)
-            print("Exiting shell")
             return "exit"
         end)
 
-        self.registerFolder("/frekos/apps")
-        self.registerFolder("/apps/turtle")
-        self.registerFolder("/apps")
+        registerFolder(folder_commands, current_path)
+        registerFolder(commands, "/frekos/apps")
+        registerFolder(commands, "/apps/turtle")
+        registerFolder(commands, "/apps")
 
         self.register("lua", function()
-            print("Entering Lua REPL. Type 'exit' to leave.")
+            term.setTextColor(colors.yellow)
+            print("Interactive Lua prompt.")
+            print("Type 'exit' to leave.")
+            term.setTextColor(colors.white)
 
-            while true do
+            while is_running do
                 write("lua> ")
                 local line = read()
 
-                if not line or line == "exit" then
-                    print("Leaving Lua REPL.")
+                if not line or line == "exit" or line == "exit()" then
                     return
                 end
 
@@ -83,35 +158,12 @@ local function shell()
         end)
     end
 
-    function self.register(name, fn)
-        self.commands[name] = fn
-    end
-
-    function self.registerFolder(folder_path)
-        for _, file in ipairs(fs.list(folder_path)) do
-            local file_path = fs.combine(folder_path, file)
-
-            if not fs.isDir(file_path) and file:match("%.lua$") then
-                local name = file:gsub("%.lua$", "")
-
-                self.register(file, function(args)
-                    os.run(file_path, table.unpack(args))
-                end)
-
-                self.register(name, function(args)
-                    os.run(file_path, table.unpack(args))
-                end)
-            end
-
-        end
-    end
-
-    function self.loop()
+    local function start()
         init()
 
-        while true do
+        while is_running do
             term.setTextColor(colors.yellow)
-            write(self.cwd .. "> ")
+            write(current_path .. "> ")
             term.setTextColor(colors.white)
 
             local line = read()
@@ -125,7 +177,7 @@ local function shell()
             table.remove(parts, 1)
 
             if cmd then
-                local fn = self.commands[cmd]
+                local fn = commands[cmd] or folder_commands[cmd]
                 if fn then
                     local result = fn(parts)
                     if result == "exit" then
@@ -138,7 +190,29 @@ local function shell()
         end
     end
 
-    return self
+    function self.register(name, fn)
+        commands[name] = fn
+    end
+
+    function self.exit()
+        is_running = false
+    end
+
+    function self.setDir(path)
+        current_path = path
+
+        folder_commands = {}
+        registerFolder(folder_commands, current_path)
+    end
+
+    function self.dir()
+        return current_path
+    end
+
+    return self, start
 end
 
-return shell().loop
+local sh, start = shell()
+_G.shell = sh
+
+start()

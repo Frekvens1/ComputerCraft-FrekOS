@@ -90,6 +90,20 @@ end
 
 -- endregion
 
+function api.normalize(path)
+    local parts = {}
+
+    for part in string.gmatch(path, "[^/]+") do
+        if part == ".." then
+            table.remove(parts)
+        elseif part ~= "." and part ~= "" then
+            table.insert(parts, part)
+        end
+    end
+
+    return "/" .. table.concat(parts, "/")
+end
+
 function api.read(path, bytes)
     local mode = "r"
     if bytes then
@@ -143,6 +157,9 @@ function api.sanitize(value, seen)
 
     if t == "function" then
         return "<function>"
+
+    elseif t == "thread" then
+        return "<thread>"
 
     elseif t == "table" then
         local out = {}

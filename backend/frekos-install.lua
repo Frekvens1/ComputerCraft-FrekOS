@@ -1,3 +1,6 @@
+term.setTextColor(colors.white)
+term.setBackgroundColor(colors.black)
+
 term.clear()
 term.setCursorPos(1, 1)
 
@@ -38,6 +41,7 @@ local downloads = {
     -- region { Applications }
 
     "/apps/gui_test.lua",
+    "/apps/music.lua",
     "/apps/teleport_requester.lua",
 
     "/apps/turtle/build_roof.lua",
@@ -58,10 +62,16 @@ local downloads = {
 
     -- region { System files - Applications }
 
-    "/frekos/apps/tps.lua",
-    "/frekos/apps/shell.lua",
-    "/frekos/apps/update.lua",
+    "/frekos/apps/cat.lua",
     "/frekos/apps/clean_install.lua",
+    "/frekos/apps/kiosk.lua",
+    "/frekos/apps/lockscreen.lua",
+    "/frekos/apps/send_characters.lua",
+    "/frekos/apps/shell.lua",
+    "/frekos/apps/tps.lua",
+    "/frekos/apps/turtle.lua",
+    "/frekos/apps/update.lua",
+    "/frekos/apps/welcome_screen.lua",
     "/frekos/apps/wipe_device.lua",
 
     -- endregion
@@ -72,6 +82,7 @@ local downloads = {
 
     "/frekos/kernel/api/frekos.lua",
     "/frekos/kernel/api/screen.lua",
+    "/frekos/kernel/api/audio.lua",
     "/frekos/kernel/api/fs.lua",
     "/frekos/kernel/api/http.lua",
     "/frekos/kernel/api/io.lua",
@@ -108,10 +119,11 @@ local downloads = {
     "/frekos/kernel/drivers/modem.lua",
     "/frekos/kernel/drivers/monitor.lua",
 
-    "/frekos/kernel/tasks/shell.lua",
     "/frekos/kernel/tasks/backend.lua",
     "/frekos/kernel/tasks/teleport.lua",
     "/frekos/kernel/tasks/turtle.lua",
+    "/frekos/kernel/tasks/peripheral.lua",
+    "/frekos/kernel/tasks/audio.lua",
 
     -- endregion
 

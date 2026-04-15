@@ -74,24 +74,56 @@ _G.write = function(str)
     term.write(str)
 end
 
-_G.read = function()
+_G.read = function(maskChar)
     local buffer = {}
-    local cursor = 0
+    local cursor = 0  -- logical cursor index
+
+    -- Capture starting cursor position
+    local originX, originY = term.getCursorPos()
+    local w = term.getSize()
+
+    -- Maximum width of the editable area
+    local maxVisible = w - originX + 1
 
     local function redraw()
-        local current_x, current_y = term.getCursorPos()
-        term.setCursorPos(current_x, current_y)
-        write(table.concat(buffer))
-        -- Clear any leftover characters
-        write(" ")
-        term.setCursorPos(current_x - (#buffer - cursor), current_y)
+        -- Determine visible window
+        local start = 1
+
+        if cursor + 1 > start + maxVisible - 1 then
+            start = cursor + 1 - maxVisible + 1
+        end
+
+        if cursor < start - 1 then
+            start = cursor
+        end
+
+        -- Build visible text
+        local text = table.concat(buffer)
+
+        if maskChar then
+            text = text:gsub(".", maskChar)
+        end
+
+        local visible = text:sub(start, start + maxVisible - 1)
+
+        -- Draw line starting at origin
+        term.setCursorPos(originX, originY)
+        term.write(visible)
+
+        -- Clear leftover characters
+        term.write(string.rep(" ", maxVisible - #visible))
+
+        -- Move cursor to correct terminal position
+        local cursorX = originX + (cursor - (start - 1))
+        term.setCursorPos(cursorX, originY)
     end
+
+    redraw()
 
     while true do
         local event, p1 = coroutine.yield()
 
         if event == "char" then
-            -- Insert character at cursor
             table.insert(buffer, cursor + 1, p1)
             cursor = cursor + 1
             redraw()
@@ -99,12 +131,10 @@ _G.read = function()
         elseif event == "key" then
             local key = p1
 
-            -- ENTER
             if key == keys.enter then
                 print()
                 return table.concat(buffer)
 
-            -- BACKSPACE
             elseif key == keys.backspace then
                 if cursor > 0 then
                     table.remove(buffer, cursor)
@@ -112,40 +142,31 @@ _G.read = function()
                     redraw()
                 end
 
-            -- DELETE
             elseif key == keys.delete then
                 if cursor < #buffer then
                     table.remove(buffer, cursor + 1)
                     redraw()
                 end
 
-            -- LEFT ARROW
             elseif key == keys.left then
                 if cursor > 0 then
                     cursor = cursor - 1
-                    local x, y = term.getCursorPos()
-                    term.setCursorPos(x - 1, y)
+                    redraw()
                 end
 
-            -- RIGHT ARROW
             elseif key == keys.right then
                 if cursor < #buffer then
                     cursor = cursor + 1
-                    local x, y = term.getCursorPos()
-                    term.setCursorPos(x + 1, y)
+                    redraw()
                 end
 
-            -- HOME
             elseif key == keys.home then
-                local x, y = term.getCursorPos()
-                term.setCursorPos(x - cursor, y)
                 cursor = 0
+                redraw()
 
-            -- END
             elseif key == keys["end"] then
-                local x, y = term.getCursorPos()
-                term.setCursorPos(x + (#buffer - cursor), y)
                 cursor = #buffer
+                redraw()
             end
         end
     end

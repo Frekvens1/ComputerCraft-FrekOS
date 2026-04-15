@@ -6,10 +6,11 @@ local api = {
 
 -- endregion
 
-function api.spawn(fn)
+function api.spawn(fn, name)
     local process = {
         thread = coroutine.create(fn),
         filter = nil,
+        name = name
     }
 
     table.insert(api.processes, process)

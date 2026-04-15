@@ -32,20 +32,21 @@ function api.version()
 end
 
 function api.run(env_or_path, path_or_nil, ...)
-    local env, path, args
+    local env = {}
+    local selected_env, path, args
 
     if type(env_or_path) == "table" then
-        env = env_or_path
+        selected_env = env_or_path
         path = path_or_nil
         args = { ... }
     else
-        env = {}
+        selected_env = _G
         path = env_or_path
         args = { path_or_nil, ... }
     end
 
     env._ENV = env
-    setmetatable(env, { __index = _G })
+    setmetatable(env, { __index = table.deepCopy(selected_env) })
 
     local fn, load_error = loadfile(path)
     if not fn then
@@ -131,11 +132,9 @@ function api.day(locale)
     return api.native.day(locale)
 end
 
-
 function api.epoch(locale)
     return api.native.epoch(locale)
 end
-
 
 function api.date(format, time)
     return api.native.date(format, time)

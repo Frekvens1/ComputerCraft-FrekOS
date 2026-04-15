@@ -26,7 +26,7 @@ function api.handleEvent()
     -- print(eventName)
 
     if frekos.settings.send_events then
-        backend.send(fs.sanitize(event))
+        backend.send(event)
     end
 
     for _, process in ipairs(frekos.processes) do

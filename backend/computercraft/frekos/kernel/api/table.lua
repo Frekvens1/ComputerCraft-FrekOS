@@ -73,3 +73,27 @@ function table.length(self)
 
     return count
 end
+
+function table.deepCopy(tbl, seen)
+    if type(tbl) ~= "table" then
+        return tbl
+    end
+
+    if seen and seen[tbl] then
+        return seen[tbl]
+    end
+
+    local copy = {}
+    seen = seen or {}
+    seen[tbl] = copy
+
+    for k, v in pairs(tbl) do
+        if type(v) == "table" then
+            copy[k] = table.deepCopy(v, seen)
+        else
+            copy[k] = v
+        end
+    end
+
+    return copy
+end

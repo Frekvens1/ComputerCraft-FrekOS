@@ -38,8 +38,16 @@ local function KERNEL()
         end
 
         for name, fn in pairs(tasks) do
-            frekos.spawn(fn)
+            frekos.spawn(fn, name)
         end
+
+        frekos.spawn(function()
+            dofileSandbox("/frekos/apps/shell.lua", "shell")
+            term.setTextColor(colors.yellow)
+            print("Nap time!")
+            os.sleep(1)
+            os.shutdown()
+        end)
 
         core.events.init()
         

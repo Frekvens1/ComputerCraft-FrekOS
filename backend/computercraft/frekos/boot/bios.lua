@@ -9,6 +9,7 @@ local function BIOS()
     function self.init()
         term.setCursorBlink(false)
 
+        _G._HOST = _G._HOST .. " (FrekOS)"
         local fn, load_error = self.loadfile("/frekos/kernel/init.lua")
         if not fn then
             term.clear()
