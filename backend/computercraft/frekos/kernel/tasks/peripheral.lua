@@ -1,10 +1,10 @@
 local function task()
+    local handleEvent = peripheral.handleEvent
+    peripheral.handleEvent = nil
+
     while true do
         local event = { coroutine.yield() }
-
-        if event[1] == "speaker_audio_empty" then
-
-        end
+        handleEvent(event)
     end
 end
 

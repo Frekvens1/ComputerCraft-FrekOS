@@ -5,7 +5,7 @@ local api = {
 }
 
 -- local chunk_size = 16 * 1024
-local chunk_size = 16 * 256
+local chunk_size = 16 * 512
 
 -- endregion
 

@@ -5,15 +5,21 @@ local api = {
 }
 
 local function updateInventory()
-    -- storage.updateTurtleInventory()
+    storage.updateTurtleInventory()
 end
 
 -- endregion
 
 -- region { native functions }
 
-function api.isTurtle()
-    return api.native ~= nil
+function api.craft(count)
+    if count ~= nil then
+        count = tonumber(count)
+    else
+        count = 1
+    end
+
+    return api.native.craft(count)
 end
 
 function api.forward()
@@ -70,72 +76,28 @@ function api.turnRight()
     return ok, err
 end
 
-function api.refuel(count)
-    return api.native.refuel(count)
+function api.dig(side)
+    return api.native.dig(side)
 end
 
-function api.getFuelLevel()
-    return api.native.getFuelLevel()
+function api.digUp(side)
+    return api.native.digUp(side)
 end
 
-function api.getFuelLimit()
-    return api.native.getFuelLimit()
+function api.digDown(side)
+    return api.native.digDown(side)
 end
 
-function api.attack()
-    return api.native.attack()
+function api.place(text)
+    return api.native.place(text)
 end
 
-function api.inspect()
-    return api.native.inspect()
+function api.placeUp(text)
+    return api.native.placeUp(text)
 end
 
-function api.inspectUp()
-    return api.native.inspectUp()
-end
-
-function api.inspectDown()
-    return api.native.inspectDown()
-end
-
-function api.detect()
-    return api.native.detect()
-end
-
-function api.detectUp()
-    return api.native.detectUp()
-end
-
-function api.detectDown()
-    return api.native.detectDown()
-end
-
-function api.dig()
-    return api.native.dig()
-end
-
-function api.digUp()
-    return api.native.digUp()
-end
-
-function api.digDown()
-    return api.native.digDown()
-end
-
-function api.place()
-    return api.native.place()
-end
-
-function api.placeUp()
-    return api.native.placeUp()
-end
-
-function api.placeDown()
-    return api.native.placeDown()
-end
-
-function api.getItemCount()
-    return api.native.getItemCount()
+function api.placeDown(text)
+    return api.native.placeDown(text)
 end
 
 function api.drop(count)
@@ -162,6 +124,70 @@ function api.dropDown(count)
     return api.native.dropDown(count)
 end
 
+function api.select(index)
+    index = tonumber(index)
+    if index == nil then
+        index = 1
+    end
+
+    if index > 16 then
+        index = 16
+    end
+
+    if index < 1 then
+        index = 1
+    end
+
+    local count = api.native.select(index)
+    updateInventory()
+
+    return count
+end
+
+function api.getItemCount(slot)
+    return api.native.getItemCount(slot)
+end
+
+function api.getItemSpace(slot)
+    return api.native.getItemSpace(slot)
+end
+
+function api.detect()
+    return api.native.detect()
+end
+
+function api.detectUp()
+    return api.native.detectUp()
+end
+
+function api.detectDown()
+    return api.native.detectDown()
+end
+
+function api.compare()
+    return api.native.compare()
+end
+
+function api.compareUp()
+    return api.native.compareUp()
+end
+
+function api.compareDown()
+    return api.native.compareDown()
+end
+
+function api.attack(side)
+    return api.native.attack(side)
+end
+
+function api.attackUp(side)
+    return api.native.attackUp(side)
+end
+
+function api.attackDown(side)
+    return api.native.attackDown(side)
+end
+
 function api.suck(count)
     if count ~= nil then
         count = tonumber(count)
@@ -186,37 +212,71 @@ function api.suckDown(count)
     return api.native.suckDown(count)
 end
 
-function api.craft(count)
-    if count ~= nil then
-        count = tonumber(count)
-    else
-        count = 1
-    end
-
-    return api.native.craft(count)
+function api.getFuelLevel()
+    return api.native.getFuelLevel()
 end
 
-function api.select(index)
-    index = tonumber(index)
-    if index == nil then
-        index = 1
-    end
+function api.refuel(count)
+    count = tonumber(count)
+    return api.native.refuel(count)
+end
 
-    if index > 16 then
-        index = 16
-    end
+function api.compareTo(slot)
+    slot = tonumber(slot)
+    return api.native.compareTo(slot)
+end
 
-    if index < 1 then
-        index = 1
-    end
+function api.transferTo(slot, count)
+    slot = tonumber(slot)
+    count = tonumber(count)
+    return api.native.transferTo(slot, count)
+end
 
-    local ok, err = api.native.select(index)
-    updateInventory()
+function api.getSelectedSlot()
+    return api.native.getSelectedSlot()
+end
 
-    return ok, err
+function api.getFuelLimit()
+    return api.native.getFuelLimit()
+end
+
+function api.equipLeft()
+    return api.native.equipLeft()
+end
+
+function api.equipRight()
+    return api.native.equipRight()
+end
+
+function api.getEquippedLeft()
+    return api.native.getEquippedLeft()
+end
+
+function api.getEquippedRight()
+    return api.native.getEquippedRight()
+end
+
+function api.inspect()
+    return api.native.inspect()
+end
+
+function api.inspectUp()
+    return api.native.inspectUp()
+end
+
+function api.inspectDown()
+    return api.native.inspectDown()
+end
+
+function api.getItemDetail(slot, detailed)
+    return api.native.getItemDetail(slot, detailed)
 end
 
 -- endregion
+
+function api.isTurtle()
+    return api.native ~= nil
+end
 
 function api.refill(count)
     return api.refuel(count)

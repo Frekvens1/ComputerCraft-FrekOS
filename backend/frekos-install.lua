@@ -42,7 +42,11 @@ local downloads = {
 
     "/apps/gui_test.lua",
     "/apps/music.lua",
+    "/apps/storage.lua",
     "/apps/teleport_requester.lua",
+
+    "/apps/restaurant/kitchen_terminal.lua",
+    "/apps/restaurant/order_terminal.lua",
 
     "/apps/turtle/build_roof.lua",
     "/apps/turtle/chunk_miner.lua",
@@ -80,18 +84,19 @@ local downloads = {
 
     "/frekos/kernel/init.lua",
 
-    "/frekos/kernel/api/frekos.lua",
-    "/frekos/kernel/api/screen.lua",
     "/frekos/kernel/api/audio.lua",
+    "/frekos/kernel/api/frekos.lua",
     "/frekos/kernel/api/fs.lua",
     "/frekos/kernel/api/http.lua",
     "/frekos/kernel/api/io.lua",
     "/frekos/kernel/api/os.lua",
     "/frekos/kernel/api/peripheral.lua",
     "/frekos/kernel/api/redstone.lua",
+    "/frekos/kernel/api/screen.lua",
+    "/frekos/kernel/api/storage.lua",
+    "/frekos/kernel/api/table.lua",
     "/frekos/kernel/api/textutils.lua",
     "/frekos/kernel/api/turtle.lua",
-    "/frekos/kernel/api/table.lua",
 
     "/frekos/kernel/api/backend.lua",
     "/frekos/kernel/api/backend/device.lua",
@@ -119,11 +124,12 @@ local downloads = {
     "/frekos/kernel/drivers/modem.lua",
     "/frekos/kernel/drivers/monitor.lua",
 
+    "/frekos/kernel/tasks/audio.lua",
     "/frekos/kernel/tasks/backend.lua",
+    "/frekos/kernel/tasks/peripheral.lua",
+    "/frekos/kernel/tasks/storage.lua",
     "/frekos/kernel/tasks/teleport.lua",
     "/frekos/kernel/tasks/turtle.lua",
-    "/frekos/kernel/tasks/peripheral.lua",
-    "/frekos/kernel/tasks/audio.lua",
 
     -- endregion
 

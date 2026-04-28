@@ -31,13 +31,22 @@ local function parseParameters(method, ...)
             }
         elseif method == "POST" then
             return {
-            url = args[1],
-            body = args[2],
-            headers = args[3],
-            binary = args[4]
-        }
+                url = args[1],
+                body = args[2],
+                headers = args[3],
+                binary = args[4]
+            }
+        else
+            return {
+                url = args[1],
+                body = args[2],
+                headers = args[3],
+                binary = args[4],
+                method = args[5],
+                redirect = args[6],
+                timeout = args[7]
+            }
         end
-
     end
 end
 
@@ -66,7 +75,7 @@ function api.postAsync(...)
 
     api.native.request({
         url = params.url,
-        body = params.data,
+        body = params.body,
         headers = params.headers,
         binary = params.binary,
         method = params.method or "POST",

@@ -70,7 +70,7 @@ function api.post(path, data)
         return nil
     end
 
-    data = fileUtils.sanitize(data)
+    data = fs.sanitize(data)
     local response = http.post({
         url = url,
         body = textutils.serialiseJSON(data),

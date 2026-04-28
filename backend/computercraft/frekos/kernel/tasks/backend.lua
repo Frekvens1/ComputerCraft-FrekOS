@@ -9,16 +9,25 @@ local function task()
             os.queueEvent(table.unpack(textutils.unserializeJSON(handle)))
 
         elseif event == "websocket_success" then
+            os.queueEvent("frekos_backend_connected")
             backend.connection = handle
             os.run("/frekos/apps/welcome_screen.lua")
 
         elseif event == "websocket_failure" then
-            backend.connection = nil
+            if backend.connection ~= nil then
+                os.queueEvent("frekos_backend_disconnected")
+                backend.connection = nil
+            end
+
             os.run("/frekos/apps/welcome_screen.lua")
             backend.refreshConnection()
 
         elseif event == "websocket_closed" then
-            backend.connection = nil
+            if backend.connection ~= nil then
+                os.queueEvent("frekos_backend_disconnected")
+                backend.connection = nil
+            end
+
             os.run("/frekos/apps/welcome_screen.lua")
             backend.refreshConnection()
         end
