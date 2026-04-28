@@ -11,7 +11,7 @@ export function TeleportPage() {
     const [onlineDevices, setOnlineDevices] = useState<string[]>([]);
 
     useEffect(() => {
-        deviceRepository.getDevicesByType('teleport_module').then((devices) => {
+        deviceRepository.getDevicesByModule('teleport_module').then((devices) => {
             setDevices(devices);
         });
 

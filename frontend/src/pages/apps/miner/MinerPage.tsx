@@ -39,7 +39,7 @@ export function MinerPage() {
 
 
     useEffect(() => {
-        deviceRepository.getDevicesByType('miner').then((devices) => {
+        deviceRepository.getDevicesByType('turtle').then((devices) => {
             setDevices(devices);
         });
 

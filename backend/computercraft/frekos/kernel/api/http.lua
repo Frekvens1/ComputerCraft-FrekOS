@@ -6,7 +6,7 @@ local api = {
 
 local function awaitResponse(url)
     while true do
-        local event, event_url, handle = coroutine.yield()
+        local event, event_url, handle = os.pullEvent()
 
         if event == "http_success" and event_url == url then
             return handle

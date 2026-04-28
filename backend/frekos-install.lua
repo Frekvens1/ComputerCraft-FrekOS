@@ -4,16 +4,6 @@ term.setBackgroundColor(colors.black)
 term.clear()
 term.setCursorPos(1, 1)
 
-printError("WARNING! DO NOT UPDATE!")
-print("FrekOS is currently being rewritten.")
-print()
-print("Press enter to update, any other key to reboot.")
-
-local event, char = coroutine.yield("key")
-if char ~= keys.enter then
-    os.reboot()
-end
-
 local pullEvent = os.pullEvent
 os.pullEvent = os.pullEventRaw
 
@@ -43,7 +33,6 @@ local downloads = {
     "/apps/gui_test.lua",
     "/apps/music.lua",
     "/apps/storage.lua",
-    "/apps/teleport_requester.lua",
 
     "/apps/restaurant/kitchen_terminal.lua",
     "/apps/restaurant/order_terminal.lua",
@@ -66,6 +55,7 @@ local downloads = {
 
     -- region { System files - Applications }
 
+    "/frekos/apps/tp.lua",
     "/frekos/apps/cat.lua",
     "/frekos/apps/clean_install.lua",
     "/frekos/apps/kiosk.lua",
@@ -102,6 +92,9 @@ local downloads = {
     "/frekos/kernel/api/backend/device.lua",
     "/frekos/kernel/api/backend/music.lua",
     "/frekos/kernel/api/backend/storage.lua",
+
+    "/frekos/kernel/api/security.lua",
+    "/frekos/kernel/api/security/sha256.lua",
 
     "/frekos/kernel/api/gui.lua",
     "/frekos/kernel/api/gui/createApp.lua",

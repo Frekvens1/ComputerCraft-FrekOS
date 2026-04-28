@@ -1,3 +1,5 @@
+local shell_args = { ... }
+
 local function shell()
     local self = {}
     local commands, folder_commands, current_path, is_running
@@ -9,7 +11,9 @@ local function shell()
             if not fs.isDir(file_path) and file:match("%.lua$") then
                 local name = file:gsub("%.lua$", "")
                 local fn = function(args)
+                    self.is_running_app = true
                     os.run(_G, file_path, table.unpack(args))
+                    self.is_running_app = false
                 end
 
                 tbl[file] = fn
@@ -160,6 +164,14 @@ local function shell()
 
     local function start()
         init()
+
+        frekos.setShell(self)
+        if fs.exists(shell_args[1]) then
+            self.is_running_app = true
+            os.run(_G, shell_args[1], table.unpack(shell_args, 2, #shell_args))
+            self.is_running_app = false
+            os.run("/frekos/apps/welcome_screen.lua")
+        end
 
         while is_running do
             term.setTextColor(colors.yellow)

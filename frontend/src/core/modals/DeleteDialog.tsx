@@ -18,7 +18,7 @@ type Props = {
     onAction: () => void;
 };
 
-export function ConfirmDialog({title, description, children, onAction}: Props) {
+export function DeleteDialog({title, description, children, onAction}: Props) {
     return (
         <AlertDialog>
             <AlertDialogTrigger asChild>
@@ -32,8 +32,8 @@ export function ConfirmDialog({title, description, children, onAction}: Props) {
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                    <AlertDialogCancel className='cursor-pointer'>Cancel</AlertDialogCancel>
-                    <AlertDialogAction className='cursor-pointer' onClick={onAction}>Continue</AlertDialogAction>
+                    <AlertDialogCancel className='cursor-pointer' type='button'>Cancel</AlertDialogCancel>
+                    <AlertDialogAction className='cursor-pointer' type='button' variant="destructive" onClick={onAction}>Delete</AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>
         </AlertDialog>

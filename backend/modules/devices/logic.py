@@ -4,7 +4,7 @@ from starlette.websockets import WebSocket
 
 from libraries import mongo_lib
 from libraries import security_lib
-from modules.devices.models import Device, DeviceBackend, DeviceData
+from modules.devices.models import Device, DeviceBackend, DeviceData, DeviceStateBackend, DeviceStateData, DeviceType
 
 devices: Dict[str, WebSocket] = {}
 
@@ -17,6 +17,14 @@ def device_collection():
         ))
 
 
+def device_state_collection():
+    return mongo_lib.mongo_collection(
+        mongo_lib.MongoCollection(
+            database='frekos',
+            collection='device_states'
+        ))
+
+
 # region { Devices - Database }
 
 def get_devices() -> List[DeviceBackend]:
@@ -24,8 +32,8 @@ def get_devices() -> List[DeviceBackend]:
     return [DeviceBackend(**doc) for doc in docs]
 
 
-def get_devices_by_type(device_type: str) -> List[DeviceBackend]:
-    docs = list(device_collection().find({'type': device_type}))
+def get_devices_by_module(device_module: str) -> List[DeviceBackend]:
+    docs = list(device_collection().find({'modules': device_module}))
     return [DeviceBackend(**doc) for doc in docs]
 
 
@@ -46,6 +54,10 @@ def create_device(device_data: DeviceData) -> DeviceBackend:
 
 
 def update_device(device_uuid: str, device: Device) -> DeviceBackend:
+    if device.password:
+        device.password_salt = security_lib.salt()
+        device.password = security_lib.sha256(device.password_salt + device.password)
+
     device_collection().update_one(
         {'device_uuid': device_uuid},
         {'$set': device.model_dump(exclude_none=True)}
@@ -55,6 +67,10 @@ def update_device(device_uuid: str, device: Device) -> DeviceBackend:
 
 
 def patch_device(device_uuid: str, device: Device) -> DeviceBackend:
+    if device.password:
+        device.password_salt = security_lib.salt()
+        device.password = security_lib.sha256(device.password_salt + device.password)
+
     device_collection().update_one(
         {'device_uuid': device_uuid},
         {'$set': device.model_dump(exclude_none=True)}
@@ -64,7 +80,48 @@ def patch_device(device_uuid: str, device: Device) -> DeviceBackend:
 
 
 def delete_device(device_uuid: str) -> bool:
+    delete_device_state(device_uuid)
     result = device_collection().delete_one({'device_uuid': device_uuid})
+    return result.deleted_count > 0
+
+
+# endregion
+
+# region { Device state - Database }
+
+def get_devices_by_type(device_type: DeviceType) -> List[DeviceBackend]:
+    state_docs = list(device_state_collection().find({'type': device_type.value}))
+    uuids = [doc['device_uuid'] for doc in state_docs]
+    docs = list(device_collection().find({'device_uuid': {'$in': uuids}}))
+    return [DeviceBackend(**doc) for doc in docs]
+
+
+def get_device_state(device_uuid: str) -> Optional[DeviceStateBackend]:
+    doc = device_state_collection().find_one({'device_uuid': device_uuid})
+    return DeviceStateBackend(**doc) if doc else None
+
+
+def update_device_state(device_uuid: str, device_state: DeviceStateData) -> DeviceStateBackend:
+    device_state_collection().update_one(
+        {'device_uuid': device_uuid},
+        {'$set': device_state.model_dump(exclude_none=True)},
+        upsert=True
+    )
+    updated = device_state_collection().find_one({'device_uuid': device_uuid})
+    return DeviceStateBackend(**updated) if updated else None
+
+
+def patch_device_state(device_uuid: str, device_state: DeviceStateData) -> DeviceStateBackend:
+    device_state_collection().update_one(
+        {'device_uuid': device_uuid},
+        {'$set': device_state.model_dump(exclude_none=True)}
+    )
+    updated = device_state_collection().find_one({'device_uuid': device_uuid})
+    return DeviceStateBackend(**updated) if updated else None
+
+
+def delete_device_state(device_uuid: str) -> bool:
+    result = device_state_collection().delete_one({'device_uuid': device_uuid})
     return result.deleted_count > 0
 
 # endregion

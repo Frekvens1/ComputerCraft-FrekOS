@@ -4,7 +4,7 @@ local function renderer(app)
     }
 
     local function main()
-        start()
+        pcall(start)
         screen.clear()
     end
 

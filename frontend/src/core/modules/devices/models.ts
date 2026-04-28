@@ -12,13 +12,10 @@ export interface Peripheral {
 
 export type DeviceType = 'computer' | 'turtle' | 'pocket' | 'command';
 
-export interface DeviceState {
-    is_online: boolean;
-
-    id: string;
+export interface DeviceStateData {
     type: DeviceType;
     has_color: boolean;
-    connected_peripherals: {[key: string]: Peripheral};
+    connected_peripherals: Peripheral[];
 
     current_volume?: number;
     fuel_amount?: number;
@@ -30,7 +27,7 @@ export interface DeviceData {
     name: string;
     description: string;
 
-    type: string;
+    modules?: string[];
 
     use_gps?: boolean;
     password?: string;
@@ -38,9 +35,14 @@ export interface DeviceData {
 
     custom_startup_script?: string;
     device_position?: Position;
-    device_state?: DeviceType;
 }
 
 export interface Device extends DeviceData {
+    device_state?: DeviceStateData;
     device_uuid: string;
+}
+
+export interface DeviceState extends DeviceStateData {
+    is_online: boolean;
+    device_state_uuid: string;
 }

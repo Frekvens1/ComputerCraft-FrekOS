@@ -7,7 +7,7 @@ from starlette.websockets import WebSocket, WebSocketDisconnect
 from modules.common.models import DeleteResponse
 from modules.devices import logic
 from modules.devices.models import (
-    DeviceData, Device,
+    DeviceData, Device, DeviceState, DeviceStateData, DeviceType,
 )
 
 
@@ -16,9 +16,9 @@ def initialize(app: FastAPI):
     async def get_devices():
         return logic.get_devices()
 
-    @app.get("/devices/type/{device_type}", response_model=List[Device], response_model_exclude_none=True)
-    async def get_devices_by_type(device_type: str):
-        return logic.get_devices_by_type(device_type)
+    @app.get("/devices/module/{device_module}", response_model=List[Device], response_model_exclude_none=True)
+    async def get_devices_by_module(device_module: str):
+        return logic.get_devices_by_module(device_module)
 
     @app.post("/device", response_model=Device, response_model_exclude_none=True)
     async def create_device(device_data: DeviceData):
@@ -44,6 +44,37 @@ def initialize(app: FastAPI):
             success=success,
             message="Device deleted" if success else "Device not found"
         )
+
+    # region { device state }
+
+    @app.get("/devices/type/{device_type}", response_model=List[Device], response_model_exclude_none=True)
+    async def get_devices_by_type(device_type: DeviceType):
+        return logic.get_devices_by_type(device_type)
+
+    @app.get("/device/{device_uuid}/state", response_model=DeviceState, response_model_exclude_none=True)
+    async def get_device(device_uuid: str):
+        device_state = logic.get_device_state(device_uuid)
+        device_state.is_online = device_uuid in logic.devices
+        return device_state
+
+    @app.post("/device/{device_uuid}/state", response_model=DeviceState, response_model_exclude_none=True)
+    async def update_device(device_uuid: str, device_state: DeviceStateData):
+        return logic.update_device_state(device_uuid, device_state)
+
+    @app.patch("/device/{device_uuid}/state", response_model=DeviceState, response_model_exclude_none=True)
+    async def patch_device(device_uuid: str, device_state: DeviceStateData):
+        return logic.patch_device_state(device_uuid, device_state)
+
+    @app.delete("/device/{device_uuid}/state", response_model=DeleteResponse, response_model_exclude_none=True)
+    async def delete_device(device_uuid: str):
+        success = logic.delete_device_state(device_uuid)
+
+        return DeleteResponse(
+            success=success,
+            message="Device deleted" if success else "Device not found"
+        )
+
+    # endregion
 
     # Experimental functions
 

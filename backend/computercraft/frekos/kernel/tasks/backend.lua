@@ -1,3 +1,16 @@
+local function refreshScreen()
+    local shell = frekos.getPrimaryShell()
+    if shell and shell.is_running_app then
+        return
+    end
+
+    os.run("/frekos/apps/welcome_screen.lua")
+end
+
+local function onConnection()
+    frekos.updateState()
+end
+
 local function task()
     backend.refreshConnection()
 
@@ -11,7 +24,8 @@ local function task()
         elseif event == "websocket_success" then
             os.queueEvent("frekos_backend_connected")
             backend.connection = handle
-            os.run("/frekos/apps/welcome_screen.lua")
+            refreshScreen()
+            onConnection()
 
         elseif event == "websocket_failure" then
             if backend.connection ~= nil then
@@ -19,7 +33,7 @@ local function task()
                 backend.connection = nil
             end
 
-            os.run("/frekos/apps/welcome_screen.lua")
+            refreshScreen()
             backend.refreshConnection()
 
         elseif event == "websocket_closed" then
@@ -28,7 +42,7 @@ local function task()
                 backend.connection = nil
             end
 
-            os.run("/frekos/apps/welcome_screen.lua")
+            refreshScreen()
             backend.refreshConnection()
         end
     end
