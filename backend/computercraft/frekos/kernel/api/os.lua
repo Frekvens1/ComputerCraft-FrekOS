@@ -9,7 +9,14 @@ local api = {
 -- region { native functions }
 
 function api.pullEvent(filter)
-    return api.pullEventRaw("pull", filter)
+    local event = { api.pullEventRaw(filter) }
+    local name = event[1]
+
+    if name == "terminate" then
+        error("Terminated", 0)
+    end
+
+    return table.unpack(event)
 end
 
 function api.pullEventRaw(filter)
@@ -20,7 +27,7 @@ function api.sleep(time)
     local id = api.native.startTimer(time)
 
     while true do
-        local event, timerId = coroutine.yield("pull", "timer")
+        local event, timerId = api.pullEvent("timer")
         if timerId == id then
             return
         end
@@ -32,6 +39,8 @@ function api.version()
 end
 
 function api.run(env_or_path, path_or_nil, ...)
+    local isCursorBlink = term.getCursorBlink()
+
     local env = {}
     local selected_env, path, args
 
@@ -59,7 +68,7 @@ function api.run(env_or_path, path_or_nil, ...)
 
     term.setCursorBlink(false)
     local ok, run_error = pcall(fn, table.unpack(args))
-    term.setCursorBlink(true)
+    term.setCursorBlink(isCursorBlink)
 
     if not ok then
         if run_error ~= "Terminated" then
@@ -144,6 +153,17 @@ end
 
 function _G.sleep(time)
     api.sleep(time)
+end
+
+function api.safeSleep(time)
+    local id = api.native.startTimer(time)
+
+    while true do
+        local event, timerId = coroutine.yield("timer")
+        if timerId == id then
+            return
+        end
+    end
 end
 
 return api

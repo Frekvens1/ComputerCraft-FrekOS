@@ -4,6 +4,8 @@ local api = {
     processes = {},
 }
 
+local shells = {}
+
 -- endregion
 
 function api.spawn(fn, name)
@@ -28,6 +30,18 @@ end
 function api.init()
     api.reloadSettings()
     api.reloadDevice()
+end
+
+function api.setShell(shell)
+    table.insert(shells, shell)
+end
+
+function api.getPrimaryShell()
+    return shells[1]
+end
+
+function api.getCurrentShell()
+    return shells[#shells]
 end
 
 return api

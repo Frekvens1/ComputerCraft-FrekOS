@@ -4,16 +4,6 @@ term.setBackgroundColor(colors.black)
 term.clear()
 term.setCursorPos(1, 1)
 
-printError("WARNING! DO NOT UPDATE!")
-print("FrekOS is currently being rewritten.")
-print()
-print("Press enter to update, any other key to reboot.")
-
-local event, char = coroutine.yield("key")
-if char ~= keys.enter then
-    os.reboot()
-end
-
 local pullEvent = os.pullEvent
 os.pullEvent = os.pullEventRaw
 

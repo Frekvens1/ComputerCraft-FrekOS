@@ -42,12 +42,12 @@ local function KERNEL()
         end
 
         frekos.spawn(function()
-            dofileSandbox("/frekos/apps/shell.lua", "shell")
+            dofileSandbox("/frekos/apps/shell.lua", "/custom_startup.lua")
             term.setTextColor(colors.yellow)
-            print("Nap time!")
-            os.sleep(1)
+            print("\nNap time!")
+            os.safeSleep(1)
             os.shutdown()
-        end)
+        end, "shell")
 
         core.events.init()
         

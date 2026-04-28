@@ -66,10 +66,6 @@ _G.printError = function(...)
     term.setTextColor(color)
 end
 
-_G.error = function(...)
-    printError(...)
-end
-
 _G.write = function(str)
     term.write(str)
 end
@@ -121,7 +117,7 @@ _G.read = function(maskChar)
     redraw()
 
     while true do
-        local event, p1 = coroutine.yield()
+        local event, p1 = os.pullEvent()
 
         if event == "char" then
             table.insert(buffer, cursor + 1, p1)

@@ -8,13 +8,13 @@ _G.loadfile = function(path)
     return load(data, "@" .. path, "t", _G)
 end
 
-_G.dofile = function(path)
+_G.dofile = function(path, ...)
     local fn, load_error = loadfile(path)
     if not fn then
         return nil, load_error
     end
 
-    local results = { pcall(fn) }
+    local results = { pcall(fn, ...) }
     if not results[1] then
         return nil, results[2]
     end
@@ -22,7 +22,7 @@ _G.dofile = function(path)
     return table.unpack(results, 2)
 end
 
-_G.dofileSandbox = function(path)
+_G.dofileSandbox = function(path, ...)
     local env = {}
     env._ENV = env
     setmetatable(env, { __index = table.deepCopy(_G) })
@@ -34,7 +34,7 @@ _G.dofileSandbox = function(path)
 
     setfenv(fn, env)
 
-    local results = { pcall(fn) }
+    local results = { pcall(fn, ...) }
     if not results[1] then
         return nil, results[2]
     end
