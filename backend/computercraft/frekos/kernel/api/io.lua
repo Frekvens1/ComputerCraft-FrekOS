@@ -14,7 +14,6 @@ _G.print = function(...)
     local args = table.pack(...)
     local text = ""
 
-    -- Build the full string with spaces between arguments
     for i = 1, args.n do
         text = text .. tostring(args[i])
         if i < args.n then
@@ -25,38 +24,39 @@ _G.print = function(...)
     local w, h = term.getSize()
     local x, y = term.getCursorPos()
 
-    -- Write each character manually with wrapping
+    local lines = 0
+
+    local function newline()
+        x = 1
+        y = y + 1
+        lines = lines + 1
+
+        if y > h then
+            term.scroll(1)
+            y = h
+        end
+
+        term.setCursorPos(x, y)
+    end
+
     for i = 1, #text do
         local ch = text:sub(i, i)
 
-        -- If at end of line, wrap
-        if x > w then
-            x = 1
-            y = y + 1
-
-            -- Scroll if needed
-            if y > h then
-                term.scroll(1)
-                y = h
+        if ch == "\n" then
+            newline()
+        else
+            if x > w then
+                newline()
             end
 
-            term.setCursorPos(x, y)
+            term.write(ch)
+            x = x + 1
         end
-
-        term.write(ch)
-        x = x + 1
     end
 
-    -- After printing the line, move to next line
-    x = 1
-    y = y + 1
+    newline()
 
-    if y > h then
-        term.scroll(1)
-        y = h
-    end
-
-    term.setCursorPos(x, y)
+    return lines
 end
 
 _G.printError = function(...)
