@@ -12,7 +12,7 @@ import {Field, FieldGroup, FieldLabel} from '@/components/ui/field';
 import {Input} from '@/components/ui/input';
 import {Label} from '@/components/ui/label';
 import type {DeviceData} from '@/core/modules/devices/models.ts';
-import type {SubmitEvent} from 'react';
+import {type SubmitEvent, useState} from 'react';
 import {ToggleGroup, ToggleGroupItem} from "@/components/ui/toggle-group.tsx";
 
 type Props = {
@@ -21,6 +21,8 @@ type Props = {
 
 
 export function CreateDeviceDialog({onSubmit}: Props) {
+    const [modules, setModules] = useState< string[] | undefined>(undefined);
+
     function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
         event.preventDefault();
 
@@ -30,7 +32,7 @@ export function CreateDeviceDialog({onSubmit}: Props) {
             name: formData.get('name') as string,
             description: formData.get('description') as string,
 
-            type: formData.get('type') as string,
+            modules: modules,
         };
 
         console.log({
@@ -56,26 +58,17 @@ export function CreateDeviceDialog({onSubmit}: Props) {
                     </DialogHeader>
 
                     <Field className='mt-4'>
-                        <FieldLabel>Device type</FieldLabel>
-                        <input type="hidden" name="type" defaultValue='terminal'/>
+                        <FieldLabel>Device modules</FieldLabel>
                         <ToggleGroup
-                            type="single"
+                            type="multiple"
                             variant="outline"
                             spacing={2}
                             size="lg"
-                            defaultValue='terminal'
+                            value={modules ?? []}
                             onValueChange={(value) => {
-                                const hidden = document.querySelector('input[name="type"]') as HTMLInputElement;
-                                hidden.value = value ?? "";
+                                setModules(value)
                             }}
                         >
-                            <ToggleGroupItem
-                                value="terminal"
-                                aria-label="Light"
-                                className="flex items-center justify-center rounded-xl cursor-pointer"
-                            >
-                                <span className="text-md">Terminal</span>
-                            </ToggleGroupItem>
                             <ToggleGroupItem
                                 value="storage_module"
                                 aria-label="Normal"
@@ -89,13 +82,6 @@ export function CreateDeviceDialog({onSubmit}: Props) {
                                 className="flex items-center justify-center rounded-xl cursor-pointer"
                             >
                                 <span className="text-md">Teleport Module</span>
-                            </ToggleGroupItem>
-                            <ToggleGroupItem
-                                value="miner"
-                                aria-label="Light"
-                                className="flex items-center justify-center rounded-xl cursor-pointer"
-                            >
-                                <span className="text-md">Miner</span>
                             </ToggleGroupItem>
                         </ToggleGroup>
                     </Field>

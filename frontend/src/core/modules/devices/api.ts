@@ -1,4 +1,4 @@
-import type {Device, DeviceData} from '@/core/modules/devices/models.ts';
+import type {Device, DeviceData, DeviceState, DeviceStateData, DeviceType} from '@/core/modules/devices/models.ts';
 import {BackendService} from '@/core/services/backend.service';
 import type {DeleteResponse} from "@/core/modules/common/modules.ts";
 
@@ -9,16 +9,28 @@ export class DeviceRepository {
         return backend.get('/devices');
     }
 
-    async getDevicesByType(device_type: string): Promise<Device[]> {
+    async getDevicesByModule(device_type: string): Promise<Device[]> {
+        return backend.get(`/devices/module/${device_type}`);
+    }
+
+    async getDevicesByType(device_type: DeviceType): Promise<Device[]> {
         return backend.get(`/devices/type/${device_type}`);
+    }
+
+    async createDevice(device: DeviceData): Promise<Device> {
+        return backend.post('/device', device);
     }
 
     async getDevice(deviceUUID: string): Promise<Device> {
         return backend.get(`/device/${deviceUUID}`);
     }
 
-    async createDevice(device: DeviceData): Promise<Device> {
-        return backend.post('/device', device);
+    async updateDevice(deviceUUID: string, device: DeviceData): Promise<DeviceState> {
+        return backend.post(`/device/${deviceUUID}`, device);
+    }
+
+    async patchDevice(deviceUUID: string, device: Partial<DeviceData>): Promise<DeviceState> {
+        return backend.patch(`/device/${deviceUUID}`, device);
     }
 
     async deleteDevice(deviceUUID: string): Promise<DeleteResponse> {
@@ -28,6 +40,27 @@ export class DeviceRepository {
     async getOnlineDevices(): Promise<string[]> {
         return backend.get('/devices/online');
     }
+
+    // region { device state }
+
+
+    async getDeviceState(deviceUUID: string): Promise<DeviceState> {
+        return backend.get(`/device/${deviceUUID}/state`);
+    }
+
+    async updateDeviceState(deviceUUID: string, device: DeviceStateData): Promise<DeviceState> {
+        return backend.post(`/device/${deviceUUID}/state`, device);
+    }
+
+    async patchDeviceState(deviceUUID: string, device: DeviceStateData): Promise<DeviceState> {
+        return backend.patch(`/device/${deviceUUID}/state`, device);
+    }
+
+    async deleteDeviceState(deviceUUID: string): Promise<DeleteResponse> {
+        return backend.delete(`/device/${deviceUUID}/state`);
+    }
+
+    // endregion
 
     events = new class {
         async raw<T>(deviceUUID: string, data: T[] | T[][]): Promise<void> {

@@ -275,8 +275,8 @@ function api.getByType(peripheral_type)
     return peripherals_by_type[peripheral_type]
 end
 
-function api.test(name)
-    return findPeripheral(name)
+function api.getPeripheralTypes(name)
+    return type_lookup[name]
 end
 
 return api

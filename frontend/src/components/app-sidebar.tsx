@@ -64,6 +64,15 @@ const data: { [p: string]: navigation[] } = {
         },
     ],
     documents: [
+        {
+            title: 'Music',
+            url: '/apps/music',
+            icon: IconMusic,
+        }, {
+            title: 'Remote Miner',
+            url: '/apps/miner',
+            icon: IconPick,
+        },
         /*
         {
             title: 'World Map',
@@ -75,21 +84,10 @@ const data: { [p: string]: navigation[] } = {
             title: 'Storage Manager',
             url: '/apps/storage',
             icon: IconBuildingWarehouse,
-        },
-        {
+        }, {
             title: 'Teleport Manager',
             url: '/apps/teleport',
             icon: IconHelicopter,
-        },
-        {
-            title: 'Remote Miner',
-            url: '/apps/miner',
-            icon: IconPick,
-        },
-        {
-            title: 'Music',
-            url: '/apps/music',
-            icon: IconMusic,
         },
         /*
         {

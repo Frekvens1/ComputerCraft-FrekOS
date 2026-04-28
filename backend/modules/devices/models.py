@@ -24,37 +24,41 @@ class Peripheral(BaseModel):
     methods: List[str]
 
 
-class DeviceState(BaseModel):
-    is_online: bool
-
-    id: str
+class DeviceStateData(BaseModel):
     type: DeviceType
     has_color: bool
-    connected_peripherals: dict
+    connected_peripherals: Optional[List[Peripheral]] = None
 
     current_volume: Optional[int] = None
     fuel_amount: Optional[int] = None
     fuel_amount_max: Optional[int] = None
     gps_position: Optional[Position] = None
 
+    class Config:
+        use_enum_values = True
 
-# region { Device model } // TODO: #27 - More device settings
+
+# region { Device model }
 
 class DeviceData(BaseModel):
     name: str
     description: str
-    type: str
+    modules: Optional[List[str]] = None
 
-#    use_gps: bool
-#    password: str
-#    use_lockscreen: bool
+    use_lockscreen: Optional[bool] = None
+    password: Optional[str] = None
+    password_salt: Optional[str] = None
 
- #   custom_startup_script: str
- #   device_position: Optional[Position] = None
- #   device_state: Optional[DeviceState] = None
+    custom_startup_script: Optional[str] = None
 
 
 class Device(DeviceData):
+    device_state: Optional[DeviceStateData] = None
+    device_uuid: str
+
+
+class DeviceState(DeviceStateData):
+    is_online: Optional[bool] = None
     device_uuid: str
 
 
@@ -65,5 +69,12 @@ class DeviceBackend(Device):
     def convert(v):
         return str(v) if isinstance(v, ObjectId) else v
 
+
+class DeviceStateBackend(DeviceState):
+    id: str = Field(alias='_id')
+
+    @field_validator('id', mode='before')
+    def convert(v):
+        return str(v) if isinstance(v, ObjectId) else v
 
 # endregion

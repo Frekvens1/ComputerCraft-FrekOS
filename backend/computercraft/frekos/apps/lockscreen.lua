@@ -1,19 +1,17 @@
-local password = "changeme"
-
 local pullEvent = os.pullEvent
 os.pullEvent = os.pullEventRaw
 
-while true do
+while frekos.device.use_lockscreen do
     screen.clear()
     print("Restricted access.\n")
     write("Password: ")
 
     local input = read("*")
 
-    if input == password then
+    if security.checkPassword(input) then
         break
     else
-        print("\nInvalid password. Please try again.")
+        print("\n\nInvalid password.\nPlease try again.")
         sleep(1.2)
     end
 end

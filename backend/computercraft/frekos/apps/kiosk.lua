@@ -1,6 +1,8 @@
 os.pullEvent = os.pullEventRaw
 local button = gui.components.button
 
+local should_reboot = true
+
 function main()
     gui.render(gui.createApp(createObjects()))
 end
@@ -21,8 +23,22 @@ function createObjects()
         end
     }))
 
+    if frekos.device.use_lockscreen then
+        table.insert(objects, button({
+            x = 2, y = 17, width = term.getSize() - 3, height = 2,
+            text = "Login", onClick = function(self, app)
+                os.run("/frekos/apps/lockscreen.lua")
+                os.queueEvent("terminate")
+                should_reboot = false
+            end
+        }))
+    end
+
     return objects
 end
 
 main()
-os.reboot()
+
+if should_reboot then
+    os.reboot()
+end

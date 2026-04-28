@@ -4,6 +4,8 @@ local api = {}
 
 -- endregion
 
+-- region { devices }
+
 function api.getAll()
     return backend.get("/devices")
 end
@@ -23,6 +25,28 @@ end
 function api.getOnline(device_uuid)
     return backend.get("/device/" .. device_uuid .. "/online")
 end
+
+-- endregion
+
+-- region { device states }
+
+function api.getState(device_uuid)
+    return backend.get("/device/" .. device_uuid .. "/state")
+end
+
+function api.updateState(device_uuid, state)
+    return backend.post("/device/" .. device_uuid .. "/state", state)
+end
+
+function api.patchState(device_uuid, state)
+    return backend.patch("/device/" .. device_uuid .. "/state", state)
+end
+
+function api.deleteState(device_uuid)
+    return backend.delete("/device/" .. device_uuid .. "/state")
+end
+
+-- endregion
 
 api.events = {}
 

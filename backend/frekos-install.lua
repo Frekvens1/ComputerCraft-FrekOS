@@ -33,7 +33,6 @@ local downloads = {
     "/apps/gui_test.lua",
     "/apps/music.lua",
     "/apps/storage.lua",
-    "/apps/teleport_requester.lua",
 
     "/apps/restaurant/kitchen_terminal.lua",
     "/apps/restaurant/order_terminal.lua",
@@ -56,6 +55,7 @@ local downloads = {
 
     -- region { System files - Applications }
 
+    "/frekos/apps/tp.lua",
     "/frekos/apps/cat.lua",
     "/frekos/apps/clean_install.lua",
     "/frekos/apps/kiosk.lua",
@@ -92,6 +92,9 @@ local downloads = {
     "/frekos/kernel/api/backend/device.lua",
     "/frekos/kernel/api/backend/music.lua",
     "/frekos/kernel/api/backend/storage.lua",
+
+    "/frekos/kernel/api/security.lua",
+    "/frekos/kernel/api/security/sha256.lua",
 
     "/frekos/kernel/api/gui.lua",
     "/frekos/kernel/api/gui/createApp.lua",

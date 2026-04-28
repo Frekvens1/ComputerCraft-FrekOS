@@ -5,12 +5,12 @@ import {DashboardPage} from '@/pages/dashboard/DashboardPage.tsx';
 import {DevicesPage} from '@/pages/devices/DevicesPage.tsx';
 import {SidebarLayout} from '@/pages/SidebarLayout.tsx';
 import {TeleportPage} from '@/pages/apps/teleport/TeleportPage.tsx';
-import {NewDevicePage} from "@/pages/devices/NewDevicePage.tsx";
 import {MinerPage} from "@/pages/apps/miner/MinerPage.tsx";
 import {StoragePage} from "@/pages/apps/storage/StoragePage.tsx";
 import {useEffect, useState} from "react";
 import {loadGuiAssets} from "@/core/modules/storage/components/StorageAssets.ts";
 import {MusicPage} from "@/pages/apps/music/MusicPage.tsx";
+import {ShowDevicePage} from "@/pages/devices/ShowDevicePage.tsx";
 
 export interface RouterHandle {
     title: string;
@@ -35,10 +35,18 @@ const router = createBrowserRouter([
                         index: true,
                         element: <DevicesPage/>,
                         handle: {title: 'Devices'} as RouterHandle,
+                    }
+                ]
+            }, {
+                path: 'device',
+                children: [
+                    {
+                        index: true,
+                        element: <Navigate to='/devices' replace/>,
                     }, {
-                        path: 'new',
-                        element: <NewDevicePage/>,
-                        handle: {title: 'Add device'} as RouterHandle,
+                        path: ':device_uuid',
+                        element: <ShowDevicePage/>,
+                        handle: {title: 'Device'} as RouterHandle,
                     }
                 ]
             }, {

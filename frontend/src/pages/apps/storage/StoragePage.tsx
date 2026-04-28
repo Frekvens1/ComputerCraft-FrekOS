@@ -25,8 +25,8 @@ export function StoragePage() {
 
     useEffect(() => {
         Promise.all([
-            deviceRepository.getDevicesByType('storage_module'),
-            deviceRepository.getDevicesByType('miner')
+            deviceRepository.getDevicesByModule('storage_module'),
+            deviceRepository.getDevicesByModule('miner')
         ]).then(([storages, miners]) => {
             setDevices([...storages, ...miners]);
         });

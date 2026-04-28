@@ -73,6 +73,7 @@ end
 _G.read = function(maskChar)
     local buffer = {}
     local cursor = 0  -- logical cursor index
+    local isCursorBlinking = term.getCursorBlink()
 
     -- Capture starting cursor position
     local originX, originY = term.getCursorPos()
@@ -115,9 +116,10 @@ _G.read = function(maskChar)
     end
 
     redraw()
+    term.setCursorBlink(true)
 
     while true do
-        local event, p1 = os.pullEvent()
+        local event, p1 = os.pullEventRaw()
 
         if event == "char" then
             table.insert(buffer, cursor + 1, p1)
@@ -129,6 +131,7 @@ _G.read = function(maskChar)
 
             if key == keys.enter then
                 print()
+                term.setCursorBlink(isCursorBlinking)
                 return table.concat(buffer)
 
             elseif key == keys.backspace then
@@ -164,6 +167,9 @@ _G.read = function(maskChar)
                 cursor = #buffer
                 redraw()
             end
+
+        elseif event == "terminate" then
+            return nil
         end
     end
 end
