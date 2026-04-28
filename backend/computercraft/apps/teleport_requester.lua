@@ -1,3 +1,5 @@
+local allowed_devices = { ... }
+
 local button = gui.components.button
 
 function main()
@@ -6,12 +8,20 @@ function main()
 end
 
 function doTeleport(device_uuid)
-    FrekOS.api.device.events.teleport(device_uuid)
+    backend.api.device.events.teleport(device_uuid)
 end
 
 function refreshDevices()
-    local devices = FrekOS.api.device.getByType("teleport_module")
-    local online_devices = FrekOS.api.device.getAllOnline()
+    local devices = {}
+    if #allowed_devices == 0 then
+        devices = backend.api.device.getByType("teleport_module")
+    else
+        for index, device_uuid in ipairs(allowed_devices) do
+            table.insert(devices, backend.api.device.get(device_uuid))
+        end
+    end
+
+    local online_devices = backend.api.device.getAllOnline()
 
     local buttons = {}
     local button_index = 0

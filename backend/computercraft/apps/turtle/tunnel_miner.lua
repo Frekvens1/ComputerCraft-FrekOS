@@ -81,8 +81,5 @@ function mineLeft()
     turtle.turnRight()
 end
 
-parallel.waitForAny(function()
-    os.pullEventRaw("terminate")
-end, main)
-
+main()
 screen.clear()

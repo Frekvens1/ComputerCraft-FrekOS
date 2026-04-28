@@ -26,7 +26,7 @@ function quickApps()
         table.insert(objects, button({
             x = 2, y = 2 * index + 2, width = term.getSize() - 3, height = 0,
             text = program.name, onClick = function(self, app, x, y)
-                FrekOS.run(program.file_path)
+                os.run(program.file_path)
                 os.queueEvent("terminate")
             end
         }))

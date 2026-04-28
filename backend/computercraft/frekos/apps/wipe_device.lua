@@ -7,4 +7,5 @@ local function wipeRoot()
 end
 
 wipeRoot()
+os.setComputerLabel()
 os.reboot()

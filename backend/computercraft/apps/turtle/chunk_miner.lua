@@ -176,9 +176,7 @@ function doDig()
     digDown()
 end
 
-parallel.waitForAny(function()
-    os.pullEventRaw("terminate")
-end, main)
+main()
 
 printFinished()
 term.write("=== Press a key to continue ===")

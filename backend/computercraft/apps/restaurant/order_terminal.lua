@@ -128,7 +128,7 @@ function orderPage()
 end
 
 function sendOrder(order)
-    FrekOS.api.device.events.raw(kitchen_device, {
+    backend.api.device.events.raw(kitchen_device, {
         "frekos_restaurant", "order", orderName, order
     })
 end

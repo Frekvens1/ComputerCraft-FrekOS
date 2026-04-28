@@ -6,10 +6,28 @@ local function wipeRoot()
     end
 end
 
-local env = setmetatable({}, { __index = _ENV })
-env.shell = shell
+local function main()
+    local response, getErr = http.get(frekos.settings.update_url)
+    if not response then
+        printError("An error occurred while fetching the updater:")
+        printError(getErr)
+        return
+    end
 
-local update_function = loadfile("/frekos/apps/update.lua", env)
+    local fn, loadErr = load(response.readAll())
+    if not fn then
+        printError("An error occurred while loading the updater:")
+        printError(loadErr)
+        return
+    end
 
-wipeRoot()
-update_function()
+    wipeRoot()
+
+    local ok, runErr = pcall(fn, frekos.settings.device_uuid)
+    if not ok then
+        printError("An error occurred while updating:")
+        printError(runErr)
+    end
+end
+
+main()

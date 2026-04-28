@@ -1,9 +1,3 @@
--- region { private }
-
-local api = {}
-
--- endregion
-
 function table.compare(a, b)
     if not a or not b then
         return false
@@ -80,12 +74,26 @@ function table.length(self)
     return count
 end
 
-local function beforeLoad()
+function table.deepCopy(tbl, seen)
+    if type(tbl) ~= "table" then
+        return tbl
+    end
 
+    if seen and seen[tbl] then
+        return seen[tbl]
+    end
+
+    local copy = {}
+    seen = seen or {}
+    seen[tbl] = copy
+
+    for k, v in pairs(tbl) do
+        if type(v) == "table" then
+            copy[k] = table.deepCopy(v, seen)
+        else
+            copy[k] = v
+        end
+    end
+
+    return copy
 end
-
-local function afterLoad()
-
-end
-
-return api, beforeLoad, afterLoad

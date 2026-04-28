@@ -10,7 +10,7 @@ function createObjects()
     table.insert(objects, button({
         x = 2, y = 2, width = term.getSize() - 3, height = 2,
         text = "Update", onClick = function(self, app)
-            shell.run("/frekos/apps/update.lua")
+            os.run("/frekos/apps/update.lua")
         end
     }))
 

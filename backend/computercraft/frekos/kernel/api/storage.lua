@@ -5,11 +5,11 @@ local api = {}
 -- endregion
 
 function api.getInventory(name)
-    if not peripheralsLib.isInventory(name) then
+    if not peripheral.isInventory(name) then
         return nil, "Peripheral is not an inventory"
     end
 
-    local p = peripheralsLib.peripherals[name]
+    local p = peripheral.wrap(name)
     local item_list = p.list()
     local slots_total = p.size()
 
@@ -44,7 +44,7 @@ function api.getInventory(name)
     end
 
     return {
-        device_uuid = FrekOS.device.device_uuid,
+        device_uuid = frekos.device.device_uuid,
         storage_uuid = name,
         slots_used = slots_used,
         slots_total = slots_total,
@@ -60,15 +60,15 @@ function api.updateInventory(name)
         return nil, err
     end
 
-    FrekOS.api.storage.update(name, inventory)
+    backend.api.storage.update(name, inventory)
 end
 
 function api.moveItems(storage_1, slot_1, storage_2, slot_2, amount)
-    if peripheralsLib.peripherals[storage_1] == nil then
+    if not peripheral.isOnline(storage_1) then
         return nil
     end
 
-    if peripheralsLib.peripherals[storage_2] == nil then
+    if not peripheral.isOnline(storage_2) then
         return nil
     end
 
@@ -76,7 +76,7 @@ function api.moveItems(storage_1, slot_1, storage_2, slot_2, amount)
     slot_2 = tonumber(slot_2)
     amount = tonumber(amount)
 
-    peripheralsLib.peripherals[storage_1].pushItems(storage_2, slot_1, amount, slot_2)
+    peripheral.get(storage_1).pushItems(storage_2, slot_1, amount, slot_2)
     api.updateInventory(storage_1)
     if storage_1 ~= storage_2 then
         api.updateInventory(storage_2)
@@ -126,8 +126,8 @@ if turtle then
         end
 
         return {
-            device_uuid = FrekOS.device.device_uuid,
-            storage_uuid = FrekOS.device.device_uuid,
+            device_uuid = frekos.device.device_uuid,
+            storage_uuid = frekos.device.device_uuid,
             slots_used = slots_used,
             slots_total = slots_total,
             items_total = item_count,
@@ -144,7 +144,7 @@ if turtle then
             return nil, err
         end
 
-        FrekOS.api.storage.update(FrekOS.device.device_uuid, inventory)
+        backend.api.storage.update(frekos.device.device_uuid, inventory)
     end
 
     function api.moveTurtleItems(slot_1, slot_2, amount)
@@ -172,34 +172,4 @@ if turtle then
     end
 end
 
-local function beforeLoad()
-
-end
-
-local function afterLoad()
-    FrekOS.events.addTask("storage", function(event)
-        if event[1] ~= "frekos_storage" then
-            return
-        end
-
-        local task = event[2]
-        if api[task] ~= nil then
-            api[task](table.unpack(event, 3, #event))
-        end
-    end)
-
-    if turtle then
-        FrekOS.events.addTask("turtle_storage", function(event)
-            if event[1] ~= "turtle_inventory" then
-                return
-            end
-
-            api.updateTurtleInventory()
-            os.queueEvent("turtle_inventory_updated")
-        end)
-
-        api.updateTurtleInventory()
-    end
-end
-
-return api, beforeLoad, afterLoad
+return api

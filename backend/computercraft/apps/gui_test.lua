@@ -19,7 +19,7 @@ function createObjects()
     table.insert(objects, input({
         x = 2, y = 6, width = term.getSize() - 3, height = 0,
         text = "Write here!", onChange = function(self, app, text)
-            backendUtils.send({
+            backend.send({
                 onChange = text
             })
         end

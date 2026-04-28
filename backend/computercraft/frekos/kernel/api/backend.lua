@@ -7,12 +7,12 @@ local function getHostname(path)
         path = "/" .. path
     end
 
-    return FrekOS.settings.hostname .. FrekOS.settings.api_path .. path
+    return frekos.settings.hostname .. frekos.settings.api_path .. path
 end
 
 local function getProtocolHTTP()
     local protocol = "http"
-    if FrekOS.settings.has_ssl then
+    if frekos.settings.has_ssl then
         protocol = protocol .. "s"
     end
 
@@ -21,14 +21,12 @@ end
 
 local function getProtocolWS()
     local protocol = "ws"
-    if FrekOS.settings.has_ssl then
+    if frekos.settings.has_ssl then
         protocol = protocol .. "s"
     end
 
     return protocol .. "://"
 end
-
--- endregion
 
 local function getURL(path)
     local url = getProtocolHTTP() .. getHostname(path)
@@ -39,6 +37,8 @@ local function getURL(path)
 
     return url
 end
+
+-- endregion
 
 function api.get(path, raw)
     local url = getURL(path)
@@ -70,13 +70,13 @@ function api.post(path, data)
         return nil
     end
 
-    data = fileUtils.sanitize(data)
+    data = fs.sanitize(data)
     local response = http.post({
         url = url,
         body = textutils.serialiseJSON(data),
         headers = {
-        ["Content-Type"] = "application/json"
-    }
+            ["Content-Type"] = "application/json"
+        }
     })
     if not response then
         return nil
@@ -94,14 +94,13 @@ function api.patch(path, data)
         return nil
     end
 
-    data = fileUtils.sanitize(data)
-    local response = http.post({
+    data = fs.sanitize(data)
+    local response = http.patch({
         url = url,
         body = textutils.serialiseJSON(data),
-        method = "PATCH",
         headers = {
-        ["Content-Type"] = "application/json"
-    }
+            ["Content-Type"] = "application/json"
+        }
     })
     if not response then
         return nil
@@ -119,9 +118,8 @@ function api.delete(path)
         return nil
     end
 
-    local response = http.post({
+    local response = http.delete({
         url = url,
-        method = "DELETE",
         binary = true
     })
     if not response then
@@ -146,34 +144,33 @@ function api.websocket(path)
 end
 
 function api.send(...)
-    local args = fileUtils.sanitize({ ... })
-    backendUtils.getConnection().send(textutils.serializeJSON(table.unpack(args)))
+    if not api.getConnection() then
+        return
+    end
+
+    local args = fs.sanitize({ ... })
+    api.getConnection().send(textutils.serializeJSON(table.unpack(args)))
 end
 
 function api.refreshConnection()
-    api.connection = api.websocket("/device/" .. FrekOS.settings.device_uuid)
+    api.websocket(api.getWebsocketURL(true))
+end
+
+function api.getWebsocketURL(only_path)
+    local path = "/device/" .. frekos.settings.device_uuid
+    if only_path then
+        return path
+    else
+        return getProtocolWS() .. getHostname(path)
+    end
 end
 
 function api.getConnection()
-    while not api.connection do
-        api.refreshConnection()
-    end
-
     return api.connection
 end
 
-local function beforeLoad()
-
+function api.init()
+    api.api = fs.loadFolder("/frekos/kernel/api/backend")
 end
 
-local function afterLoad()
-    print("Establishing websocket connection...")
-    api.refreshConnection()
-    if not api.connection then
-        print("Failed to connect.")
-    else
-        print("Connected!")
-    end
-end
-
-return api, beforeLoad, afterLoad
+return api

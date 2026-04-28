@@ -28,5 +28,5 @@ while true do
         count = count + 1
     end
 
-    os.sleep(0.1)
+    os.sleep(1)
 end
