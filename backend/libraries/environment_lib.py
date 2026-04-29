@@ -14,8 +14,8 @@ def get_mongodb_credentials() -> MongoDBCredentials:
     return MongoDBCredentials(
         host=str(os.environ['MONGO_HOST']),
         port=int(os.environ['MONGO_PORT']),
-        username=str(os.environ['MONGO_USERNAME']),
-        password=str(os.environ['MONGO_PASSWORD']),
+        username=str(os.environ['MONGO_INITDB_ROOT_USERNAME']),
+        password=str(os.environ['MONGO_INITDB_ROOT_PASSWORD']),
     )
 
 

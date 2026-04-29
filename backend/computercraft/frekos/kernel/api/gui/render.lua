@@ -4,7 +4,14 @@ local function renderer(app)
     }
 
     local function main()
-        pcall(start)
+        local ok, err = pcall(start)
+        if not ok then
+            backend.send({
+                app = app,
+                err = err,
+            })
+        end
+
         screen.clear()
     end
 

@@ -9,8 +9,8 @@ import {
     IconHelicopter,
     IconInnerShadowTop,
     IconSettings,
-    IconMusic, 
-    IconPick,
+    IconMusic,
+    IconPick, IconPhoto,
 } from '@tabler/icons-react'
 
 import {NavDocuments} from '@/components/nav-documents'
@@ -68,6 +68,10 @@ const data: { [p: string]: navigation[] } = {
             title: 'Music',
             url: '/apps/music',
             icon: IconMusic,
+        }, {
+            title: 'Pictures',
+            url: '/apps/pictures',
+            icon: IconPhoto,
         }, {
             title: 'Remote Miner',
             url: '/apps/miner',
