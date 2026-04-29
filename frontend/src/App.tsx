@@ -11,6 +11,7 @@ import {useEffect, useState} from "react";
 import {loadGuiAssets} from "@/core/modules/storage/components/StorageAssets.ts";
 import {MusicPage} from "@/pages/apps/music/MusicPage.tsx";
 import {ShowDevicePage} from "@/pages/devices/ShowDevicePage.tsx";
+import {PicturePage} from "@/pages/apps/pictures/PicturePage.tsx";
 
 export interface RouterHandle {
     title: string;
@@ -71,6 +72,10 @@ const router = createBrowserRouter([
                         path: 'music',
                         element: <MusicPage/>,
                         handle: {title: 'Music'} as RouterHandle,
+                    }, {
+                        path: 'pictures',
+                        element: <PicturePage/>,
+                        handle: {title: 'Pictures'} as RouterHandle,
                     }, {
                         path: '*',
                         element: <Navigate to='/apps' replace/>,

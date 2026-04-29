@@ -32,6 +32,7 @@ local downloads = {
 
     "/apps/gui_test.lua",
     "/apps/music.lua",
+    "/apps/pictures.lua",
     "/apps/storage.lua",
 
     "/apps/restaurant/kitchen_terminal.lua",
@@ -91,6 +92,7 @@ local downloads = {
     "/frekos/kernel/api/backend.lua",
     "/frekos/kernel/api/backend/device.lua",
     "/frekos/kernel/api/backend/music.lua",
+    "/frekos/kernel/api/backend/pictures.lua",
     "/frekos/kernel/api/backend/storage.lua",
 
     "/frekos/kernel/api/security.lua",
