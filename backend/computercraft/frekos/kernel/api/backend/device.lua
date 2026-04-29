@@ -10,12 +10,12 @@ function api.getAll()
     return backend.get("/devices")
 end
 
-function api.getAllOnline()
-    return backend.get("/devices/online")
+function api.getByModule(device_module)
+    return backend.get("/devices/module/" .. device_module)
 end
 
-function api.getByType(device_type)
-    return backend.get("/devices/type/" .. device_type)
+function api.getAllOnline()
+    return backend.get("/devices/online")
 end
 
 function api.get(device_uuid)
@@ -29,6 +29,10 @@ end
 -- endregion
 
 -- region { device states }
+
+function api.getByType(device_type)
+    return backend.get("/devices/type/" .. device_type)
+end
 
 function api.getState(device_uuid)
     return backend.get("/device/" .. device_uuid .. "/state")
