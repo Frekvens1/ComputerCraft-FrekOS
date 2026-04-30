@@ -1,7 +1,6 @@
 local mon = peripheral.find("monitor")
 if not mon then error("No monitor found") end
 mon.setTextScale(0.5)
-mon.clear()
 
 local button = gui.components.button
 
@@ -13,6 +12,10 @@ function picturePage()
     local objects = {}
 
     local pictures = backend.api.pictures.getAll()
+    if table.length(pictures) > 0 then
+        displayPicture(pictures[1].picture_uuid)
+    end
+
     for index, picture in ipairs(pictures) do
         table.insert(objects, button({
             x = 2, y = 4 * (index - 1) + 2, width = term.getSize() - 3, height = 2,
@@ -31,7 +34,7 @@ function displayPicture(picture_uuid)
 
     local frame = img[1]
 
-    -- Apply palette from the frame (NOT img.palette)
+    -- Apply palette from the frame
     if frame.palette then
         for i = 0, #frame.palette do
             local c = frame.palette[i]

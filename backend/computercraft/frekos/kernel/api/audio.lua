@@ -4,8 +4,7 @@ local api = {
     dfpwm = {}
 }
 
--- local chunk_size = 16 * 1024
-local chunk_size = 16 * 512
+local chunk_size = 16 * 1024
 
 -- endregion
 

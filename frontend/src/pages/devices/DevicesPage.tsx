@@ -64,7 +64,7 @@ export function DevicesPage() {
 
         switch (deviceState.type) {
             case 'command':
-                return `${path}/${deviceState.type}.png`;
+                return `${path}/computer_${deviceState.type}.png`;
             case 'pocket':
                 return `${path}/${deviceState.type}_computer_${deviceType}.png`;
             default:
