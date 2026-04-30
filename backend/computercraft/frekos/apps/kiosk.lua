@@ -9,15 +9,16 @@ end
 
 function createObjects()
     local objects = {}
+    local term_width, term_height = term.getSize()
     table.insert(objects, button({
-        x = 2, y = 2, width = term.getSize() - 3, height = 2,
+        x = 2, y = 2, width = term_width - 3, height = 2,
         text = "Update", onClick = function(self, app)
             os.run("/frekos/apps/update.lua")
         end
     }))
 
     table.insert(objects, button({
-        x = 2, y = 6, width = term.getSize() - 3, height = 2,
+        x = 2, y = 6, width = term_width - 3, height = 2,
         text = "Reboot", onClick = function(self, app)
             os.reboot()
         end
@@ -25,7 +26,7 @@ function createObjects()
 
     if frekos.device.use_lockscreen then
         table.insert(objects, button({
-            x = 2, y = 17, width = term.getSize() - 3, height = 2,
+            x = 2, y = term_height - 3, width = term_width - 3, height = 2,
             text = "Login", onClick = function(self, app)
                 os.run("/frekos/apps/lockscreen.lua")
                 os.queueEvent("terminate")

@@ -1,3 +1,4 @@
+import asyncio
 import json
 from typing import List
 
@@ -38,7 +39,7 @@ def initialize(app: FastAPI):
 
     @app.delete("/device/{device_uuid}", response_model=DeleteResponse, response_model_exclude_none=True)
     async def delete_device(device_uuid: str):
-        success = logic.delete_device(device_uuid)
+        success = await logic.delete_device(device_uuid)
 
         return DeleteResponse(
             success=success,
@@ -89,10 +90,22 @@ def initialize(app: FastAPI):
     @app.websocket("/device/{device_uuid}")
     async def device_websocket(device_uuid: str, websocket: WebSocket):
         device = logic.get_device(device_uuid)
-        if device is None:
-            raise HTTPException(status_code=404, detail="Device not found")
-
         await websocket.accept()
+
+        if device is None:
+            print(f"Unknown device connected: ({device_uuid})")
+            try:
+                await asyncio.wait_for(websocket.receive_text(), timeout=3)
+                await websocket.send_json(["frekos_wipe_device"])
+            except asyncio.TimeoutError:
+                print(f"Unknown device timed out: ({device_uuid})")
+            except WebSocketDisconnect:
+                print(f"Unknown device disconnected early: ({device_uuid})")
+            finally:
+                await websocket.close()
+
+            return
+
         logic.devices[device_uuid] = websocket
         print(f"Device connected: {device.name} ({device_uuid})")
         try:
@@ -116,8 +129,7 @@ def initialize(app: FastAPI):
         if not isinstance(event, list):
             raise HTTPException(status_code=400, detail="Event must be a list or nested list")
 
-        device = logic.devices[device_uuid]
-        await device.send_json(event)
+        await logic.send_device_event(device_uuid, event)
 
         return {"message": "Event sent!"}
 
