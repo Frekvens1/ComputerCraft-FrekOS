@@ -66,6 +66,10 @@ function api.updateState()
         })
     end
 
+    if table.length(peripherals) == 0 then
+        peripherals = nil
+    end
+
     backend.api.device.updateState(api.device.device_uuid, {
         type = device_type,
         has_color = term.isColor(),

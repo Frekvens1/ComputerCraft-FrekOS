@@ -73,7 +73,7 @@ export function ShowDevicePage() {
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
             <div className='px-4 lg:px-6 gap-6 flex flex-col'>
-                {!deviceState?.is_online && (
+                {!deviceState && (
                     <Card className='@container/card'>
                         <CardHeader>
                             <CardTitle>Install Site</CardTitle>

@@ -96,6 +96,10 @@ async def delete_device(device_uuid: str) -> bool:
 
 # region { Device state - Database }
 
+def get_device_states() -> List[DeviceStateBackend]:
+    docs = list(device_state_collection().find({}))
+    return [DeviceStateBackend(**doc) for doc in docs]
+
 def get_devices_by_type(device_type: DeviceType) -> List[DeviceBackend]:
     state_docs = list(device_state_collection().find({'type': device_type.value}))
     uuids = [doc['device_uuid'] for doc in state_docs]
@@ -140,13 +144,19 @@ def delete_device_state(device_uuid: str) -> bool:
 
 # endregion
 
-async def send_device_event(device_uuid: str, event) -> None:
+async def send_device_event(device_uuid: str, event) -> bool:
+    if not device_uuid in devices:
+        return False
+
     device = devices[device_uuid]
-    if device:
-        await device.send_json(event)
+    await device.send_json(event)
+    return True
 
 
-async def close_device_websocket(device_uuid: str) -> None:
+async def close_device_websocket(device_uuid: str) -> bool:
+    if not device_uuid in devices:
+        return False
+
     device = devices[device_uuid]
-    if device:
-        await device.close()
+    await device.close()
+    return True

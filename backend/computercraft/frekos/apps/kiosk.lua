@@ -27,7 +27,7 @@ function createObjects()
     if frekos.device.use_lockscreen then
         table.insert(objects, button({
             x = 2, y = term_height - 3, width = term_width - 3, height = 2,
-            text = "Login", onClick = function(self, app)
+            text = "Maintenance", onClick = function(self, app)
                 os.run("/frekos/apps/lockscreen.lua")
                 os.queueEvent("terminate")
                 should_reboot = false

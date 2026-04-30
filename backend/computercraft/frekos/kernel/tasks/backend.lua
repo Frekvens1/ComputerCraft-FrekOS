@@ -32,11 +32,7 @@ local function task()
             refreshScreen()
             onConnection()
 
-            backend.send({
-                task = "frekos_backend_connected",
-                message = "Ready",
-                status = true
-            })
+            backend.send({task = "frekos_device_ready"})
 
         elseif event == "websocket_failure" then
             if backend.connection ~= nil then

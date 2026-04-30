@@ -44,5 +44,5 @@ export interface Device extends DeviceData {
 
 export interface DeviceState extends DeviceStateData {
     is_online: boolean;
-    device_state_uuid: string;
+    device_uuid: string;
 }

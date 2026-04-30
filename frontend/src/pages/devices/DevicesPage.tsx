@@ -4,7 +4,7 @@ import {Card, CardHeader, CardTitle, CardContent} from '@/components/ui/card';
 import {ScrollArea} from '@/components/ui/scroll-area';
 import {Trash2} from 'lucide-react';
 
-import type {Device} from '@/core/modules/devices/models';
+import type {Device, DeviceState} from '@/core/modules/devices/models';
 import {DeviceRepository} from '@/core/modules/devices/api.ts';
 import {StatusDot} from "@/core/components/StatusDot.tsx";
 import {DeviceTable} from "@/components/device-table.tsx";
@@ -16,11 +16,16 @@ const deviceRepository = new DeviceRepository();
 export function DevicesPage() {
     const navigate = useNavigate();
     const [devices, setDevices] = useState<Device[]>([]);
+    const [deviceStates, setDeviceStates] = useState<DeviceState[]>([]);
     const [onlineDevices, setOnlineDevices] = useState<string[]>([]);
 
     useEffect(() => {
         deviceRepository.getDevices().then((devices) => {
             setDevices(devices);
+        });
+
+        deviceRepository.getDeviceStates().then((deviceStates) => {
+            setDeviceStates(deviceStates);
         });
 
         deviceRepository.getOnlineDevices().then((devices) => {
@@ -30,7 +35,8 @@ export function DevicesPage() {
 
     async function createDevice() {
         const device = await deviceRepository.createDevice({name: 'FrekOS Device', description: ''});
-        navigator.clipboard.writeText(getInstallURL(device.device_uuid)).catch(() => {});
+        navigator.clipboard.writeText(getInstallURL(device.device_uuid)).catch(() => {
+        });
         showDevice(device.device_uuid);
     }
 
@@ -51,6 +57,21 @@ export function DevicesPage() {
         return `wget run https://install.frekos.cc ${device_uuid}`;
     }
 
+    function getDeviceImagePath(deviceState: DeviceState | undefined): string {
+        if (deviceState == undefined) return '';
+        const path = '/items/computercraft';
+        const deviceType = deviceState.has_color ? 'advanced' : 'normal';
+
+        switch (deviceState.type) {
+            case 'command':
+                return `${path}/${deviceState.type}.png`;
+            case 'pocket':
+                return `${path}/${deviceState.type}_computer_${deviceType}.png`;
+            default:
+                return `${path}/${deviceState.type}_${deviceType}.png`;
+        }
+    }
+
     return (
         <div className='px-4 lg:px-6 w-full flex flex-col'>
             <Card className='h-full flex flex-col'>
@@ -62,78 +83,85 @@ export function DevicesPage() {
                     </Button>
                 </CardHeader>
 
-                { /* <div className="flex flex-col block lg:hidden"> */ }
+                { /* <div className="flex flex-col block lg:hidden"> */}
                 <CardContent className="flex-1 overflow-hidden px-0 lg:px-4">
                     <div className="flex flex-col">
                         <ScrollArea className="h-full">
                             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 p-6">
-                                {devices.map((device) => (
-                                    <Card
-                                        key={device.device_uuid}
-                                        className="transition hover:bg-muted/50 group cursor-pointer"
-                                        onClick={() => showDevice(device.device_uuid)}
-                                    >
-                                        <CardHeader className="flex flex-col border-b pb-2">
-                                            <div className="w-full flex flex-row items-center justify-between">
-                                                <div className="w-full flex flex-row items-center gap-2">
-                                                    <StatusDot
-                                                        status={isDeviceOnline(device.device_uuid) ? 'online' : 'offline'}/>
-                                                    <CardTitle className="text-base">{device.name}</CardTitle>
-                                                </div>
-                                                <DeleteDialog
-                                                    title={`Remove device "${device.name}"?`}
-                                                    description='This action cannot be undone.'
-                                                    onAction={() => removeDevice(device.device_uuid)}>
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        onClick={(e) => e.stopPropagation()}
-                                                        className="
+                                {devices.map((device) => {
+                                    const deviceState = deviceStates.find((state) => state.device_uuid == device.device_uuid);
+
+                                    return (
+                                        <Card
+                                            key={device.device_uuid}
+                                            className="transition hover:bg-muted/50 group cursor-pointer"
+                                            onClick={() => showDevice(device.device_uuid)}
+                                        >
+                                            <CardHeader className="flex flex-col border-b pb-2">
+                                                <div className="w-full flex flex-row items-center justify-between">
+                                                    <div className="w-full flex flex-row items-center gap-2">
+                                                        <StatusDot
+                                                            status={isDeviceOnline(device.device_uuid) ? 'online' : 'offline'}/>
+                                                        <CardTitle className="text-base">{device.name}</CardTitle>
+                                                    </div>
+                                                    <DeleteDialog
+                                                        title={`Remove device "${device.name}"?`}
+                                                        description='This action cannot be undone.'
+                                                        onAction={() => removeDevice(device.device_uuid)}>
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            onClick={(e) => e.stopPropagation()}
+                                                            className="
                                                         cursor-pointer text-red-500 hover:text-red-700 hover:bg-red-100
                                                         [@media(hover:none)]:opacity-100 transition-opacity duration-200
                                                         [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100
                                                       "
-                                                    >
-                                                        <Trash2 className="h-4 w-4"/>
-                                                    </Button>
-                                                </DeleteDialog>
-                                            </div>
-                                            <div className="w-full flex flex-row items-center">
-                                                <p className="text-sm text-muted-foreground">
-                                                    {device.description}
-                                                </p>
-                                            </div>
-                                        </CardHeader>
+                                                        >
+                                                            <Trash2 className="h-4 w-4"/>
+                                                        </Button>
+                                                    </DeleteDialog>
+                                                </div>
+                                                <div className="w-full flex flex-row items-center">
+                                                    <p className="text-sm text-muted-foreground">
+                                                        {device.description}
+                                                    </p>
+                                                </div>
+                                            </CardHeader>
 
-                                        <CardContent className='flex flex-col gap-2'>
-                                            {isDeviceOnline(device.device_uuid) ?
-                                                (
-                                                    <>
-                                                        {(device.modules?.length ?? 0) > 0 && (
-                                                            <>
-                                                                <h3 className="text-lg">Device modules:</h3>
-                                                                <p>{device.modules?.join(', ')}</p>
-                                                                <br/>
-                                                            </>
+                                            <CardContent className='flex flex-col gap-2'>
+                                                <div className='flex flex-col md:flex-row gap-2'>
+                                                    <div>
+                                                        {deviceState != undefined && (
+                                                            <img className="h-32 w-auto"
+                                                                 src={getDeviceImagePath(deviceState)}
+                                                                 alt={deviceState?.type}/>
                                                         )}
-
+                                                    </div>
+                                                    <div className='flex-1'>
                                                         <h3 className="text-lg">Device ID</h3>
                                                         <p>{device.device_uuid}</p>
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        <p>Device is offline</p>
-                                                    </>
-                                                )}
-                                        </CardContent>
-                                    </Card>
-                                ))}
+
+                                                        {(device.modules?.length ?? 0) > 0 && (
+                                                            <>
+                                                                <br/>
+                                                                <h3 className="text-lg">Device modules:</h3>
+                                                                <p>{device.modules?.join(', ')}</p>
+                                                            </>
+                                                        )}
+                                                    </div>
+                                                </div>
+
+                                            </CardContent>
+                                        </Card>
+                                    )
+                                })}
                             </div>
                         </ScrollArea>
 
                     </div>
 
-                    { /* <div className="flex flex-col hidden lg:block"> */ }
+                    { /* <div className="flex flex-col hidden lg:block"> */}
                     <div className="flex flex-col hidden">
                         <DeviceTable columns={[
                             {

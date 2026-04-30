@@ -26,7 +26,7 @@ class Peripheral(BaseModel):
 
 class DeviceStateData(BaseModel):
     type: DeviceType
-    has_color: bool
+    has_color: Optional[bool] = False
     connected_peripherals: Optional[List[Peripheral]] = None
 
     current_volume: Optional[int] = None

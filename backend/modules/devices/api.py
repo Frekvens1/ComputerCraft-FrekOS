@@ -48,6 +48,10 @@ def initialize(app: FastAPI):
 
     # region { device state }
 
+    @app.get("/devices/state", response_model=List[DeviceState], response_model_exclude_none=True)
+    async def get_device_states():
+        return logic.get_device_states()
+
     @app.get("/devices/type/{device_type}", response_model=List[Device], response_model_exclude_none=True)
     async def get_devices_by_type(device_type: DeviceType):
         return logic.get_devices_by_type(device_type)
@@ -90,6 +94,7 @@ def initialize(app: FastAPI):
     @app.websocket("/device/{device_uuid}")
     async def device_websocket(device_uuid: str, websocket: WebSocket):
         device = logic.get_device(device_uuid)
+
         await websocket.accept()
 
         if device is None:
@@ -101,6 +106,20 @@ def initialize(app: FastAPI):
                 print(f"Unknown device timed out: ({device_uuid})")
             except WebSocketDisconnect:
                 print(f"Unknown device disconnected early: ({device_uuid})")
+            finally:
+                await websocket.close()
+
+            return
+
+        if device_uuid in logic.devices:
+            print(f"Device hijack rejected: {device.name} ({device_uuid})")
+            try:
+                await asyncio.wait_for(websocket.receive_text(), timeout=3)
+                await websocket.send_json(["frekos_wipe_device"])
+            except asyncio.TimeoutError:
+                print(f"Hijacked device timed out: {device.name} ({device_uuid})")
+            except WebSocketDisconnect:
+                print(f"Hijacked device disconnected early: {device.name} ({device_uuid})")
             finally:
                 await websocket.close()
 

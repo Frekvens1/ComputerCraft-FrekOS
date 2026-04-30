@@ -6,6 +6,10 @@ local function wipeRoot()
     end
 end
 
+pcall(function()
+    backend.api.device.deleteState(frekos.device.device_uuid)
+end)
+
 wipeRoot()
 os.setComputerLabel()
 os.reboot()
