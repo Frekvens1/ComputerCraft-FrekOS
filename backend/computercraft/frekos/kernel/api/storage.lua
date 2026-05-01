@@ -9,7 +9,8 @@ function api.getInventory(name)
         return nil, "Peripheral is not an inventory"
     end
 
-    local p = peripheral.wrap(name)
+    local p = peripheral.getInventory(name)
+
     local item_list = p.list()
     local slots_total = p.size()
 
@@ -76,7 +77,22 @@ function api.moveItems(storage_1, slot_1, storage_2, slot_2, amount)
     slot_2 = tonumber(slot_2)
     amount = tonumber(amount)
 
-    peripheral.get(storage_1).pushItems(storage_2, slot_1, amount, slot_2)
+    local storage_1_is_manipulator = peripheral.getType(storage_1) == "manipulator"
+    local storage_2_is_manipulator = peripheral.getType(storage_2) == "manipulator"
+
+    if storage_1_is_manipulator and storage_2_is_manipulator then
+        if storage_1 == storage_2 then
+            backend.send("Unable to transfer between manipulators")
+            return nil, "Unable to transfer between manipulators"
+        end
+    end
+
+    if storage_2_is_manipulator then
+        peripheral.getInventory(storage_2).pullItems(storage_1, slot_1, amount, slot_2)
+    else
+        peripheral.getInventory(storage_1).pushItems(storage_2, slot_1, amount, slot_2)
+    end
+
     api.updateInventory(storage_1)
     if storage_1 ~= storage_2 then
         api.updateInventory(storage_2)

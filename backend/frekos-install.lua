@@ -44,6 +44,7 @@ local downloads = {
     "/apps/turtle/quartz_miner.lua",
     "/apps/turtle/quartz_replacer.lua",
     "/apps/turtle/tunnel_miner.lua",
+    "/apps/turtle/stair_miner.lua",
 
     -- endregion
 

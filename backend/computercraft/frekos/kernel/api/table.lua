@@ -30,6 +30,10 @@ function table.combine(a, b)
 end
 
 function table.includes(self, item)
+    if self == nil then
+        return false, 0
+    end
+
     for i = 1, #self do
         if self[i] == item then
             return true, i

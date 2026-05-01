@@ -43,7 +43,7 @@ class StorageLookup(StorageItem):
 
     damage: Optional[int] = None
     maxDamage: Optional[int] = None
-    durability: Optional[int] = None
+    durability: Optional[float] = None
     unbreakable: Optional[bool] = None
     enchantments: Optional[List[Enchantment]] = None
 
