@@ -14,7 +14,7 @@ end
 function refreshDevices()
     local devices = {}
     if #allowed_devices == 0 then
-        devices = backend.api.device.getByType("teleport_module")
+        devices = backend.api.device.getByModule("teleport_module")
     else
         for index, device_uuid in ipairs(allowed_devices) do
             table.insert(devices, backend.api.device.get(device_uuid))

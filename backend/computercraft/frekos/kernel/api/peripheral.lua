@@ -206,9 +206,27 @@ function api.isInventory(name)
     for _, type in ipairs(types) do
         if type == "inventory" then
             return true
+        elseif type == "manipulator" then
+            local manipulator = api.wrap(name)
+            if manipulator.getInventory ~= nil then
+                return true
+            end
         end
     end
     return false
+end
+
+function api.getInventory(name)
+    local p = api.get(name)
+    if p == nil then
+        return nil
+    end
+
+    if p.getInventory then
+        return p.getInventory()
+    end
+
+    return p
 end
 
 function api.handleEvent(event)

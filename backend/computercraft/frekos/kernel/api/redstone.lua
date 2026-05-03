@@ -4,6 +4,8 @@ local api = {
     native = _G.redstone
 }
 
+local state = {}
+
 -- endregion
 
 -- region { native functions }
@@ -25,6 +27,12 @@ function api.getInput(side)
 end
 
 function api.setAnalogOutput(side, value)
+    state[side] = {
+        side = side,
+        mode = "output",
+        power = value
+    }
+
     return api.native.setAnalogOutput(side, value)
 end
 
@@ -65,5 +73,9 @@ function api.testBundledInput(side, mask)
 end
 
 -- endregion
+
+function api.getState()
+    return state
+end
 
 return api

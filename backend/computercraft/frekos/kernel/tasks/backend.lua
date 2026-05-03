@@ -9,6 +9,11 @@ end
 
 local function onConnection()
     frekos.updateState()
+    for _, message in ipairs(backend.message_queue) do
+        backend.send(table.unpack(message))
+    end
+
+    backend.message_queue = {}
 end
 
 local function task()
@@ -19,13 +24,20 @@ local function task()
 
         if url ~= backend.getWebsocketURL() then
         elseif event == "websocket_message" then
-            os.queueEvent(table.unpack(textutils.unserializeJSON(handle)))
+            local backend_event = textutils.unserializeJSON(handle)
+            if backend_event[1] == "frekos_wipe_device" then
+                os.run("/frekos/apps/wipe_device.lua")
+            end
+
+            os.queueEvent(table.unpack(backend_event))
 
         elseif event == "websocket_success" then
             os.queueEvent("frekos_backend_connected")
             backend.connection = handle
             refreshScreen()
             onConnection()
+
+            backend.send({task = "frekos_device_ready"})
 
         elseif event == "websocket_failure" then
             if backend.connection ~= nil then

@@ -35,6 +35,8 @@ local downloads = {
     "/apps/pictures.lua",
     "/apps/storage.lua",
 
+    "/apps/plethora/fly.lua",
+
     "/apps/restaurant/kitchen_terminal.lua",
     "/apps/restaurant/order_terminal.lua",
 
@@ -44,6 +46,8 @@ local downloads = {
     "/apps/turtle/quartz_miner.lua",
     "/apps/turtle/quartz_replacer.lua",
     "/apps/turtle/tunnel_miner.lua",
+    "/apps/turtle/stair_miner.lua",
+    "/apps/turtle/tree_cut.lua",
 
     -- endregion
 
@@ -85,7 +89,9 @@ local downloads = {
     "/frekos/kernel/api/redstone.lua",
     "/frekos/kernel/api/screen.lua",
     "/frekos/kernel/api/storage.lua",
+    "/frekos/kernel/api/parallel.lua",
     "/frekos/kernel/api/table.lua",
+    "/frekos/kernel/api/string.lua",
     "/frekos/kernel/api/textutils.lua",
     "/frekos/kernel/api/turtle.lua",
 
@@ -125,6 +131,7 @@ local downloads = {
     "/frekos/kernel/tasks/storage.lua",
     "/frekos/kernel/tasks/teleport.lua",
     "/frekos/kernel/tasks/turtle.lua",
+    "/frekos/kernel/tasks/redstone.lua",
 
     -- endregion
 

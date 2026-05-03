@@ -17,12 +17,13 @@ local function task()
     resetRedstone(trapdoor_side)
 
     while true do
-        local event = coroutine.yield()
-
-        if event == "frekos_teleport" then
-            toggleRedstone(trapdoor_side)
-        end
+        coroutine.yield("frekos_teleport")
+        toggleRedstone(trapdoor_side)
     end
 end
 
-return task
+if table.includes(frekos.device.modules, "teleport_module") then
+    return task
+end
+
+return function()  end

@@ -6,6 +6,7 @@ import {StorageRepository} from "@/core/modules/storage/api.ts";
 import {StatusDot} from "@/core/components/StatusDot.tsx";
 import type {Storage, StorageItem} from "@/core/modules/storage/models.ts";
 import {StorageInventory} from "@/core/modules/storage/components/StorageInventory.tsx";
+import {Button} from "@/components/ui/button.tsx";
 
 const deviceRepository = new DeviceRepository();
 const storageRepository = new StorageRepository();
@@ -103,6 +104,11 @@ export function StoragePage() {
         setTimeout(async () => updateStorage(selectedSlot.storage.storage_uuid), 250);
     }
 
+    async function updateInventory(device_uuid: string, storage_uuid: string): Promise<void> {
+        await sendEvent(device_uuid, ['updateInventory', storage_uuid])
+        setTimeout(async () => await updateStorage(storage_uuid), 1000)
+    }
+
     async function moveItems(currentSlot: Required<ClickedStorageItem>, selectedSlot: ClickedStorageItem): Promise<void> {
         if (currentSlot.storage.is_turtle != selectedSlot.storage.is_turtle) {
             setCurrentSelectedSlot(null);
@@ -147,7 +153,7 @@ export function StoragePage() {
             }
 
             await Promise.all(storageUpdates);
-        }, 500);
+        }, 1000);
     }
 
     function getSelectedSlot(device_uuid: string, storage_uuid: string): number {
@@ -193,6 +199,11 @@ export function StoragePage() {
                                                             <p>Slots used: {storage.slots_used}</p>
                                                             <p>Slots
                                                                 free: {storage.slots_total - storage.slots_used}</p>
+
+                                                            <Button variant='outline' className='cursor-pointer my-2'
+                                                                    onClick={() => updateInventory(device.device_uuid, storage.storage_uuid)}>
+                                                                Refresh
+                                                            </Button>
 
                                                             <StorageInventory
                                                                 storage={storage}

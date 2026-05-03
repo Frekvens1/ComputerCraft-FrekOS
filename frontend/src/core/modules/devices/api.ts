@@ -43,6 +43,9 @@ export class DeviceRepository {
 
     // region { device state }
 
+    async getDeviceStates(): Promise<DeviceState[]> {
+        return backend.get(`/devices/state`);
+    }
 
     async getDeviceState(deviceUUID: string): Promise<DeviceState> {
         return backend.get(`/device/${deviceUUID}/state`);

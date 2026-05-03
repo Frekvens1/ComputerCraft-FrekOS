@@ -5,20 +5,19 @@ if x_blocks == nil then
     x_blocks = "3"
 end
 
-local whitelisted_blocks = {
-    "minecraft:torch"
-}
-
 function main()
     screen.clear()
-    print("Mining a tunnel '" .. x_blocks .. "' wide...")
+    print("Mining a stair tunnel '" .. x_blocks .. "' wide...")
 
     while true do
         if x_blocks == "1" then
             doDig()
+            turtle.down()
         else
             mineRight()
+            turtle.down()
             mineLeft()
+            turtle.down()
         end
     end
 end
@@ -26,7 +25,7 @@ end
 function dig()
     while true do
         local hasBlock, block = turtle.inspect()
-        if not hasBlock or (block and table.includes(whitelisted_blocks, block.name)) then
+        if not hasBlock or block.name == "minecraft:torch" then
             break
         end
 
@@ -38,7 +37,7 @@ end
 function digUp()
     while true do
         local hasBlock, block = turtle.inspectUp()
-        if not hasBlock or (block and table.includes(whitelisted_blocks, block.name)) then
+        if not hasBlock or block.name == "minecraft:torch" then
             break
         end
 
@@ -50,7 +49,7 @@ end
 function digDown()
     while true do
         local hasBlock, block = turtle.inspectDown()
-        if not hasBlock or (block and table.includes(whitelisted_blocks, block.name)) then
+        if not hasBlock or block.name == "minecraft:torch" then
             break
         end
 

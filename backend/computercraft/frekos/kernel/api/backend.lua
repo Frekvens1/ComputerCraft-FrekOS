@@ -1,6 +1,8 @@
 -- region { private }
 
-local api = {}
+local api = {
+    message_queue = {}
+}
 
 local function getHostname(path)
     if not path:match("^/") then
@@ -145,6 +147,7 @@ end
 
 function api.send(...)
     if not api.getConnection() then
+        table.insert(api.message_queue, {...})
         return
     end
 
