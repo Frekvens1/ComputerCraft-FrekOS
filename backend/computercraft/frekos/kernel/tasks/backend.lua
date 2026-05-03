@@ -9,6 +9,11 @@ end
 
 local function onConnection()
     frekos.updateState()
+    for _, message in ipairs(backend.message_queue) do
+        backend.send(table.unpack(message))
+    end
+
+    backend.message_queue = {}
 end
 
 local function task()

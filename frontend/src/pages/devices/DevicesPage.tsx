@@ -10,6 +10,7 @@ import {StatusDot} from "@/core/components/StatusDot.tsx";
 import {DeviceTable} from "@/components/device-table.tsx";
 import {useNavigate} from "react-router-dom";
 import {DeleteDialog} from "@/core/modals/DeleteDialog.tsx";
+import {DeviceIcon} from "@/core/modules/devices/components/DeviceIcon.tsx";
 
 const deviceRepository = new DeviceRepository();
 
@@ -57,21 +58,6 @@ export function DevicesPage() {
         return `wget run https://install.frekos.cc ${device_uuid}`;
     }
 
-    function getDeviceImagePath(deviceState: DeviceState | undefined): string {
-        if (deviceState == undefined) return '';
-        const path = '/items/computercraft';
-        const deviceType = deviceState.has_color ? 'advanced' : 'normal';
-
-        switch (deviceState.type) {
-            case 'command':
-                return `${path}/computer_${deviceState.type}.png`;
-            case 'pocket':
-                return `${path}/${deviceState.type}_computer_${deviceType}.png`;
-            default:
-                return `${path}/${deviceState.type}_${deviceType}.png`;
-        }
-    }
-
     return (
         <div className='px-4 lg:px-6 w-full flex flex-col'>
             <Card className='h-full flex flex-col'>
@@ -87,7 +73,7 @@ export function DevicesPage() {
                 <CardContent className="flex-1 overflow-hidden px-0 lg:px-4">
                     <div className="flex flex-col">
                         <ScrollArea className="h-full">
-                            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 p-6">
+                            <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-3 p-6">
                                 {devices.map((device) => {
                                     const deviceState = deviceStates.find((state) => state.device_uuid == device.device_uuid);
 
@@ -131,22 +117,18 @@ export function DevicesPage() {
 
                                             <CardContent className='flex flex-col gap-2'>
                                                 <div className='flex flex-col md:flex-row gap-2'>
-                                                    <div>
-                                                        {deviceState != undefined && (
-                                                            <img className="h-32 w-auto"
-                                                                 src={getDeviceImagePath(deviceState)}
-                                                                 alt={deviceState?.type}/>
-                                                        )}
+                                                    <div className="flex-shrink-0">
+                                                        <DeviceIcon deviceState={deviceState}/>
                                                     </div>
                                                     <div className='flex-1'>
                                                         <h3 className="text-lg">Device ID</h3>
-                                                        <p>{device.device_uuid}</p>
+                                                        <p className="break-all">{device.device_uuid}</p>
 
                                                         {(device.modules?.length ?? 0) > 0 && (
                                                             <>
                                                                 <br/>
                                                                 <h3 className="text-lg">Device modules:</h3>
-                                                                <p>{device.modules?.join(', ')}</p>
+                                                                <p className="break-words">{device.modules?.join(', ')}</p>
                                                             </>
                                                         )}
                                                     </div>

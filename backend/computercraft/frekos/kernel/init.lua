@@ -7,7 +7,6 @@ local function KERNEL()
         local api, apiErrors = self.loadFolder("/frekos/kernel/api")
         local core, coreErrors = self.loadFolder("/frekos/kernel/core")
         local drivers, driverErrors = self.loadFolder("/frekos/kernel/drivers")
-        local tasks, taskErrors = self.loadFolder("/frekos/kernel/tasks")
 
         for name, fn in pairs(api) do
             _G[name] = fn
@@ -18,6 +17,8 @@ local function KERNEL()
                 fn.init()
             end
         end
+
+        local tasks, taskErrors = self.loadFolder("/frekos/kernel/tasks")
 
         if self.debug then
             print("Displaying all tasks:")
@@ -72,6 +73,10 @@ local function KERNEL()
             local data = file_handle.readAll()
             file_handle.close()
 
+            local env = {}
+            env._ENV = env
+            setmetatable(env, { __index = _G })
+
             local fn, load_error = load(data, "@" .. file_path, "t", _G)
             if not fn then
                 errors[name] = {
@@ -80,6 +85,8 @@ local function KERNEL()
                 }
                 goto continue
             end
+
+            setfenv(fn, env)
 
             local result = { pcall(fn) }
             if not result[1] then

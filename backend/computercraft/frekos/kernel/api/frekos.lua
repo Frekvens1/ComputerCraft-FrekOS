@@ -70,7 +70,7 @@ function api.updateState()
         peripherals = nil
     end
 
-    backend.api.device.updateState(api.device.device_uuid, {
+    local config = {
         type = device_type,
         has_color = term.isColor(),
         connected_peripherals = peripherals,
@@ -78,12 +78,16 @@ function api.updateState()
         current_volume = 100,
         fuel_amount = orDefault(turtle_values.fuel_amount, -1),
         fuel_amount_max = orDefault(turtle_values.fuel_amount_max, -1),
+        redstone = redstone.getState(),
         gps_position = {
             x = 0,
             y = 0,
             z = 0,
         },
-    })
+    }
+
+    fs.saveConfig("/frekos/config/state.conf", config)
+    backend.api.device.updateState(api.device.device_uuid, config)
 end
 
 function api.init()

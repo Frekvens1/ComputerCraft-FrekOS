@@ -36,8 +36,10 @@ function api.getInventory(name)
 
         if not item_lookup[item.name][hash] then
             item_lookup[item.name][hash] = p.getItemDetail(slot)
-            if #item_lookup[item.name][hash].itemGroups == 0 then
-                item_lookup[item.name][hash].itemGroups = nil
+            if item_lookup[item.name][hash] ~= nil then
+                if #item_lookup[item.name][hash].itemGroups == 0 then
+                    item_lookup[item.name][hash].itemGroups = nil
+                end
             end
         else
             item_lookup[item.name][hash].count = item_lookup[item.name][hash].count + item.count
@@ -132,8 +134,10 @@ if turtle then
 
                 if not item_lookup[item.name][hash] then
                     item_lookup[item.name][hash] = turtle.getItemDetail(slot, true)
-                    if #item_lookup[item.name][hash].itemGroups == 0 then
-                        item_lookup[item.name][hash].itemGroups = nil
+                    if item_lookup[item.name][hash] ~= nil then
+                        if #item_lookup[item.name][hash].itemGroups == 0 then
+                            item_lookup[item.name][hash].itemGroups = nil
+                        end
                     end
                 else
                     item_lookup[item.name][hash].count = item_lookup[item.name][hash].count + item.count

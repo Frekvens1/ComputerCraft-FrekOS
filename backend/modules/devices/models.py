@@ -12,11 +12,32 @@ class DeviceType(Enum):
     COMMAND = 'command'
 
 
+class DeviceSide(Enum):
+    BOTTOM = 'bottom'
+    TOP = 'top'
+    BACK = 'back'
+    FRONT = 'front'
+    RIGHT = 'right'
+    LEFT = 'left'
+
+class RedstoneType(Enum):
+    INPUT = 'input'
+    OUTPUT = 'output'
+
+
 class Position(BaseModel):
     x: int
     y: int
     z: int
 
+
+class Redstone(BaseModel):
+    side: DeviceSide
+    mode: RedstoneType
+    power: int
+
+    class Config:
+        use_enum_values = True
 
 class Peripheral(BaseModel):
     name: str
@@ -33,6 +54,7 @@ class DeviceStateData(BaseModel):
     fuel_amount: Optional[int] = None
     fuel_amount_max: Optional[int] = None
     gps_position: Optional[Position] = None
+    redstone: Optional[dict[DeviceSide, Redstone]] = None
 
     class Config:
         use_enum_values = True
@@ -45,6 +67,7 @@ class DeviceData(BaseModel):
     description: str
     modules: Optional[List[str]] = None
 
+    debug_send_events: Optional[bool] = None
     use_lockscreen: Optional[bool] = None
     password: Optional[str] = None
     password_salt: Optional[str] = None

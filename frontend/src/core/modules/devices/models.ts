@@ -11,6 +11,14 @@ export interface Peripheral {
 }
 
 export type DeviceType = 'computer' | 'turtle' | 'pocket' | 'command';
+export type DeviceSide = 'bottom' | 'top' | 'back' | 'front' | 'right' | 'left';
+export type RedstoneType = 'input' | 'output';
+
+export interface Redstone {
+    side: DeviceSide;
+    mode: RedstoneType;
+    power: number;
+}
 
 export interface DeviceStateData {
     type: DeviceType;
@@ -21,6 +29,7 @@ export interface DeviceStateData {
     fuel_amount?: number;
     fuel_amount_max?: number;
     gps_position?: Position;
+    redstone?: Partial<Record<DeviceSide, Redstone>>;
 }
 
 export interface DeviceData {
@@ -32,6 +41,7 @@ export interface DeviceData {
     use_gps?: boolean;
     password?: string;
     use_lockscreen?: boolean;
+    debug_send_events?: boolean;
 
     custom_startup_script?: string;
     device_position?: Position;

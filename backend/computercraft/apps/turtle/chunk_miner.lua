@@ -1,5 +1,9 @@
 local args = { ... }
 
+local whitelisted_blocks = {
+    "minecraft:torch"
+}
+
 local tunnel_width = tonumber(args[1])
 local tunnel_length = tonumber(args[2])
 local tunnel_height = tonumber(args[3])
@@ -120,7 +124,7 @@ end
 function dig()
     while true do
         local hasBlock, block = turtle.inspect()
-        if not hasBlock or block.name == "minecraft:torch" then
+        if not hasBlock or (block and table.includes(whitelisted_blocks, block.name)) then
             break
         end
 
@@ -136,7 +140,7 @@ end
 function digUp()
     while true do
         local hasBlock, block = turtle.inspectUp()
-        if not hasBlock or block.name == "minecraft:torch" then
+        if not hasBlock or (block and table.includes(whitelisted_blocks, block.name)) then
             break
         end
 
@@ -152,7 +156,7 @@ end
 function digDown()
     while true do
         local hasBlock, block = turtle.inspectDown()
-        if not hasBlock or block.name == "minecraft:torch" then
+        if not hasBlock or (block and table.includes(whitelisted_blocks, block.name)) then
             break
         end
 

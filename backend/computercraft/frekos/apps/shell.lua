@@ -125,6 +125,7 @@ local function shell()
         registerFolder(folder_commands, current_path)
         registerFolder(commands, "/frekos/apps")
         registerFolder(commands, "/apps/turtle")
+        registerFolder(commands, "/apps/plethora")
         registerFolder(commands, "/apps")
 
         self.register("lua", function()
