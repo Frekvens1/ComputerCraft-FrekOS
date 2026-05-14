@@ -84,9 +84,12 @@ function api.post(path, data)
         return nil
     end
 
-    local text = response.readAll()
-    response.close()
+    local ok, text = pcall(response.readAll)
+    if not ok then
+        return nil, text
+    end
 
+    response.close()
     return textutils.unserialiseJSON(text)
 end
 
@@ -152,7 +155,9 @@ function api.send(...)
     end
 
     local args = fs.sanitize({ ... })
-    api.getConnection().send(textutils.serializeJSON(table.unpack(args)))
+    pcall(function()
+        api.getConnection().send(textutils.serializeJSON(table.unpack(args)))
+    end)
 end
 
 function api.refreshConnection()

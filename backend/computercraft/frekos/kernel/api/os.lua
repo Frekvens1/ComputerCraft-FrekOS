@@ -8,8 +8,13 @@ local api = {
 
 -- region { native functions }
 
-function api.pullEvent(filter)
-    local event = { api.pullEventRaw(filter) }
+function api.pullEvent(...)
+    local args = { ... }
+    if table.length(args) > 0 and not table.includes(args, "terminate") then
+        table.insert(args, "terminate")
+    end
+
+    local event = { api.pullEventRaw(table.unpack(args)) }
     local name = event[1]
 
     if name == "terminate" then
@@ -19,8 +24,8 @@ function api.pullEvent(filter)
     return table.unpack(event)
 end
 
-function api.pullEventRaw(filter)
-    return coroutine.yield(filter)
+function api.pullEventRaw(...)
+    return coroutine.yield(...)
 end
 
 function api.sleep(time)
@@ -72,7 +77,13 @@ function api.run(env_or_path, path_or_nil, ...)
 
     if not ok then
         if run_error ~= "Terminated" then
-            printError("Failed to run program:")
+            printError("Program crashed:")
+            backend.send({
+                message = "Program crashed",
+                error = run_error,
+                path = path,
+                args = args
+            })
         end
         printError(run_error)
         return nil, run_error

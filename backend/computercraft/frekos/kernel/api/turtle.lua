@@ -138,10 +138,14 @@ function api.select(index)
         index = 1
     end
 
-    local count = api.native.select(index)
+    if api.getSelectedSlot() == index then
+        return true
+    end
+
+    api.native.select(index)
     updateInventory()
 
-    return count
+    return true
 end
 
 function api.getItemCount(slot)

@@ -16,6 +16,21 @@ local function onConnection()
     backend.message_queue = {}
 end
 
+local function onRemoteCommand(command, args)
+    if command == "wipe_device" then
+        os.run("/frekos/apps/wipe_device.lua")
+
+    elseif command == "update" then
+        os.run("/frekos/apps/update.lua")
+
+    elseif command == "clean_install" then
+        os.run("/frekos/apps/clean_install.lua")
+
+    elseif command == "reboot" then
+        os.reboot()
+    end
+end
+
 local function task()
     backend.refreshConnection()
 
@@ -25,11 +40,11 @@ local function task()
         if url ~= backend.getWebsocketURL() then
         elseif event == "websocket_message" then
             local backend_event = textutils.unserializeJSON(handle)
-            if backend_event[1] == "frekos_wipe_device" then
-                os.run("/frekos/apps/wipe_device.lua")
+            if backend_event[1] == "frekos_remote_command" then
+                onRemoteCommand(backend_event[2], table.unpack(backend_event, 3, #backend_event))
+            else
+                os.queueEvent(table.unpack(backend_event))
             end
-
-            os.queueEvent(table.unpack(backend_event))
 
         elseif event == "websocket_success" then
             os.queueEvent("frekos_backend_connected")
@@ -37,12 +52,14 @@ local function task()
             refreshScreen()
             onConnection()
 
-            backend.send({task = "frekos_device_ready"})
+            backend.send({ task = "frekos_device_ready" })
 
         elseif event == "websocket_failure" then
             if backend.connection ~= nil then
                 os.queueEvent("frekos_backend_disconnected")
                 backend.connection = nil
+            else
+                os.safeSleep(10)
             end
 
             refreshScreen()
