@@ -77,6 +77,10 @@ parallel.waitForAny(
 
         function()
             while true do
+                while meta == nil or meta.motionY == nil do
+                    os.sleep(0)
+                end
+
                 local blocks = modules.scan()
                 for y = 0, -8, -1 do
                     -- Scan from the current block downwards

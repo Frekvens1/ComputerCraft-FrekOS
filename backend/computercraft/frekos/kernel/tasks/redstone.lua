@@ -1,6 +1,6 @@
 local function task()
     local state = fs.loadConfig("/frekos/config/state.conf")
-    if state and state.redstone then
+    if state ~= nil and state.redstone ~= nil then
         for side, redstone_state in pairs(state.redstone) do
             if redstone_state.mode == "output" then
                 redstone.setAnalogOutput(side, redstone_state.power)
@@ -10,11 +10,9 @@ local function task()
 
     while true do
         local event = { coroutine.yield("frekos_redstone") }
-        local redstone_task = event[2]
-        local side = event[3]
+        local _, redstone_device, redstone_task, side, power = table.unpack(event)
 
         if redstone_task == "output" then
-            local power = event[4]
             if power ~= nil then
                 power = tonumber(power)
                 if power > 15 then
@@ -26,7 +24,15 @@ local function task()
                 power = 0
             end
 
-            redstone.setAnalogOutput(side, power)
+            if redstone_device == "device" then
+                redstone.setAnalogOutput(side, power)
+            else
+                local rs_peripheral = peripheral.wrap(redstone_device)
+                if rs_peripheral ~= nil then
+                    rs_peripheral.setAnalogOutput(side, power)
+                end
+            end
+
             frekos.updateState()
         end
 

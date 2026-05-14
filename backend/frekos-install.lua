@@ -34,6 +34,7 @@ local downloads = {
     "/apps/music.lua",
     "/apps/pictures.lua",
     "/apps/storage.lua",
+    "/apps/rs_clock.lua",
 
     "/apps/plethora/fly.lua",
 

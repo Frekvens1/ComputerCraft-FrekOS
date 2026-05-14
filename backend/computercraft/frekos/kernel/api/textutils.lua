@@ -8,6 +8,10 @@ local api = {
 
 -- region { native functions }
 
+function api.formatTime(nTime, bTwentyFourHour)
+    return api.native.formatTime(nTime, bTwentyFourHour)
+end
+
 function api.serialize(tbl, options)
     return api.native.serialize(tbl, options)
 end
@@ -39,8 +43,6 @@ end
 function api.unserialiseJSON(str)
     return api.unserializeJSON(str)
 end
-
-
 
 -- endregion
 

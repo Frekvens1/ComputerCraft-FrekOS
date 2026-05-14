@@ -1,4 +1,4 @@
-function main()
+local function main()
     screen.clear()
     print("Chopping down trees!")
 
@@ -25,6 +25,8 @@ function main()
         while turtle.suckDown() do
             os.sleep(0.5)
         end
+
+        os.sleep(5)
     end
 end
 
